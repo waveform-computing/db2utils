@@ -1,7 +1,7 @@
 DBNAME:=SAMPLE
 SCHEMANAME:=UTILS
 
-ALL_SQL:=$(wildcard *.sql)
+ALL_SQL:=$(filter-out install.sql uninstall.sql test.sql,$(wildcard *.sql))
 ALL_FOO:=$(ALL_SQL:%.sql=%.foo)
 
 install: install.sql
@@ -10,6 +10,14 @@ install: install.sql
 
 uninstall: uninstall.sql
 	db2 -td! +c +s -vf $< || true
+
+test: test.awk test.dat
+	echo "CONNECT TO $(DBNAME);" > foo
+	echo "SET SCHEMA $(SCHEMANAME);" >> foo
+	echo "SET PATH SYSTEM PATH, USER, $(SCHEMANAME);" >> foo
+	awk -f test.awk test.dat >> foo
+	db2 -tvf foo || true
+	rm -f foo
 
 clean:
 	rm -f foo
@@ -40,7 +48,7 @@ uninstall.sql: install.sql
 		/^CREATE +(ALIAS|TABLE|VIEW|ROLE|TRIGGER) +([A-Za-z0-9_#$$@]+)\>/ { print "DROP " $$2 " " gensub("!$$", "", 1, $$3) "!"; }' $< | tac >> $@
 	echo "COMMIT!" >> $@
 
-etl.foo: sql.foo
+export_load.foo: sql.foo
 
 exceptions.foo: sql.foo auth.foo
 
@@ -56,4 +64,4 @@ corrections.foo: sql.foo log.foo
 
 toggle_triggers.foo: sql.foo
 
-.PHONY: install uninstall clean
+.PHONY: install uninstall clean test
