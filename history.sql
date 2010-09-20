@@ -581,6 +581,8 @@ BEGIN ATOMIC
     DECLARE DDL CLOB(64K) DEFAULT '';
     DECLARE SAVE_PATH VARCHAR(254);
     DECLARE SAVE_SCHEMA VARCHAR(128);
+    DECLARE PK_CLUSTERED CHAR(1) DEFAULT 'N';
+    DECLARE TAB_COMPRESSED CHAR(1) DEFAULT 'N';
     -- Check the source table has a primary key
     IF (SELECT COALESCE(KEYCOLUMNS, 0)
         FROM SYSCAT.TABLES
@@ -589,6 +591,28 @@ BEGIN ATOMIC
         SIGNAL SQLSTATE '70001'
         SET MESSAGE_TEXT = 'Source table must have a primary key';
     END IF;
+    SET TAB_COMPRESSED = (
+        SELECT
+            CASE COMPRESSION
+                WHEN 'R' THEN 'Y'
+                WHEN 'B' THEN 'Y'
+                ELSE 'N'
+            END
+        FROM SYSCAT.TABLES
+        WHERE TABSCHEMA = SOURCE_SCHEMA
+        AND TABNAME = SOURCE_TABLE
+    );
+    SET PK_CLUSTERED = (
+        SELECT
+            CASE INDEXTYPE
+                WHEN 'CLUS' THEN 'Y'
+                ELSE 'N'
+            END
+        FROM SYSCAT.INDEXES
+        WHERE TABSCHEMA = SOURCE_SCHEMA
+        AND TABNAME = SOURCE_TABLE
+        AND UNIQUERULE = 'P'
+    );
     -- Drop any existing table with the same name as the destination table
     FOR D AS
         SELECT
@@ -641,7 +665,8 @@ BEGIN ATOMIC
         || '    FROM '
         ||          QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE) || ' AS T'
         || ')'
-        || 'WITH NO DATA IN ' || DEST_TBSPACE;
+        || 'WITH NO DATA IN ' || DEST_TBSPACE || ' '
+        || 'COMPRESS ' || CASE TAB_COMPRESSED WHEN 'Y' THEN 'YES' ELSE 'NO' END;
     EXECUTE IMMEDIATE DDL;
     -- Create two unique indexes, both based on the source table's primary key,
     -- plus the EFFECTIVE and EXPIRY fields respectively. Use INCLUDE for
@@ -651,7 +676,8 @@ BEGIN ATOMIC
         'CREATE UNIQUE INDEX ' || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_TABLE || '_PK') || ' '
         || 'ON ' || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_TABLE)
         || '(' || KEY_COLS || QUOTE_IDENTIFIER(HISTORY$EFFNAME(RESOLUTION))
-        || ') INCLUDE (' || INC_COLS || QUOTE_IDENTIFIER(HISTORY$EXPNAME(RESOLUTION)) || ')';
+        || ') INCLUDE (' || INC_COLS || QUOTE_IDENTIFIER(HISTORY$EXPNAME(RESOLUTION)) || ') '
+        || CASE PK_CLUSTERED WHEN 'Y' THEN 'CLUSTER' ELSE '' END;
     EXECUTE IMMEDIATE DDL;
     SET DDL =
         'CREATE UNIQUE INDEX ' || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_TABLE || '_PK2') || ' '
@@ -671,6 +697,7 @@ BEGIN ATOMIC
     SET DDL =
         'ALTER TABLE ' || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_TABLE) || ' '
         || 'ADD CONSTRAINT PK PRIMARY KEY (' || KEY_COLS || QUOTE_IDENTIFIER(HISTORY$EFFNAME(RESOLUTION)) || ') '
+        || 'ADD CONSTRAINT EXPIRY_CK CHECK (' || QUOTE_IDENTIFIER(HISTORY$EFFNAME(RESOLUTION)) || ' <= ' || QUOTE_IDENTIFIER(HISTORY$EXPNAME(RESOLUTION)) || ') '
         || 'ALTER COLUMN ' || QUOTE_IDENTIFIER(HISTORY$EFFNAME(RESOLUTION)) || ' SET DEFAULT ' || HISTORY$EFFDEFAULT(RESOLUTION) || ' '
         || 'ALTER COLUMN ' || QUOTE_IDENTIFIER(HISTORY$EXPNAME(RESOLUTION)) || ' SET DEFAULT ' || HISTORY$EXPDEFAULT(RESOLUTION);
     EXECUTE IMMEDIATE DDL;
@@ -714,6 +741,31 @@ BEGIN ATOMIC
     WHERE TABSCHEMA = SOURCE_SCHEMA
         AND TABNAME = SOURCE_TABLE;
     CALL RESTORE_AUTH(DEST_SCHEMA, DEST_TABLE);
+    -- Set up comments for the effective and expiry fields then copy the
+    -- comments for all fields from the source table
+    SET DDL = 'COMMENT ON COLUMN '
+        || QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE) || '.' || QUOTE_IDENTIFIER(HISTORY$EFFNAME(RESOLUTION))
+        || ' IS ' || QUOTE_STRING('The date from which this row was present in the source table');
+    EXECUTE IMMEDIATE DDL;
+    SET DDL = 'COMMENT ON COLUMN '
+        || QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE) || '.' || QUOTE_IDENTIFIER(HISTORY$EXPNAME(RESOLUTION))
+        || ' IS ' || QUOTE_STRING('The date until which this row was present in the source table (rows with 9999-12-31 currently exist in the source table)');
+    EXECUTE IMMEDIATE DDL;
+    SET DDL = 'COMMENT ON TABLE '
+        || QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE)
+        || ' IS ' || QUOTE_STRING('History table which tracks the content of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE);
+    EXECUTE IMMEDIATE DDL;
+    FOR C AS
+        SELECT
+            VARCHAR('COMMENT ON COLUMN '
+                || QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE) || '.' || QUOTE_IDENTIFIER(COLNAME)
+                || ' IS ' || QUOTE_STRING(REMARKS)) AS COMMENT_STMT
+        FROM SYSCAT.COLUMNS
+        WHERE TABSCHEMA = SOURCE_SCHEMA
+        AND TABNAME = SOURCE_TABLE
+    DO
+        EXECUTE IMMEDIATE C.COMMENT_STMT;
+    END FOR;
 END!
 
 CREATE PROCEDURE CREATE_HISTORY_TABLE(

@@ -25,6 +25,55 @@
 -- constructing SQL with SQL, including the appropriate escaping.
 -------------------------------------------------------------------------------
 
+-- QUOTE_STRING(ASTRING)
+-------------------------------------------------------------------------------
+-- Returns ASTRING surrounded by single quotes and performs any necessary
+-- escaping within the string to make it valid SQL. For example, single quotes
+-- within ASTRING are doubled, and control characters like CR or LF are
+-- returned as concatenated hex-strings
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION QUOTE_STRING(ASTRING VARCHAR(4000))
+    RETURNS VARCHAR(4000)
+    SPECIFIC QUOTE_STRING1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+BEGIN ATOMIC
+    DECLARE I SMALLINT DEFAULT 1;
+    DECLARE RESULT VARCHAR(4000) DEFAULT '';
+    DECLARE IN_HEX CHAR(1);
+    SET IN_HEX = CASE
+        WHEN ASCII(SUBSTR(ASTRING, I, 1)) BETWEEN 32 AND 127 THEN 'N'
+        ELSE 'Y'
+    END;
+    SET RESULT = CASE IN_HEX
+        WHEN 'Y' THEN 'X'''
+        ELSE ''''
+    END;
+    WHILE I <= LENGTH(ASTRING) DO
+        IF ASCII(SUBSTR(ASTRING, I, 1)) BETWEEN 32 AND 127 THEN
+            IF IN_HEX = 'Y' THEN
+                SET RESULT = RESULT || ''' || ''';
+                SET IN_HEX = 'N';
+            END IF;
+        ELSE
+            IF IN_HEX = 'N' THEN
+                SET RESULT = RESULT || ''' || X''';
+                SET IN_HEX = 'Y';
+            END IF;
+        END IF;
+        SET RESULT = RESULT ||
+            CASE IN_HEX
+                WHEN 'Y' THEN HEX(SUBSTR(ASTRING, I, 1))
+                ELSE REPLACE(SUBSTR(ASTRING, I, 1), '''', '''''')
+            END;
+        SET I = I + 1;
+    END WHILE;
+    RETURN RESULT || '''';
+END!
+
 -- QUOTE_IDENTIFIER(AIDENT)
 -------------------------------------------------------------------------------
 -- Returns AIDENT surrounded by double quotes if AIDENT contains any characters
