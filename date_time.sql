@@ -124,9 +124,11 @@ RETURN
 
 -- SECONDS(ATIMESTAMP)
 -------------------------------------------------------------------------------
--- Returns the number of seconds since 0001-01-01-00:00:00. This function is
--- a combination of the DAYS and MIDNIGHT_SECONDS functions. The result is
--- a BIGINT (64-bit integer value).
+-- Returns an integer representation of a TIMESTAMP. This function is a
+-- combination of the DAYS and MIDNIGHT_SECONDS functions. The result is a
+-- BIGINT (64-bit integer value) representing the number of seconds since one
+-- day before 0001-01-01 at 00:00:00. The one day offset is due to the
+-- operation of the DAYS function.
 -------------------------------------------------------------------------------
 
 CREATE FUNCTION SECONDS(ATIMESTAMP TIMESTAMP)
@@ -454,7 +456,7 @@ CREATE FUNCTION MONTHWEEK_ISO(ADATE DATE)
     NO EXTERNAL ACTION
     CONTAINS SQL
 RETURN
-    WEEK_ISO(ADATE) - WEEK_ISO(MONTHSTART(ADATE)) + 1!
+    ((DAYS(ADATE) - DAYS(PRIOR_DAYOFWEEK(MONTHSTART(ADATE) + 1 DAY, 2))) / 7) + 1!
 
 CREATE FUNCTION MONTHWEEK_ISO(ADATE TIMESTAMP)
     RETURNS SMALLINT
@@ -620,7 +622,7 @@ CREATE FUNCTION QUARTERWEEK_ISO(ADATE DATE)
     NO EXTERNAL ACTION
     CONTAINS SQL
 RETURN
-    WEEK_ISO(ADATE) - WEEK_ISO(QUARTERSTART(ADATE)) + 1!
+    ((DAYS(ADATE) - DAYS(PRIOR_DAYOFWEEK(QUARTERSTART(ADATE) + 1 DAY, 2))) / 7) + 1!
 
 CREATE FUNCTION QUARTERWEEK_ISO(ADATE TIMESTAMP)
     RETURNS SMALLINT
@@ -986,7 +988,7 @@ CREATE FUNCTION WEEKSINYEAR_ISO(AYEAR INTEGER)
     NO EXTERNAL ACTION
     CONTAINS SQL
 RETURN
-    WEEK_ISO(DATE(AYEAR, 12, 31))!
+    WEEK_ISO(DATE(AYEAR, 12, 28))!
 
 CREATE FUNCTION WEEKSINYEAR_ISO(ADATE DATE)
     RETURNS SMALLINT
