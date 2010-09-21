@@ -15,7 +15,7 @@ test: test.awk test.dat
 	echo "CONNECT TO $(DBNAME);" > foo
 	echo "SET SCHEMA $(SCHEMANAME);" >> foo
 	echo "SET PATH SYSTEM PATH, USER, $(SCHEMANAME);" >> foo
-	awk -f test.awk test.dat >> foo
+	awk --re-interval -f test.awk test.dat >> foo
 	db2 -tvf foo || true
 	rm -f foo
 

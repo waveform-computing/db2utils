@@ -7,14 +7,25 @@ BEGIN {
 # test row
 NR % 2 == 1 {
 	if (first) first = 0; else print ",";
-	print "(";
-	print "'" gensub("'", "''", "g", $0) "',";
-	print "VARCHAR(" $0 "),";
+	test = $0;
 }
 
 # result row
 NR % 2 == 0 {
-	print "CAST(" $0 " AS VARCHAR(4000))";
+	print "(";
+	print "\t'" gensub("'", "''", "g", test) "',";
+	expected = $0;
+	# Apply specific formats to DATE, TIME, and TIMESTAMP values to ensure we
+	# match the expected results
+	if (expected ~ /^'[[:digit:]]{4}(-[[:digit:]]{2}){2}'$/)
+		print "\tVARCHAR(" test ",ISO),";
+	else if (expected ~ /^'[[:digit:]]{2}(:[[:digit:]]{2}){2}'$/)
+		print "\tVARCHAR(" test ",JIS),";
+	else if (expected ~ /^'[[:digit:]]{4}(-[[:digit:]]{2}){2} [[:digit:]]{2}(:[[:digit:]]{2}){2}\.[[:digit:]]{6}'$/)
+		print "\tVARCHAR_FORMAT(" test ",'YYYY-MM-DD HH24:MI:SS.FF6'),";
+	else
+		print "\tVARCHAR(" test "),";
+	print "\tCAST(" expected " AS VARCHAR(4000))";
 	print ")";
 }
 
