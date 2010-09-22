@@ -133,7 +133,7 @@ BEGIN ATOMIC
         || '        OLD.' || QUOTE_IDENTIFIER(BASE_COLUMN) || ' <> NEW.' || QUOTE_IDENTIFIER(BASE_COLUMN)
         || '        AND OLD.' || QUOTE_IDENTIFIER(CORRECTION_COLUMN) || ' IS NOT NULL'
         || '    )'
-        || '    INSERT INTO BOBIN.LOG ('
+        || '    INSERT INTO ' || QUOTE_IDENTIFIER(CURRENT SCHEMA) || '.LOG ('
         || '        SEVERITY,'
         || '        SUBJECT_TYPE,'
         || '        SUBJECT_SCHEMA,'
@@ -168,5 +168,10 @@ CREATE PROCEDURE CREATE_CORRECTION_TRIGGERS(
 BEGIN ATOMIC
     CALL CREATE_CORRECTION_TRIGGERS(CURRENT SCHEMA, ATABLE, BASE_COLUMN, CORRECTION_COLUMN);
 END!
+
+COMMENT ON SPECIFIC PROCEDURE CREATE_CORRECTION_TRIGGERS1
+    IS 'Creates triggers on the specified column which will log changes and NULL out a corresponding correction column. See source for usage examples'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_CORRECTION_TRIGGERS2
+    IS 'Creates triggers on the specified column which will log changes and NULL out a corresponding correction column. See source for usage examples'!
 
 -- vim: set et sw=4 sts=4:

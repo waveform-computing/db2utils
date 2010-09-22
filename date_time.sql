@@ -73,6 +73,15 @@ CREATE FUNCTION PRIOR_DAYOFWEEK(ADOW INTEGER)
     CONTAINS SQL
 RETURN PRIOR_DAYOFWEEK(CURRENT DATE, ADOW)!
 
+COMMENT ON SPECIFIC FUNCTION PRIOR_DAYOFWEEK1
+    IS 'Returns the latest date earlier than ADATE, which is also a particular day of the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)'!
+COMMENT ON SPECIFIC FUNCTION PRIOR_DAYOFWEEK2
+    IS 'Returns the latest date earlier than ADATE, which is also a particular day of the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)'!
+COMMENT ON SPECIFIC FUNCTION PRIOR_DAYOFWEEK3
+    IS 'Returns the latest date earlier than ADATE, which is also a particular day of the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)'!
+COMMENT ON SPECIFIC FUNCTION PRIOR_DAYOFWEEK4
+    IS 'Returns the latest date earlier than ADATE, which is also a particular day of the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)'!
+
 -- NEXT_DAYOFWEEK(ADATE, ADOW)
 -- NEXT_DAYOFWEEK(ADOW)
 -------------------------------------------------------------------------------
@@ -121,6 +130,15 @@ CREATE FUNCTION NEXT_DAYOFWEEK(ADOW INTEGER)
     CONTAINS SQL
 RETURN
     NEXT_DAYOFWEEK(CURRENT DATE, ADOW)!
+
+COMMENT ON SPECIFIC FUNCTION NEXT_DAYOFWEEK1
+    IS 'Returns the earliest date later than ADATE, which is also a particular day of the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)'!
+COMMENT ON SPECIFIC FUNCTION NEXT_DAYOFWEEK2
+    IS 'Returns the earliest date later than ADATE, which is also a particular day of the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)'!
+COMMENT ON SPECIFIC FUNCTION NEXT_DAYOFWEEK3
+    IS 'Returns the earliest date later than ADATE, which is also a particular day of the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)'!
+COMMENT ON SPECIFIC FUNCTION NEXT_DAYOFWEEK4
+    IS 'Returns the earliest date later than ADATE, which is also a particular day of the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)'!
 
 -- SECONDS(ATIMESTAMP)
 -------------------------------------------------------------------------------
@@ -171,6 +189,15 @@ RETURN
         ELSE SECONDS(TIMESTAMP(ATIMESTAMP))
     END!
 
+COMMENT ON SPECIFIC FUNCTION SECONDS1
+    IS 'Returns an integer representation of the specified TIMESTAMP. The inverse of this function is TIMESTAMP'!
+COMMENT ON SPECIFIC FUNCTION SECONDS2
+    IS 'Returns an integer representation of the specified TIMESTAMP. The inverse of this function is TIMESTAMP'!
+COMMENT ON SPECIFIC FUNCTION SECONDS3
+    IS 'Returns an integer representation of the specified TIMESTAMP. The inverse of this function is TIMESTAMP'!
+COMMENT ON SPECIFIC FUNCTION SECONDS4
+    IS 'Returns an integer representation of the specified TIMESTAMP. The inverse of this function is TIMESTAMP'!
+
 -- DATE(AYEAR, AMONTH, ADAY)
 -- DATE(AYEAR, ADAY)
 -------------------------------------------------------------------------------
@@ -202,6 +229,11 @@ CREATE FUNCTION DATE(AYEAR INTEGER, ADOY INTEGER)
     CONTAINS SQL
 RETURN
     DATE(CHAR(RIGHT(DIGITS(AYEAR), 4) || RIGHT(DIGITS(ADOY), 3), 7))!
+
+COMMENT ON SPECIFIC FUNCTION DATE1
+    IS 'Returns a DATE constructed from the specified year, month and day'!
+COMMENT ON SPECIFIC FUNCTION DATE2
+    IS 'Returns a DATE constructed from the specified year and day-of-year'!
 
 -- TIME(AHOUR, AMINUTE, ASECONDS)
 -- TIME(ASECONDS)
@@ -254,6 +286,13 @@ CREATE FUNCTION TIME(ASECONDS INTEGER)
 RETURN
     TIME(BIGINT(ASECONDS))!
 
+COMMENT ON SPECIFIC FUNCTION TIME1
+    IS 'Constructs a TIME from the specified hours, minutes and seconds'!
+COMMENT ON SPECIFIC FUNCTION TIME2
+    IS 'Constructs a TIME from the specified seconds after midnight'!
+COMMENT ON SPECIFIC FUNCTION TIME3
+    IS 'Constructs a TIME from the specified seconds after midnight'!
+
 -- TIMESTAMP(ASECONDS)
 -------------------------------------------------------------------------------
 -- Returns a TIMESTAMP ASECONDS seconds after 0001-01-01:00:00:00. This
@@ -272,6 +311,9 @@ CREATE FUNCTION TIMESTAMP(ASECONDS BIGINT)
     CONTAINS SQL
 RETURN
     TIMESTAMP(DATE(ASECONDS / (24 * 60 * 60)), TIME(ASECONDS))!
+
+COMMENT ON SPECIFIC FUNCTION TIMESTAMP1
+    IS 'Constructs a TIMESTAMP from the specified seconds after the epoch. This is the inverse function of SECONDS'!
 
 -- YEAR_ISO(ADATE)
 -------------------------------------------------------------------------------
@@ -311,6 +353,13 @@ CREATE FUNCTION YEAR_ISO(ADATE VARCHAR(26))
     CONTAINS SQL
 RETURN
     YEAR_ISO(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION YEAR_ISO1
+    IS 'Returns the year of ADATE, unless the ISO week of ADATE exists in the prior year in which case that year is returned'!
+COMMENT ON SPECIFIC FUNCTION YEAR_ISO2
+    IS 'Returns the year of ADATE, unless the ISO week of ADATE exists in the prior year in which case that year is returned'!
+COMMENT ON SPECIFIC FUNCTION YEAR_ISO3
+    IS 'Returns the year of ADATE, unless the ISO week of ADATE exists in the prior year in which case that year is returned'!
 
 -- MONTHSTART(AYEAR, AMONTH)
 -- MONTHSTART(ADATE)
@@ -357,6 +406,15 @@ CREATE FUNCTION MONTHSTART(ADATE VARCHAR(26))
     CONTAINS SQL
 RETURN
     MONTHSTART(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION MONTHSTART1
+    IS 'Returns the first day of month AMONTH in the year AYEAR'!
+COMMENT ON SPECIFIC FUNCTION MONTHSTART2
+    IS 'Returns the first day of the month that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION MONTHSTART3
+    IS 'Returns the first day of the month that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION MONTHSTART4
+    IS 'Returns the first day of the month that ADATE exists within'!
 
 -- MONTHEND(AYEAR, AMONTH)
 -- MONTHEND(ADATE)
@@ -409,6 +467,15 @@ CREATE FUNCTION MONTHEND(ADATE VARCHAR(26))
 RETURN
     MONTHEND(DATE(ADATE))!
 
+COMMENT ON SPECIFIC FUNCTION MONTHEND1
+    IS 'Returns the last day of month AMONTH in the year AYEAR'!
+COMMENT ON SPECIFIC FUNCTION MONTHEND2
+    IS 'Returns the last day of the month that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION MONTHEND3
+    IS 'Returns the last day of the month that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION MONTHEND4
+    IS 'Returns the last day of the month that ADATE exists within'!
+
 -- MONTHWEEK(ADATE)
 -------------------------------------------------------------------------------
 -- Returns the week of the month of the ADATE, where weeks start on a Sunday.
@@ -443,6 +510,13 @@ CREATE FUNCTION MONTHWEEK(ADATE VARCHAR(26))
 RETURN
     MONTHWEEK(DATE(ADATE))!
 
+COMMENT ON SPECIFIC FUNCTION MONTHWEEK1
+    IS 'Returns the week of the month that ADATE exists within (weeks start on a Sunday, result will be in the range 1-6)'!
+COMMENT ON SPECIFIC FUNCTION MONTHWEEK2
+    IS 'Returns the week of the month that ADATE exists within (weeks start on a Sunday, result will be in the range 1-6)'!
+COMMENT ON SPECIFIC FUNCTION MONTHWEEK3
+    IS 'Returns the week of the month that ADATE exists within (weeks start on a Sunday, result will be in the range 1-6)'!
+
 -- MONTHWEEK_ISO(ADATE)
 -------------------------------------------------------------------------------
 -- Returns the week of the month of the ADATE, where weeks start on a Monday.
@@ -476,6 +550,13 @@ CREATE FUNCTION MONTHWEEK_ISO(ADATE VARCHAR(26))
     CONTAINS SQL
 RETURN
     MONTHWEEK_ISO(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION MONTHWEEK_ISO1
+    IS 'Returns the week of the month that ADATE exists within (weeks start on a Monday, result will be in the range 1-6)'!
+COMMENT ON SPECIFIC FUNCTION MONTHWEEK_ISO2
+    IS 'Returns the week of the month that ADATE exists within (weeks start on a Monday, result will be in the range 1-6)'!
+COMMENT ON SPECIFIC FUNCTION MONTHWEEK_ISO3
+    IS 'Returns the week of the month that ADATE exists within (weeks start on a Monday, result will be in the range 1-6)'!
 
 -- QUARTERSTART(AYEAR, AQUARTER)
 -- QUARTERSTART(ADATE)
@@ -522,6 +603,15 @@ CREATE FUNCTION QUARTERSTART(ADATE VARCHAR(26))
     CONTAINS SQL
 RETURN
     QUARTERSTART(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION QUARTERSTART1
+    IS 'Returns the first day of quarter AQUARTER in the year AYEAR'!
+COMMENT ON SPECIFIC FUNCTION QUARTERSTART2
+    IS 'Returns the first day of the quarter that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION QUARTERSTART3
+    IS 'Returns the first day of the quarter that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION QUARTERSTART4
+    IS 'Returns the first day of the quarter that ADATE exists within'!
 
 -- QUARTEREND(AYEAR, AQUARTER)
 -- QUARTEREND(ADATE)
@@ -574,6 +664,15 @@ CREATE FUNCTION QUARTEREND(ADATE VARCHAR(26))
 RETURN
     QUARTEREND(DATE(ADATE))!
 
+COMMENT ON SPECIFIC FUNCTION QUARTEREND1
+    IS 'Returns the last day of quarter AQUARTER in the year AYEAR'!
+COMMENT ON SPECIFIC FUNCTION QUARTEREND2
+    IS 'Returns the last day of the quarter that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION QUARTEREND3
+    IS 'Returns the last day of the quarter that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION QUARTEREND4
+    IS 'Returns the last day of the quarter that ADATE exists within'!
+
 -- QUARTERWEEK(ADATE)
 -------------------------------------------------------------------------------
 -- Returns the week of the month of the ADATE, where weeks start on a Sunday.
@@ -609,6 +708,13 @@ CREATE FUNCTION QUARTERWEEK(ADATE VARCHAR(26))
 RETURN
     QUARTERWEEK(DATE(ADATE))!
 
+COMMENT ON SPECIFIC FUNCTION QUARTERWEEK1
+    IS 'Returns the week of the quarter that ADATE exists within (weeks start on a Sunday, result will be in the range 1-6)'!
+COMMENT ON SPECIFIC FUNCTION QUARTERWEEK2
+    IS 'Returns the week of the quarter that ADATE exists within (weeks start on a Sunday, result will be in the range 1-6)'!
+COMMENT ON SPECIFIC FUNCTION QUARTERWEEK3
+    IS 'Returns the week of the quarter that ADATE exists within (weeks start on a Sunday, result will be in the range 1-6)'!
+
 -- QUARTERWEEK_ISO(ADATE)
 -------------------------------------------------------------------------------
 -- Returns the week of the month of the ADATE, where weeks start on a Monday.
@@ -643,6 +749,13 @@ CREATE FUNCTION QUARTERWEEK_ISO(ADATE VARCHAR(26))
     CONTAINS SQL
 RETURN
     QUARTERWEEK_ISO(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION QUARTERWEEK_ISO1
+    IS 'Returns the week of the quarter that ADATE exists within (weeks start on a Monday, result will be in the range 1-6)'!
+COMMENT ON SPECIFIC FUNCTION QUARTERWEEK_ISO2
+    IS 'Returns the week of the quarter that ADATE exists within (weeks start on a Monday, result will be in the range 1-6)'!
+COMMENT ON SPECIFIC FUNCTION QUARTERWEEK_ISO3
+    IS 'Returns the week of the quarter that ADATE exists within (weeks start on a Monday, result will be in the range 1-6)'!
 
 -- YEARSTART(AYEAR)
 -- YEARSTART(ADATE)
@@ -690,6 +803,15 @@ CREATE FUNCTION YEARSTART(ADATE VARCHAR(26))
 RETURN
     YEARSTART(DATE(ADATE))!
 
+COMMENT ON SPECIFIC FUNCTION YEARSTART1
+    IS 'Returns the first day of year AYEAR'!
+COMMENT ON SPECIFIC FUNCTION YEARSTART2
+    IS 'Returns the first day of the year that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION YEARSTART3
+    IS 'Returns the first day of the year that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION YEARSTART4
+    IS 'Returns the first day of the year that ADATE exists within'!
+
 -- YEAREND(AYEAR)
 -- YEAREND(ADATE)
 -------------------------------------------------------------------------------
@@ -735,6 +857,15 @@ CREATE FUNCTION YEAREND(ADATE VARCHAR(26))
     CONTAINS SQL
 RETURN
     YEAREND(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION YEAREND1
+    IS 'Returns the last day of year AYEAR'!
+COMMENT ON SPECIFIC FUNCTION YEAREND2
+    IS 'Returns the last day of the year that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION YEAREND3
+    IS 'Returns the last day of the year that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION YEAREND4
+    IS 'Returns the last day of the year that ADATE exists within'!
 
 -- WEEKSTART(AYEAR, AWEEK)
 -- WEEKSTART(ADATE)
@@ -784,6 +915,15 @@ CREATE FUNCTION WEEKSTART(ADATE VARCHAR(26))
     CONTAINS SQL
 RETURN
     WEEKSTART(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION WEEKSTART1
+    IS 'Returns the first day of year AWEEK'!
+COMMENT ON SPECIFIC FUNCTION WEEKSTART2
+    IS 'Returns the first day of the year that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION WEEKSTART3
+    IS 'Returns the first day of the year that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION WEEKSTART4
+    IS 'Returns the first day of the year that ADATE exists within'!
 
 -- WEEKEND(AYEAR, AWEEK)
 -- WEEKEND(ADATE)
