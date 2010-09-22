@@ -71,6 +71,9 @@ RETURN
         SELECT 'R'         FROM SYSCAT.ROLES               WHERE ROLENAME = AUTH_NAME
     ), CASE AUTH_NAME WHEN 'PUBLIC' THEN 'G' ELSE 'U' END)!
 
+COMMENT ON SPECIFIC FUNCTION AUTH_TYPE1
+    IS 'Utility routine used by other routines to determine the type of an authorization name when it isn''t explicitly given'!
+
 -- AUTHS_HELD(AUTH_NAME, AUTH_TYPE, INCLUDE_COLUMNS, INCLUDE_PERSONAL)
 -- AUTHS_HELD(AUTH_NAME, INCLUDE_COLUMNS, INCLUDE_PERSONAL)
 -- AUTHS_HELD(AUTH_NAME, INCLUDE_COLUMNS)
@@ -489,6 +492,13 @@ RETURN
         'N'
     )) AS T!
 
+COMMENT ON SPECIFIC FUNCTION AUTHS_HELD1
+    IS 'Utility table function which returns all the authorizations held by a specific name'!
+COMMENT ON SPECIFIC FUNCTION AUTHS_HELD2
+    IS 'Utility table function which returns all the authorizations held by a specific name'!
+COMMENT ON SPECIFIC FUNCTION AUTHS_HELD3
+    IS 'Utility table function which returns all the authorizations held by a specific name'!
+
 -- AUTH_DIFF(SOURCE, SOURCE_TYPE, DEST, DEST_TYPE, INCLUDE_COLUMNS, INCLUDE_PERSONAL)
 -- AUTH_DIFF(SOURCE, DEST, INCLUDE_COLUMNS, INCLUDE_PERSONAL)
 -- AUTH_DIFF(SOURCE, DEST, INCLUDE_COLUMNS)
@@ -525,7 +535,7 @@ CREATE FUNCTION AUTH_DIFF(
         SUFFIX VARCHAR(20),
         LEVEL SMALLINT
     )
-    SPECIFIC AUTHS_DIFF1
+    SPECIFIC AUTH_DIFF1
     NOT DETERMINISTIC
     NO EXTERNAL ACTION
     READS SQL DATA
@@ -594,7 +604,7 @@ CREATE FUNCTION AUTH_DIFF(
         SUFFIX VARCHAR(20),
         LEVEL SMALLINT
     )
-    SPECIFIC AUTHS_DIFF2
+    SPECIFIC AUTH_DIFF2
     NOT DETERMINISTIC
     NO EXTERNAL ACTION
     READS SQL DATA
@@ -622,7 +632,7 @@ CREATE FUNCTION AUTH_DIFF(
         SUFFIX       VARCHAR(20),
         LEVEL        SMALLINT
     )
-    SPECIFIC AUTHS_DIFF3
+    SPECIFIC AUTH_DIFF3
     NOT DETERMINISTIC
     NO EXTERNAL ACTION
     READS SQL DATA
@@ -637,6 +647,13 @@ RETURN
         INCLUDE_COLUMNS,
         'N'
     )) AS T!
+
+COMMENT ON SPECIFIC FUNCTION AUTH_DIFF1
+    IS 'Utility table function which returns the difference between the authorities held by two names'!
+COMMENT ON SPECIFIC FUNCTION AUTH_DIFF2
+    IS 'Utility table function which returns the difference between the authorities held by two names'!
+COMMENT ON SPECIFIC FUNCTION AUTH_DIFF3
+    IS 'Utility table function which returns the difference between the authorities held by two names'!
 
 -- COPY_AUTH(SOURCE, SOURCE_TYPE, DEST, DEST_TYPE, INCLUDE_PERSONAL)
 -- COPY_AUTH(SOURCE, DEST, INCLUDE_PERSONAL)
@@ -737,6 +754,13 @@ BEGIN ATOMIC
     CALL COPY_AUTH(SOURCE, AUTH_TYPE(SOURCE), DEST, AUTH_TYPE(DEST), 'N');
 END!
 
+COMMENT ON SPECIFIC PROCEDURE COPY_AUTH1
+    IS 'Grants all authorities held by the source to the target, provided they are not already held (i.e. does not "re-grant" authorities already held)'!
+COMMENT ON SPECIFIC PROCEDURE COPY_AUTH2
+    IS 'Grants all authorities held by the source to the target, provided they are not already held (i.e. does not "re-grant" authorities already held)'!
+COMMENT ON SPECIFIC PROCEDURE COPY_AUTH3
+    IS 'Grants all authorities held by the source to the target, provided they are not already held (i.e. does not "re-grant" authorities already held)'!
+
 -- REMOVE_AUTH(AUTH_NAME, AUTH_TYPE, INCLUDE_PERSONAL)
 -- REMOVE_AUTH(AUTH_NAME, INCLUDE_PERSONAL)
 -- REMOVE_AUTH(AUTH_NAME)
@@ -828,6 +852,13 @@ BEGIN ATOMIC
     CALL REMOVE_AUTH(AUTH_NAME, AUTH_TYPE(AUTH_NAME), 'N');
 END!
 
+COMMENT ON SPECIFIC PROCEDURE REMOVE_AUTH1
+    IS 'Removes all authorities held by the specified name'!
+COMMENT ON SPECIFIC PROCEDURE REMOVE_AUTH2
+    IS 'Removes all authorities held by the specified name'!
+COMMENT ON SPECIFIC PROCEDURE REMOVE_AUTH3
+    IS 'Removes all authorities held by the specified name'!
+
 -- MOVE_AUTH(SOURCE, SOURCE_TYPE, DEST, DEST_TYPE, INCLUDE_PERSONAL)
 -- MOVE_AUTH(SOURCE, DEST, INCLUDE_PERSONAL)
 -- MOVE_AUTH(SOURCE, DEST)
@@ -895,6 +926,13 @@ BEGIN ATOMIC
     CALL MOVE_AUTH(SOURCE, AUTH_TYPE(SOURCE), DEST, AUTH_TYPE(DEST), 'N');
 END!
 
+COMMENT ON SPECIFIC PROCEDURE MOVE_AUTH1
+    IS 'Moves all authorities held by the source to the target, provided they are not already held'!
+COMMENT ON SPECIFIC PROCEDURE MOVE_AUTH2
+    IS 'Moves all authorities held by the source to the target, provided they are not already held'!
+COMMENT ON SPECIFIC PROCEDURE MOVE_AUTH3
+    IS 'Moves all authorities held by the source to the target, provided they are not already held'!
+
 -- SAVED_AUTH
 -------------------------------------------------------------------------------
 -- A simple table which replicates the structure of the SYSCAT.TABAUTH view for
@@ -914,6 +952,9 @@ CREATE UNIQUE INDEX SAVED_AUTH_PK
 
 ALTER TABLE SAVED_AUTH
     ADD CONSTRAINT PK PRIMARY KEY (TABSCHEMA, TABNAME, GRANTOR, GRANTEE, GRANTEETYPE)!
+
+COMMENT ON TABLE SAVED_AUTH
+    IS 'Utility table used for temporary storage of authorizations by SAVE_AUTH, SAVE_AUTHS, RESTORE_AUTH and RESTORE_AUTHS et al'!
 
 -- SAVE_AUTH(ASCHEMA, ATABLE)
 -- SAVE_AUTH(ATABLE)
@@ -996,12 +1037,17 @@ BEGIN ATOMIC
     CALL SAVE_AUTH(CURRENT SCHEMA, ATABLE);
 END!
 
+COMMENT ON SPECIFIC PROCEDURE SAVE_AUTH1
+    IS 'Saves the authorizations of the specified relation for later restoration with the RESTORE_AUTH procedure'!
+COMMENT ON SPECIFIC PROCEDURE SAVE_AUTH2
+    IS 'Saves the authorizations of the specified relation for later restoration with the RESTORE_AUTH procedure'!
+
 -- SAVE_AUTHS(ASCHEMA)
 -- SAVE_AUTHS()
 -------------------------------------------------------------------------------
 -- SAVE_AUTHS is a utility procedure which copies the authorization settings
--- for all tables in the database (or the optionally specified schema) to the
--- SAVED_AUTH table above.
+-- for all tables in the specified schema to the SAVED_AUTH table above. If no
+-- schema is specified the current schema is used.
 -------------------------------------------------------------------------------
 
 CREATE PROCEDURE SAVE_AUTHS(ASCHEMA VARCHAR(128))
@@ -1059,45 +1105,13 @@ CREATE PROCEDURE SAVE_AUTHS()
     NO EXTERNAL ACTION
     LANGUAGE SQL
 BEGIN ATOMIC
-    MERGE INTO SAVED_AUTH AS DEST
-        USING (
-            SELECT *
-            FROM SYSCAT.TABAUTH
-        ) AS SRC
-        ON SRC.TABSCHEMA = DEST.TABSCHEMA
-        AND SRC.TABNAME = DEST.TABNAME
-        AND SRC.GRANTOR = DEST.GRANTOR
-        AND SRC.GRANTEE = DEST.GRANTEE
-        AND SRC.GRANTEETYPE = DEST.GRANTEETYPE
-        WHEN MATCHED THEN
-            UPDATE SET
-                GRANTORTYPE = SRC.GRANTORTYPE,
-                CONTROLAUTH = SRC.CONTROLAUTH,
-                ALTERAUTH = SRC.ALTERAUTH,
-                DELETEAUTH = SRC.DELETEAUTH,
-                INDEXAUTH = SRC.INDEXAUTH,
-                INSERTAUTH = SRC.INSERTAUTH,
-                REFAUTH = SRC.REFAUTH,
-                SELECTAUTH = SRC.SELECTAUTH,
-                UPDATEAUTH = SRC.UPDATEAUTH
-        WHEN NOT MATCHED THEN
-            INSERT VALUES (
-                SRC.GRANTOR,
-                SRC.GRANTORTYPE,
-                SRC.GRANTEE,
-                SRC.GRANTEETYPE,
-                SRC.TABSCHEMA,
-                SRC.TABNAME,
-                SRC.CONTROLAUTH,
-                SRC.ALTERAUTH,
-                SRC.DELETEAUTH,
-                SRC.INDEXAUTH,
-                SRC.INSERTAUTH,
-                SRC.REFAUTH,
-                SRC.SELECTAUTH,
-                SRC.UPDATEAUTH
-            );
+    CALL SAVE_AUTHS(CURRENT SCHEMA);
 END!
+
+COMMENT ON SPECIFIC PROCEDURE SAVE_AUTHS1
+    IS 'Saves the authorizations of all relations in the specified schema for later restoration with the RESTORE_AUTH procedure'!
+COMMENT ON SPECIFIC PROCEDURE SAVE_AUTHS2
+    IS 'Saves the authorizations of all relations in the specified schema for later restoration with the RESTORE_AUTH procedure'!
 
 -- RESTORE_AUTH(ASCHEMA, ATABLE)
 -- RESTORE_AUTH(ATABLE)
@@ -1236,12 +1250,17 @@ BEGIN ATOMIC
     CALL RESTORE_AUTH(CURRENT SCHEMA, ATABLE);
 END!
 
+COMMENT ON SPECIFIC PROCEDURE RESTORE_AUTH1
+    IS 'Restores authorizations previously saved by SAVE_AUTH for the specified table'!
+COMMENT ON SPECIFIC PROCEDURE RESTORE_AUTH2
+    IS 'Restores authorizations previously saved by SAVE_AUTH for the specified table'!
+
 -- RESTORE_AUTHS(ASCHEMA)
 -- RESTORE_AUTHS()
 -------------------------------------------------------------------------------
 -- RESTORE_AUTHS is a utility procedure which restores the authorization
--- settings for all tables in the database (or the optionally specified schema)
--- from the SAVED_AUTH table above.
+-- settings for all tables in the specified schema from the SAVED_AUTH table
+-- above. If no schema is specified, the current schema is used.
 --
 -- NOTE: The procedure only attempts to restore settings for those tables or
 -- views which currently exist, and for which settings were previously saved.
@@ -1249,8 +1268,7 @@ END!
 -- then call RESTORE_AUTHS on that schema, the procedure will succeed with no
 -- error, although several authorization settings have not been restored.
 -- Furthermore, the settings that are not restored are removed from the
--- SAVED_AUTHS table (so as not to interfere with future invocations of
--- SAVE_AUTH / SAVE_AUTHS).
+-- SAVED_AUTHS table.
 -------------------------------------------------------------------------------
 
 CREATE PROCEDURE RESTORE_AUTHS(ASCHEMA VARCHAR(128))
@@ -1292,5 +1310,10 @@ BEGIN ATOMIC
     END FOR;
     DELETE FROM SAVED_AUTH;
 END!
+
+COMMENT ON SPECIFIC PROCEDURE RESTORE_AUTHS1
+    IS 'Restores the authorizations of all relations in the specified schema that were previously saved with SAVE_AUTHS'!
+COMMENT ON SPECIFIC PROCEDURE RESTORE_AUTHS2
+    IS 'Restores the authorizations of all relations in the specified schema that were previously saved with SAVE_AUTHS'!
 
 -- vim: set et sw=4 sts=4:
