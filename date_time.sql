@@ -917,13 +917,13 @@ RETURN
     WEEKSTART(DATE(ADATE))!
 
 COMMENT ON SPECIFIC FUNCTION WEEKSTART1
-    IS 'Returns the first day of year AWEEK'!
+    IS 'Returns the first day (Sunday) of AWEEK in AYEAR'!
 COMMENT ON SPECIFIC FUNCTION WEEKSTART2
-    IS 'Returns the first day of the year that ADATE exists within'!
+    IS 'Returns the first day (Sunday) of the week that ADATE exists within'!
 COMMENT ON SPECIFIC FUNCTION WEEKSTART3
-    IS 'Returns the first day of the year that ADATE exists within'!
+    IS 'Returns the first day (Sunday) of the week that ADATE exists within'!
 COMMENT ON SPECIFIC FUNCTION WEEKSTART4
-    IS 'Returns the first day of the year that ADATE exists within'!
+    IS 'Returns the first day (Sunday) of the week that ADATE exists within'!
 
 -- WEEKEND(AYEAR, AWEEK)
 -- WEEKEND(ADATE)
@@ -971,6 +971,15 @@ CREATE FUNCTION WEEKEND(ADATE VARCHAR(26))
     CONTAINS SQL
 RETURN
     WEEKEND(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION WEEKEND1
+    IS 'Returns the last day (Saturday) of AWEEK in AYEAR'!
+COMMENT ON SPECIFIC FUNCTION WEEKEND2
+    IS 'Returns the last day (Saturday) of the week that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION WEEKEND3
+    IS 'Returns the last day (Saturday) of the week that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION WEEKEND4
+    IS 'Returns the last day (Saturday) of the week that ADATE exists within'!
 
 -- WEEKSTART_ISO(AYEAR, AWEEK)
 -- WEEKSTART_ISO(ADATE)
@@ -1021,6 +1030,15 @@ CREATE FUNCTION WEEKSTART_ISO(ADATE VARCHAR(26))
 RETURN
     WEEKSTART_ISO(DATE(ADATE))!
 
+COMMENT ON SPECIFIC FUNCTION WEEKSTART_ISO1
+    IS 'Returns the first day (Monday) of AWEEK in AYEAR'!
+COMMENT ON SPECIFIC FUNCTION WEEKSTART_ISO2
+    IS 'Returns the first day (Monday) of the week that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION WEEKSTART_ISO3
+    IS 'Returns the first day (Monday) of the week that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION WEEKSTART_ISO4
+    IS 'Returns the first day (Monday) of the week that ADATE exists within'!
+
 -- WEEKEND_ISO(AYEAR, AWEEK)
 -- WEEKEND_ISO(ADATE)
 -------------------------------------------------------------------------------
@@ -1068,6 +1086,15 @@ CREATE FUNCTION WEEKEND_ISO(ADATE VARCHAR(26))
 RETURN
     WEEKEND_ISO(DATE(ADATE))!
 
+COMMENT ON SPECIFIC FUNCTION WEEKEND_ISO1
+    IS 'Returns the last day (Sunday) of AWEEK in AYEAR'!
+COMMENT ON SPECIFIC FUNCTION WEEKEND_ISO2
+    IS 'Returns the last day (Sunday) of the week that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION WEEKEND_ISO3
+    IS 'Returns the last day (Sunday) of the week that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION WEEKEND_ISO4
+    IS 'Returns the last day (Sunday) of the week that ADATE exists within'!
+
 -- WEEKSINYEAR(AYEAR)
 -- WEEKSINYEAR(ADATE)
 -------------------------------------------------------------------------------
@@ -1113,6 +1140,15 @@ CREATE FUNCTION WEEKSINYEAR(ADATE VARCHAR(26))
     CONTAINS SQL
 RETURN
     WEEKSINYEAR(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION WEEKSINYEAR1
+    IS 'Returns the number of weeks in AYEAR'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINYEAR2
+    IS 'Returns the number of weeks in the year that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINYEAR3
+    IS 'Returns the number of weeks in the year that ADATE exists within'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINYEAR4
+    IS 'Returns the number of weeks in the year that ADATE exists within'!
 
 -- WEEKSINYEAR_ISO(AYEAR)
 -- WEEKSINYEAR_ISO(ADATE)
@@ -1160,6 +1196,15 @@ CREATE FUNCTION WEEKSINYEAR_ISO(ADATE VARCHAR(26))
 RETURN
     WEEKSINYEAR_ISO(DATE(ADATE))!
 
+COMMENT ON SPECIFIC FUNCTION WEEKSINYEAR_ISO1
+    IS 'Returns the number of weeks in AYEAR according to the ISO8601 standard'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINYEAR_ISO2
+    IS 'Returns the number of weeks in the year that ADATE exists within according to the ISO8601 standard'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINYEAR_ISO3
+    IS 'Returns the number of weeks in the year that ADATE exists within according to the ISO8601 standard'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINYEAR_ISO4
+    IS 'Returns the number of weeks in the year that ADATE exists within according to the ISO8601 standard'!
+
 -- WEEKSINMONTH(AYEAR, AMONTH)
 -- WEEKSINMONTH(ADATE)
 -------------------------------------------------------------------------------
@@ -1205,6 +1250,15 @@ CREATE FUNCTION WEEKSINMONTH(ADATE VARCHAR(26))
     CONTAINS SQL
 RETURN
     WEEKSINMONTH(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH1
+    IS 'Returns the number of weeks (ranging from Sunday to Saturday, including partials) in AMONTH in AYEAR'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH2
+    IS 'Returns the number of weeks (randing from Sunday to Saturday, including partials) in the month in which ADATE exists'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH3
+    IS 'Returns the number of weeks (randing from Sunday to Saturday, including partials) in the month in which ADATE exists'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH4
+    IS 'Returns the number of weeks (randing from Sunday to Saturday, including partials) in the month in which ADATE exists'!
 
 -- WEEKSINMONTH_ISO(AYEAR, AMONTH)
 -- WEEKSINMONTH_ISO(ADATE)
@@ -1252,6 +1306,15 @@ CREATE FUNCTION WEEKSINMONTH_ISO(ADATE VARCHAR(26))
 RETURN
     WEEKSINMONTH_ISO(DATE(ADATE))!
 
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH1
+    IS 'Returns the number of weeks (ranging from Monday to Sunday, including partials) in AMONTH in AYEAR'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH2
+    IS 'Returns the number of weeks (randing from Monday to Sunday, including partials) in the month in which ADATE exists'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH3
+    IS 'Returns the number of weeks (randing from Monday to Sunday, including partials) in the month in which ADATE exists'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH4
+    IS 'Returns the number of weeks (randing from Monday to Sunday, including partials) in the month in which ADATE exists'!
+
 -- HOURSTART(AYEAR, AMONTH, ADAY, AHOUR)
 -- HOURSTART(ATIMESTAMP)
 -------------------------------------------------------------------------------
@@ -1289,6 +1352,13 @@ CREATE FUNCTION HOURSTART(ATIMESTAMP VARCHAR(26))
     CONTAINS SQL
 RETURN
     HOURSTART(TIMESTAMP(ATIMESTAMP))!
+
+COMMENT ON SPECIFIC FUNCTION HOURSTART1
+    IS 'Returns a TIMESTAMP at the start of AHOUR on the date AYEAR, AMONTH, ADAY'!
+COMMENT ON SPECIFIC FUNCTION HOURSTART2
+    IS 'Returns a TIMESTAMP at the start of the hour of ATIMESTAMP'!
+COMMENT ON SPECIFIC FUNCTION HOURSTART3
+    IS 'Returns a TIMESTAMP at the start of the hour of ATIMESTAMP'!
 
 -- HOUREND(AYEAR, AMONTH, ADAY, AHOUR)
 -- HOUREND(ATIMESTAMP)
@@ -1328,6 +1398,13 @@ CREATE FUNCTION HOUREND(ATIMESTAMP VARCHAR(26))
 RETURN
     HOUREND(TIMESTAMP(ATIMESTAMP))!
 
+COMMENT ON SPECIFIC FUNCTION HOUREND1
+    IS 'Returns a TIMESTAMP at the end of AHOUR on the date AYEAR, AMONTH, ADAY'!
+COMMENT ON SPECIFIC FUNCTION HOUREND2
+    IS 'Returns a TIMESTAMP at the end of the hour of ATIMESTAMP'!
+COMMENT ON SPECIFIC FUNCTION HOUREND3
+    IS 'Returns a TIMESTAMP at the end of the hour of ATIMESTAMP'!
+
 -- MINUTESTART(AYEAR, AMONTH, ADAY, AHOUR, AMINUTE)
 -- MINUTESTART(ATIMESTAMP)
 -------------------------------------------------------------------------------
@@ -1365,6 +1442,13 @@ CREATE FUNCTION MINUTESTART(ATIMESTAMP VARCHAR(26))
     CONTAINS SQL
 RETURN
     MINUTESTART(TIMESTAMP(ATIMESTAMP))!
+
+COMMENT ON SPECIFIC FUNCTION MINUTESTART1
+    IS 'Returns a TIMESTAMP at the start of AHOUR:AMINUTE on the date AYEAR, AMONTH, ADAY'!
+COMMENT ON SPECIFIC FUNCTION MINUTESTART2
+    IS 'Returns a TIMESTAMP at the start of the minute of ATIMESTAMP'!
+COMMENT ON SPECIFIC FUNCTION MINUTESTART3
+    IS 'Returns a TIMESTAMP at the start of the minute of ATIMESTAMP'!
 
 -- MINUTEEND(AYEAR, AMONTH, ADAY, AHOUR, AMINUTE)
 -- MINUTEEND(ATIMESTAMP)
@@ -1404,6 +1488,13 @@ CREATE FUNCTION MINUTEEND(ATIMESTAMP VARCHAR(26))
 RETURN
     MINUTEEND(TIMESTAMP(ATIMESTAMP))!
 
+COMMENT ON SPECIFIC FUNCTION MINUTEEND1
+    IS 'Returns a TIMESTAMP at the end of AHOUR:AMINUTE on the date AYEAR, AMONTH, ADAY'!
+COMMENT ON SPECIFIC FUNCTION MINUTEEND2
+    IS 'Returns a TIMESTAMP at the end of the minute of ATIMESTAMP'!
+COMMENT ON SPECIFIC FUNCTION MINUTEEND3
+    IS 'Returns a TIMESTAMP at the end of the minute of ATIMESTAMP'!
+
 -- SECONDSTART(AYEAR, AMONTH, ADAY, AHOUR, AMINUTE, ASECOND)
 -- SECONDSTART(ATIMESTAMP)
 -------------------------------------------------------------------------------
@@ -1442,6 +1533,13 @@ CREATE FUNCTION SECONDSTART(ATIMESTAMP VARCHAR(26))
 RETURN
     SECONDSTART(TIMESTAMP(ATIMESTAMP))!
 
+COMMENT ON SPECIFIC FUNCTION SECONDSTART1
+    IS 'Returns a TIMESTAMP at the start of AHOUR:AMINUTE:ASECOND on the date AYEAR, AMONTH, ADAY'!
+COMMENT ON SPECIFIC FUNCTION SECONDSTART2
+    IS 'Returns a TIMESTAMP at the start of the minute of ATIMESTAMP'!
+COMMENT ON SPECIFIC FUNCTION SECONDSTART3
+    IS 'Returns a TIMESTAMP at the start of the minute of ATIMESTAMP'!
+
 -- SECONDEND(AYEAR, AMONTH, ADAY, AHOUR, AMINUTE, ASECOND)
 -- SECONDEND(ATIMESTAMP)
 -------------------------------------------------------------------------------
@@ -1479,6 +1577,13 @@ CREATE FUNCTION SECONDEND(ATIMESTAMP VARCHAR(26))
     CONTAINS SQL
 RETURN
     SECONDEND(TIMESTAMP(ATIMESTAMP))!
+
+COMMENT ON SPECIFIC FUNCTION SECONDEND1
+    IS 'Returns a TIMESTAMP at the end of AHOUR:AMINUTE:ASECOND on the date AYEAR, AMONTH, ADAY'!
+COMMENT ON SPECIFIC FUNCTION SECONDEND2
+    IS 'Returns a TIMESTAMP at the end of the minute of ATIMESTAMP'!
+COMMENT ON SPECIFIC FUNCTION SECONDEND3
+    IS 'Returns a TIMESTAMP at the end of the minute of ATIMESTAMP'!
 
 -- DATE_RANGE(START, FINISH, STEP)
 -- DATE_RANGE(START, FINISH)
@@ -1701,6 +1806,43 @@ RETURN
     SELECT *
     FROM TABLE(DATE_RANGE(START, FINISH, DECIMAL(1, 8, 0))) AS T!
 
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE1
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE2
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE3
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE4
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE5
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE6
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE7
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE8
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE9
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE10
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE11
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE12
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE13
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE14
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE15
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE16
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE17
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+COMMENT ON SPECIFIC FUNCTION DATE_RANGE18
+    IS 'Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD which defaults to 1 day)'!
+
 -- TS_FORMAT(AFORMAT, ATIMESTAMP)
 -------------------------------------------------------------------------------
 -- A slightly more useful version of the built-in TIMESTAMP_FORMAT function
@@ -1921,5 +2063,18 @@ CREATE FUNCTION TS_FORMAT(AFORMAT VARCHAR(100), ATIMESTAMP VARCHAR(26))
     CONTAINS SQL
 RETURN
     TS_FORMAT(AFORMAT, TIMESTAMP(ATIMESTAMP))!
+
+COMMENT ON SPECIFIC FUNCTION TS$PAD
+    IS 'Internal utility sub-routine for TS_FORMAT'!
+COMMENT ON SPECIFIC FUNCTION TS$FMT
+    IS 'Internal utility sub-routine for TS_FORMAT'!
+COMMENT ON SPECIFIC FUNCTION TS_FORMAT1
+    IS 'A version of C''s strftime() for DB2. Formats ATIMESTAMP according to the AFORMAT string, containing %-prefixed templates which will be replaced with elements of ATIMESTAMP'!
+COMMENT ON SPECIFIC FUNCTION TS_FORMAT2
+    IS 'A version of C''s strftime() for DB2. Formats ATIMESTAMP according to the AFORMAT string, containing %-prefixed templates which will be replaced with elements of ATIMESTAMP'!
+COMMENT ON SPECIFIC FUNCTION TS_FORMAT3
+    IS 'A version of C''s strftime() for DB2. Formats ATIMESTAMP according to the AFORMAT string, containing %-prefixed templates which will be replaced with elements of ATIMESTAMP'!
+COMMENT ON SPECIFIC FUNCTION TS_FORMAT4
+    IS 'A version of C''s strftime() for DB2. Formats ATIMESTAMP according to the AFORMAT string, containing %-prefixed templates which will be replaced with elements of ATIMESTAMP'!
 
 -- vim: set et sw=4 sts=4:
