@@ -864,7 +864,7 @@ COMMENT ON SPECIFIC PROCEDURE REMOVE_AUTH3
 -- MOVE_AUTH(SOURCE, DEST)
 -------------------------------------------------------------------------------
 -- MOVE_AUTH is a procedure which moves all authorizations from the source
--- grantee (SORUCE) to the destination grantee (DEST). Like COPY_AUTH, this
+-- grantee (SOURCE) to the destination grantee (DEST). Like COPY_AUTH, this
 -- procedure does not preserve the grantor, and method authorizations are not
 -- moved. Essentially this procedure combines COPY_AUTH and REMOVE_AUTH to
 -- copy authorizations from SOURCE to DEST and then remove them from SOURCE.
