@@ -158,34 +158,24 @@ CREATE FUNCTION SECONDS(ATIMESTAMP TIMESTAMP)
 RETURN
     (DAYS(ATIMESTAMP) * BIGINT(24 * 60 * 60) + MIDNIGHT_SECONDS(ATIMESTAMP))!
 
-CREATE FUNCTION SECONDS(ADATE DATE)
+CREATE FUNCTION SECONDS(ATIMESTAMP DATE)
     RETURNS BIGINT
     SPECIFIC SECONDS2
     DETERMINISTIC
     NO EXTERNAL ACTION
     CONTAINS SQL
 RETURN
-    DAYS(ADATE) * BIGINT(24 * 60 * 60)!
+    DAYS(ATIMESTAMP) * BIGINT(24 * 60 * 60)!
 
-CREATE FUNCTION SECONDS(ATIME TIME)
+CREATE FUNCTION SECONDS(ATIMESTAMP VARCHAR(26))
     RETURNS BIGINT
     SPECIFIC SECONDS3
     DETERMINISTIC
     NO EXTERNAL ACTION
     CONTAINS SQL
 RETURN
-    BIGINT(MIDNIGHT_SECONDS(ATIME))!
-
-CREATE FUNCTION SECONDS(ATIMESTAMP VARCHAR(26))
-    RETURNS BIGINT
-    SPECIFIC SECONDS4
-    DETERMINISTIC
-    NO EXTERNAL ACTION
-    CONTAINS SQL
-RETURN
     CASE LENGTH(ATIMESTAMP)
         WHEN 10 THEN SECONDS(DATE(ATIMESTAMP))
-        WHEN 8 THEN SECONDS(TIME(ATIMESTAMP))
         ELSE SECONDS(TIMESTAMP(ATIMESTAMP))
     END!
 
@@ -195,16 +185,13 @@ COMMENT ON SPECIFIC FUNCTION SECONDS2
     IS 'Returns an integer representation of the specified TIMESTAMP. The inverse of this function is TIMESTAMP'!
 COMMENT ON SPECIFIC FUNCTION SECONDS3
     IS 'Returns an integer representation of the specified TIMESTAMP. The inverse of this function is TIMESTAMP'!
-COMMENT ON SPECIFIC FUNCTION SECONDS4
-    IS 'Returns an integer representation of the specified TIMESTAMP. The inverse of this function is TIMESTAMP'!
 
 -- DATE(AYEAR, AMONTH, ADAY)
 -- DATE(AYEAR, ADAY)
 -------------------------------------------------------------------------------
--- Returns the a DATE value with the values specified by AYEAR, AMONTH and ADAY
--- each of which can be INTEGER values. The AMONTH parameter is optional. If
--- excluded, then ADAY refers to the day of the year to return as opposed to
--- the day of the month when AMONTH is specified.
+-- Returns the DATE value with the components specified by AYEAR, AMONTH, and
+-- ADAY, or alternatively AYEAR and ADOY the latter of which is the day of year
+-- to construct a DATE for.
 -------------------------------------------------------------------------------
 
 CREATE FUNCTION DATE(AYEAR INTEGER, AMONTH INTEGER, ADAY INTEGER)
@@ -238,10 +225,12 @@ COMMENT ON SPECIFIC FUNCTION DATE2
 -- TIME(AHOUR, AMINUTE, ASECONDS)
 -- TIME(ASECONDS)
 -------------------------------------------------------------------------------
--- Returns a TIME ASECONDS seconds after midnight. If ASECONDS represents
--- a period longer than a day, the value used is ASECONDS mod 86400 (the "date"
--- portion of the seconds value is removed before calculation). This function
--- is essentially the reverse of the MIDNIGHT_SECONDS function.
+-- Returns a TIME with the components specified by AHOUR, AMINUTE and ASECOND
+-- in the first case. In the second case, returns a TIME ASECONDS after
+-- midnight. If ASECONDS represents a period longer than a day, the value used
+-- is ASECONDS mod 86400 (the "date" portion of the seconds value is removed
+-- before calculation). This function is essentially the reverse of the
+-- MIDNIGHT_SECONDS function.
 -------------------------------------------------------------------------------
 
 CREATE FUNCTION TIME(AHOUR INTEGER, AMINUTE INTEGER, ASECOND INTEGER)
@@ -295,7 +284,7 @@ COMMENT ON SPECIFIC FUNCTION TIME3
 
 -- TIMESTAMP(ASECONDS)
 -------------------------------------------------------------------------------
--- Returns a TIMESTAMP ASECONDS seconds after 0001-01-01:00:00:00. This
+-- Returns a TIMESTAMP ASECONDS seconds after 0001-01-00 00:00:00. This
 -- function is essentially the reverse of the SECONDS function. The ASECONDS
 -- value MUST be greater than 86400 (it must include a "date" portion)
 -- otherwise the returned value has an invalid year of 0000 and an error will
@@ -385,7 +374,7 @@ CREATE FUNCTION MONTHSTART(ADATE DATE)
     NO EXTERNAL ACTION
     CONTAINS SQL
 RETURN
-    DATE(YEAR(ADATE), MONTH(ADATE), 1)!
+    ADATE - (DAY(ADATE) - 1) DAYS!
 
 CREATE FUNCTION MONTHSTART(ADATE TIMESTAMP)
     RETURNS DATE
@@ -478,7 +467,10 @@ COMMENT ON SPECIFIC FUNCTION MONTHEND4
 
 -- MONTHWEEK(ADATE)
 -------------------------------------------------------------------------------
--- Returns the week of the month of the ADATE, where weeks start on a Sunday.
+-- Returns the week of the month of ADATE, where weeks start on a Sunday. The
+-- result will be in the range 1-6 as partial weeks are permitted. For example,
+-- if the first day of a month is a Saturday, it will be counted as week 1,
+-- which lasts one day. The next day, Sunday, will start week 2.
 -------------------------------------------------------------------------------
 
 CREATE FUNCTION MONTHWEEK(ADATE DATE)
@@ -519,7 +511,10 @@ COMMENT ON SPECIFIC FUNCTION MONTHWEEK3
 
 -- MONTHWEEK_ISO(ADATE)
 -------------------------------------------------------------------------------
--- Returns the week of the month of the ADATE, where weeks start on a Monday.
+-- Returns the week of the month of ADATE, where weeks start on a Monday. The
+-- result will be in the range 1-6 as partial weeks are permitted. For example,
+-- if the first day of a month is a Sunday, it will be counted as week 1, which
+-- lasts one day. The next day, Monday, will start week 2.
 -------------------------------------------------------------------------------
 
 CREATE FUNCTION MONTHWEEK_ISO(ADATE DATE)
