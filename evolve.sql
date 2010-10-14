@@ -100,7 +100,8 @@ COMMENT ON SPECIFIC PROCEDURE RECREATE_VIEW2
 -- RECREATE_VIEWS()
 -------------------------------------------------------------------------------
 -- RECREATE_VIEWS is a utility procedure which recreates all inoperative
--- views in the database or the optionally specified schema.
+-- views in the optionally specified schema. If ASCHEMA is omitted it defaults
+-- to the CURRENT SCHEMA.
 -------------------------------------------------------------------------------
 
 CREATE PROCEDURE RECREATE_VIEWS(ASCHEMA VARCHAR(128))
@@ -147,33 +148,7 @@ CREATE PROCEDURE RECREATE_VIEWS()
     NO EXTERNAL ACTION
     LANGUAGE SQL
 BEGIN ATOMIC
-    DECLARE SAVE_PATH VARCHAR(254);
-    DECLARE SAVE_SCHEMA VARCHAR(128);
-    SET SAVE_PATH = CURRENT PATH;
-    SET SAVE_SCHEMA = CURRENT SCHEMA;
-    FOR D AS
-        SELECT
-            'SET SCHEMA ' || QUOTE_IDENTIFIER(V.QUALIFIER) AS SET_QUALIFIER,
-            'SET PATH '   || V.FUNC_PATH                   AS SET_PATH,
-            V.TEXT                                         AS TEXT,
-            'SET SCHEMA ' || QUOTE_IDENTIFIER(SAVE_SCHEMA) AS RESTORE_QUALIFIER,
-            'SET PATH '   || SAVE_PATH                     AS RESTORE_PATH
-        FROM
-            SYSCAT.VIEWS V
-            INNER JOIN SYSCAT.TABLES T
-                ON V.VIEWSCHEMA = T.TABSCHEMA
-                AND V.VIEWNAME = T.TABNAME
-        WHERE
-            V.VALID = 'X'
-        ORDER BY
-            T.CREATE_TIME
-    DO
-        EXECUTE IMMEDIATE D.SET_QUALIFIER;
-        EXECUTE IMMEDIATE D.SET_PATH;
-        EXECUTE IMMEDIATE D.TEXT;
-        EXECUTE IMMEDIATE D.RESTORE_QUALIFIER;
-        EXECUTE IMMEDIATE D.RESTORE_PATH;
-    END FOR;
+    CALL RECREATE_VIEWS(ASCHEMA);
 END!
 
 COMMENT ON SPECIFIC PROCEDURE RECREATE_VIEWS1
@@ -345,11 +320,40 @@ CREATE PROCEDURE SAVE_VIEW(ASCHEMA VARCHAR(128), AVIEW VARCHAR(128))
     LANGUAGE SQL
 BEGIN ATOMIC
     CALL SAVE_AUTH(ASCHEMA, AVIEW);
-    INSERT INTO SAVED_VIEWS
-        SELECT VIEWSCHEMA, VIEWNAME, QUALIFIER, FUNC_PATH, TEXT
-        FROM SYSCAT.VIEWS
-        WHERE VIEWSCHEMA = ASCHEMA
-        AND VIEWNAME = AVIEW;
+    MERGE INTO SAVED_VIEWS AS DEST
+        USING (
+            SELECT VIEWSCHEMA, VIEWNAME, QUALIFIER, FUNC_PATH, TEXT
+            FROM SYSCAT.VIEWS
+            WHERE VIEWSCHEMA = ASCHEMA
+            AND VIEWNAME = AVIEW
+        ) AS SRC
+        ON SRC.VIEWSCHEMA = DEST.VIEWSCHEMA
+        AND SRC.VIEWNAME = DEST.VIEWNAME
+        WHEN MATCHED THEN
+            UPDATE SET (
+                QUALIFIER,
+                FUNC_PATH,
+                TEXT
+            ) = (
+                SRC.QUALIFIER,
+                SRC.FUNC_PATH,
+                SRC.TEXT
+            )
+        WHEN NOT MATCHED THEN
+            INSERT (
+                VIEWSCHEMA,
+                VIEWNAME,
+                QUALIFIER,
+                FUNC_PATH,
+                TEXT
+            )
+            VALUES (
+                SRC.VIEWSCHEMA,
+                SRC.VIEWNAME,
+                SRC.QUALIFIER,
+                SRC.FUNC_PATH,
+                SRC.TEXT
+            );
 END!
 
 CREATE PROCEDURE SAVE_VIEW(AVIEW VARCHAR(128))
@@ -362,12 +366,17 @@ BEGIN ATOMIC
     CALL SAVE_VIEW(CURRENT SCHEMA, AVIEW);
 END!
 
+COMMENT ON SPECIFIC PROCEDURE SAVE_VIEW1
+    IS 'Saves the authorizations and definition of the specified view for later restoration with RESTORE_VIEW'!
+COMMENT ON SPECIFIC PROCEDURE SAVE_VIEW2
+    IS 'Saves the authorizations and definition of the specified view for later restoration with RESTORE_VIEW'!
+
 -- SAVE_VIEWS(ASCHEMA)
 -- SAVE_VIEWS()
 -------------------------------------------------------------------------------
 -- SAVE_VIEWS is a utility procedure which saves the definitions of all views
--- in the database (or the optionally specified schema) to the SAVED_VIEWS
--- table above.
+-- in the optionally specified schema to the SAVED_VIEWS table above. If
+-- ASCHEMA is omitted it defaults to the CURRENT SCHEMA.
 -------------------------------------------------------------------------------
 
 CREATE PROCEDURE SAVE_VIEWS(ASCHEMA VARCHAR(128))
@@ -377,20 +386,46 @@ CREATE PROCEDURE SAVE_VIEWS(ASCHEMA VARCHAR(128))
     NO EXTERNAL ACTION
     LANGUAGE SQL
 BEGIN ATOMIC
+    MERGE INTO SAVED_VIEWS AS DEST
+        USING (
+            SELECT VIEWSCHEMA, VIEWNAME, QUALIFIER, FUNC_PATH, TEXT
+            FROM SYSCAT.VIEWS
+            WHERE VIEWSCHEMA = ASCHEMA
+        ) AS SRC
+        ON SRC.VIEWSCHEMA = DEST.VIEWSCHEMA
+        AND SRC.VIEWNAME = DEST.VIEWNAME
+        WHEN MATCHED THEN
+            UPDATE SET (
+                QUALIFIER,
+                FUNC_PATH,
+                TEXT
+            ) = (
+                SRC.QUALIFIER,
+                SRC.FUNC_PATH,
+                SRC.TEXT
+            )
+        WHEN NOT MATCHED THEN
+            INSERT (
+                VIEWSCHEMA,
+                VIEWNAME,
+                QUALIFIER,
+                FUNC_PATH,
+                TEXT
+            )
+            VALUES (
+                SRC.VIEWSCHEMA,
+                SRC.VIEWNAME,
+                SRC.QUALIFIER,
+                SRC.FUNC_PATH,
+                SRC.TEXT
+            );
     -- Can't directly use SAVE_AUTHS as that'll also save table authorizations
     -- which we don't want. Instead we call SAVE_AUTH for each view definition
     -- that we save...
     FOR D AS
-        SELECT
-            VIEWSCHEMA,
-            VIEWNAME
-        FROM
-            NEW TABLE(
-                INSERT INTO SAVED_VIEWS
-                    SELECT VIEWSCHEMA, VIEWNAME, QUALIFIER, FUNC_PATH, TEXT
-                    FROM SYSCAT.VIEWS
-                    WHERE VIEWSCHEMA = ASCHEMA
-            ) AS V
+        SELECT VIEWSCHEMA, VIEWNAME
+        FROM SYSCAT.VIEWS
+        WHERE VIEWSCHEMA = ASCHEMA
     DO
         CALL SAVE_AUTH(D.VIEWSCHEMA, D.VIEWNAME);
     END FOR;
@@ -403,22 +438,13 @@ CREATE PROCEDURE SAVE_VIEWS()
     NO EXTERNAL ACTION
     LANGUAGE SQL
 BEGIN ATOMIC
-    -- Note that the query below avoids selecting system schemas
-    FOR D AS
-        SELECT
-            VIEWSCHEMA,
-            VIEWNAME
-        FROM
-            NEW TABLE(
-                INSERT INTO SAVED_VIEWS
-                    SELECT VIEWSCHEMA, VIEWNAME, QUALIFIER, FUNC_PATH, TEXT
-                    FROM SYSCAT.VIEWS
-                    WHERE SUBSTR(VIEWSCHEMA, 1, 3) <> 'SYS'
-            ) AS V
-    DO
-        CALL SAVE_AUTH(D.VIEWSCHEMA, D.VIEWNAME);
-    END FOR;
+    CALL SAVE_VIEWS(CURRENT SCHEMA);
 END!
+
+COMMENT ON SPECIFIC PROCEDURE SAVE_VIEWS1
+    IS 'Saves the authorizations and definitions of all views in the specified schema for later restoration with RESTORE_VIEWS'!
+COMMENT ON SPECIFIC PROCEDURE SAVE_VIEWS2
+    IS 'Saves the authorizations and definitions of all views in the specified schema for later restoration with RESTORE_VIEWS'!
 
 -- RESTORE_VIEW(ASCHEMA, AVIEW)
 -- RESTORE_VIEW(AVIEW)
@@ -479,12 +505,17 @@ BEGIN ATOMIC
     CALL RESTORE_VIEW(CURRENT SCHEMA, AVIEW);
 END!
 
+COMMENT ON SPECIFIC PROCEDURE RESTORE_VIEW1
+    IS 'Restores the specified view which was previously saved with SAVE_VIEW'!
+COMMENT ON SPECIFIC PROCEDURE RESTORE_VIEW2
+    IS 'Restores the specified view which was previously saved with SAVE_VIEW'!
+
 -- RESTORE_VIEWS(ASCHEMA)
 -- RESTORE_VIEWS()
 -------------------------------------------------------------------------------
 -- RESTORE_VIEWS is a utility procedure which restores all the views in the
--- database (or the optionally specified schema) from the SAVED_VIEWS table
--- above.
+-- optionally specified schema from the SAVED_VIEWS table above. If ASCHEMA is
+-- omitted it defaults to the CURRENT SCHEMA.
 -------------------------------------------------------------------------------
 
 CREATE PROCEDURE RESTORE_VIEWS(ASCHEMA VARCHAR(128))
@@ -510,12 +541,12 @@ CREATE PROCEDURE RESTORE_VIEWS()
     NO EXTERNAL ACTION
     LANGUAGE SQL
 BEGIN ATOMIC
-    FOR D AS
-        SELECT VIEWSCHEMA, VIEWNAME
-        FROM SAVED_VIEWS
-    DO
-        CALL RESTORE_VIEW(D.VIEWSCHEMA, D.VIEWNAME);
-    END FOR;
+    CALL RESTORE_VIEWS(CURRENT SCHEMA);
 END!
+
+COMMENT ON SPECIFIC PROCEDURE RESTORE_VIEWS1
+    IS 'Restores all views in the specified schema which were previously saved with SAVE_VIEWS'!
+COMMENT ON SPECIFIC PROCEDURE RESTORE_VIEWS2
+    IS 'Restores all views in the specified schema which were previously saved with SAVE_VIEWS'!
 
 -- vim: set et sw=4 sts=4:
