@@ -306,10 +306,9 @@ ALTER TABLE SAVED_VIEWS
 -- SAVE_VIEW is a utility procedure which saves the definition of the specified
 -- view to the SAVED_VIEWS table above. This saved definition can then be
 -- restored with the RESTORE_VIEW procedure declared below. SAVE_VIEW and
--- RESTORE_VIEW also implicitly call SAVE_AUTH and RESTORE_AUTH (above) to
--- preserve the authorizations of the view. This is in contrast to inoperative
--- views recreated with RECREATE_VIEW (below) which lose authorization
--- information.
+-- RESTORE_VIEW also implicitly call SAVE_AUTH and RESTORE_AUTH to preserve the
+-- authorizations of the view. This is in contrast to inoperative views
+-- recreated with RECREATE_VIEW which lose authorization information.
 -------------------------------------------------------------------------------
 
 CREATE PROCEDURE SAVE_VIEW(ASCHEMA VARCHAR(128), AVIEW VARCHAR(128))
@@ -454,9 +453,9 @@ COMMENT ON SPECIFIC PROCEDURE SAVE_VIEWS2
 -- call to SAVE_VIEW or SAVE_VIEWS. It also implicitly calls RESTORE_AUTH just
 -- as SAVE_VIEW calls SAVE_AUTH to ensure that authorizations are not lost.
 -- This is the primary difference between using SAVE_VIEW / RESTORE_VIEW and
--- using DB2's inoperative view mechanism with the RECREATE_VIEW procedure(s)
--- below. Another use of these procedures is in recreating views which need to
--- be dropped surrounding the update of a UDF.
+-- using DB2's inoperative view mechanism with the RECREATE_VIEW procedure.
+-- Another use of these procedures is in recreating views which need to be
+-- dropped surrounding the update of a UDF.
 -------------------------------------------------------------------------------
 
 CREATE PROCEDURE RESTORE_VIEW(ASCHEMA VARCHAR(128), AVIEW VARCHAR(128))
