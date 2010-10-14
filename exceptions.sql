@@ -27,6 +27,7 @@
 -------------------------------------------------------------------------------
 
 -- CREATE_EXCEPTION_TABLE(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE, DEST_TBSPACE)
+-- CREATE_EXCEPTION_TABLE(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE)
 -- CREATE_EXCEPTION_TABLE(SOURCE_TABLE, DEST_TABLE, DEST_TBSPACE)
 -- CREATE_EXCEPTION_TABLE(SOURCE_TABLE, DEST_TABLE)
 -- CREATE_EXCEPTION_TABLE(SOURCE_TABLE)
@@ -48,12 +49,11 @@
 -- Only the SOURCE_TABLE parameter is mandatory. All other parameters are
 -- optional.  If DEST_TBSPACE is not specified, it defaults to the tablespace
 -- of the source table. If DEST_TABLE is not specified it defaults to the value
--- of SOURCE_TABLE. If DEST_SCHEMA is not specified it defaults to the
--- EXCEPTIONS schema. If SOURCE_SCHEMA is not specified, it defaults to the
--- current schema.
+-- of SOURCE_TABLE with a suffix of '_EXCEPTIONS'. If SOURCE_SCHEMA and
+-- DEST_SCHEMA are not specified they default to the value of CURRENT SCHEMA.
 --
--- All SELECT and CONTROL authorities present on the source table will be
--- copied to the destination table.
+-- All authorizations present on the source table will be copied to the
+-- destination table.
 --
 -- If the specified table already exists, this procedure will replace it,
 -- potentially losing all its content. If the existing exceptions data is
@@ -112,11 +112,31 @@ BEGIN ATOMIC
 END!
 
 CREATE PROCEDURE CREATE_EXCEPTION_TABLE(
+    SOURCE_SCHEMA VARCHAR(128),
+    SOURCE_TABLE VARCHAR(128),
+    DEST_SCHEMA VARCHAR(128),
+    DEST_TABLE VARCHAR(128)
+)
+    SPECIFIC CREATE_EXCEPTION_TABLE2
+    MODIFIES SQL DATA
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+    LANGUAGE SQL
+BEGIN ATOMIC
+    CALL CREATE_EXCEPTION_TABLE(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE, (
+        SELECT TBSPACE
+        FROM SYSCAT.TABLES
+        WHERE TABSCHEMA = CURRENT SCHEMA
+        AND TABNAME = SOURCE_TABLE
+    ));
+END!
+
+CREATE PROCEDURE CREATE_EXCEPTION_TABLE(
     SOURCE_TABLE VARCHAR(128),
     DEST_TABLE VARCHAR(128),
     DEST_TBSPACE VARCHAR(18)
 )
-    SPECIFIC CREATE_EXCEPTION_TABLE2
+    SPECIFIC CREATE_EXCEPTION_TABLE3
     MODIFIES SQL DATA
     NOT DETERMINISTIC
     NO EXTERNAL ACTION
@@ -125,36 +145,47 @@ BEGIN ATOMIC
     CALL CREATE_EXCEPTION_TABLE(
         CURRENT SCHEMA,
         SOURCE_TABLE,
-        'EXCEPTIONS',
+        CURRENT SCHEMA,
         DEST_TABLE,
         DEST_TBSPACE
     );
 END!
 
 CREATE PROCEDURE CREATE_EXCEPTION_TABLE(SOURCE_TABLE VARCHAR(128), DEST_TABLE VARCHAR(128))
-    SPECIFIC CREATE_EXCEPTION_TABLE3
-    MODIFIES SQL DATA
-    NOT DETERMINISTIC
-    NO EXTERNAL ACTION
-    LANGUAGE SQL
-BEGIN ATOMIC
-    CALL CREATE_EXCEPTION_TABLE(SOURCE_TABLE, DEST_TABLE, (
-        SELECT TBSPACE
-        FROM SYSCAT.TABLES
-        WHERE TABSCHEMA = CURRENT SCHEMA
-        AND TABNAME = SOURCE_TABLE
-    ));
-END!
-
-CREATE PROCEDURE CREATE_EXCEPTION_TABLE(SOURCE_TABLE VARCHAR(128))
     SPECIFIC CREATE_EXCEPTION_TABLE4
     MODIFIES SQL DATA
     NOT DETERMINISTIC
     NO EXTERNAL ACTION
     LANGUAGE SQL
 BEGIN ATOMIC
-    CALL CREATE_EXCEPTION_TABLE(SOURCE_TABLE, SOURCE_TABLE);
+    CALL CREATE_EXCEPTION_TABLE(
+        CURRENT SCHEMA,
+        SOURCE_TABLE,
+        CURRENT SCHEMA,
+        DEST_TABLE
+    );
 END!
+
+CREATE PROCEDURE CREATE_EXCEPTION_TABLE(SOURCE_TABLE VARCHAR(128))
+    SPECIFIC CREATE_EXCEPTION_TABLE5
+    MODIFIES SQL DATA
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+    LANGUAGE SQL
+BEGIN ATOMIC
+    CALL CREATE_EXCEPTION_TABLE(SOURCE_TABLE, SOURCE_TABLE || '_EXCEPTIONS');
+END!
+
+COMMENT ON SPECIFIC PROCEDURE CREATE_EXCEPTION_TABLE1
+    IS 'Creates an exception table based on the structure of the specified table'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_EXCEPTION_TABLE2
+    IS 'Creates an exception table based on the structure of the specified table'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_EXCEPTION_TABLE3
+    IS 'Creates an exception table based on the structure of the specified table'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_EXCEPTION_TABLE4
+    IS 'Creates an exception table based on the structure of the specified table'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_EXCEPTION_TABLE5
+    IS 'Creates an exception table based on the structure of the specified table'!
 
 -- CREATE_EXCEPTION_VIEW(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_VIEW)
 -- CREATE_EXCEPTION_VIEW(SOURCE_TABLE, DEST_VIEW)
@@ -247,7 +278,7 @@ BEGIN ATOMIC
         ||          COLS
         || '        EXCEPT_MSG,'
         || '        CHAR(SUBSTR(EXCEPT_MSG, 6, 1)),'
-        || '        CHAR(SUBSTR(EXCEPT_MSG, 12, INTEGER(DECIMAL(VARCHAR(SUBSTR(EXCEPT_MSG, 7, 5)), 5, 0)))),'
+        || '        SUBSTR(EXCEPT_MSG, 12, INTEGER(DECIMAL(VARCHAR(SUBSTR(EXCEPT_MSG, 7, 5)), 5, 0))),'
         || '        EXCEPT_TS,'
         || '        1,'
         || '        15 + INTEGER(DECIMAL(VARCHAR(SUBSTR(EXCEPT_MSG, 7, 5)), 5, 0))'
@@ -257,7 +288,7 @@ BEGIN ATOMIC
         ||          COLS
         || '        EXCEPT_MSG,'
         || '        CHAR(SUBSTR(EXCEPT_MSG, J, 1)),'
-        || '        CHAR(SUBSTR(EXCEPT_MSG, J + 6, INTEGER(DECIMAL(VARCHAR(SUBSTR(EXCEPT_MSG, J + 1, 5)), 5, 0)))),'
+        || '        SUBSTR(EXCEPT_MSG, J + 6, INTEGER(DECIMAL(VARCHAR(SUBSTR(EXCEPT_MSG, J + 1, 5)), 5, 0))),'
         || '        EXCEPT_TS,'
         || '        I + 1,'
         || '        J + 9 + INTEGER(DECIMAL(VARCHAR(SUBSTR(EXCEPT_MSG, J + 1, 5)), 5, 0))'
@@ -313,5 +344,12 @@ CREATE PROCEDURE CREATE_EXCEPTION_VIEW(SOURCE_TABLE VARCHAR(128))
 BEGIN ATOMIC
     CALL CREATE_EXCEPTION_VIEW(SOURCE_TABLE, SOURCE_TABLE || '_V');
 END!
+
+COMMENT ON SPECIFIC PROCEDURE CREATE_EXCEPTION_VIEW1
+    IS 'Creates a view based on the specified exception table which interprets the content of the EXCEPT_MSG column'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_EXCEPTION_VIEW2
+    IS 'Creates a view based on the specified exception table which interprets the content of the EXCEPT_MSG column'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_EXCEPTION_VIEW3
+    IS 'Creates a view based on the specified exception table which interprets the content of the EXCEPT_MSG column'!
 
 -- vim: set et sw=4 sts=4:
