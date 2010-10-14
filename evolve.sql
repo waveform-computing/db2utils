@@ -2,17 +2,17 @@
 -- SCHEMA EVOLUTION UTILS
 -------------------------------------------------------------------------------
 -- Copyright (c) 2005-2010 Dave Hughes <dave@waveform.org.uk>
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to
 -- deal in the Software without restriction, including without limitation the
 -- rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 -- sell copies of the Software, and to permit persons to whom the Software is
 -- furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Software.
--- 
+--
 -- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -90,6 +90,11 @@ CREATE PROCEDURE RECREATE_VIEW(AVIEW VARCHAR(128))
 BEGIN ATOMIC
     CALL RECREATE_VIEW(CURRENT SCHEMA, AVIEW);
 END!
+
+COMMENT ON SPECIFIC PROCEDURE RECREATE_VIEW1
+    IS 'Recreates the specified inoperative view from its definition in the system catalogue'!
+COMMENT ON SPECIFIC PROCEDURE RECREATE_VIEW2
+    IS 'Recreates the specified inoperative view from its definition in the system catalogue'!
 
 -- RECREATE_VIEWS(ASCHEMA)
 -- RECREATE_VIEWS()
@@ -171,6 +176,11 @@ BEGIN ATOMIC
     END FOR;
 END!
 
+COMMENT ON SPECIFIC PROCEDURE RECREATE_VIEWS1
+    IS 'Recreates all inoperative views in the specified schema from their system catalogue definitions'!
+COMMENT ON SPECIFIC PROCEDURE RECREATE_VIEWS2
+    IS 'Recreates all inoperative views in the specified schema from their system catalogue definitions'!
+
 -- RECREATE_TRIGGER(ASCHEMA, ATRIGGER)
 -- RECREATE_TRIGGER(ATRIGGER)
 -------------------------------------------------------------------------------
@@ -230,14 +240,19 @@ BEGIN ATOMIC
     CALL RECREATE_TRIGGER(CURRENT SCHEMA, ATRIGGER);
 END!
 
--- RECREATE_TRIGGERS(ASCHEMA)
--- RECREATE_TRIGGERS()
+COMMENT ON SPECIFIC PROCEDURE RECREATE_TRIGGER1
+    IS 'Recreates the specified inoperative trigger from its definition in the system catalogue'!
+COMMENT ON SPECIFIC PROCEDURE RECREATE_TRIGGER2
+    IS 'Recreates the specified inoperative trigger from its definition in the system catalogue'!
+
+-- RECREATE_TRIGGERS(ASCHEMA, ATABLE)
+-- RECREATE_TRIGGERS(ATABLE)
 -------------------------------------------------------------------------------
 -- RECREATE_TRIGGERS is a utility procedure which recreates all inoperative
--- triggers in the database or the optionally specified schema.
+-- triggers associated with the specified table.
 -------------------------------------------------------------------------------
 
-CREATE PROCEDURE RECREATE_TRIGGERS(ASCHEMA VARCHAR(128))
+CREATE PROCEDURE RECREATE_TRIGGERS(ASCHEMA VARCHAR(128), ATABLE VARCHAR(128))
     SPECIFIC RECREATE_TRIGGERS1
     MODIFIES SQL DATA
     NOT DETERMINISTIC
@@ -258,7 +273,8 @@ BEGIN ATOMIC
         FROM
             SYSCAT.TRIGGERS
         WHERE
-            TRIGSCHEMA = ASCHEMA
+            TABSCHEMA = ASCHEMA
+            AND TABNAME = ATABLE
             AND VALID = 'X'
         ORDER BY
             CREATE_TIME
@@ -271,38 +287,20 @@ BEGIN ATOMIC
     END FOR;
 END!
 
-CREATE PROCEDURE RECREATE_TRIGGERS()
+CREATE PROCEDURE RECREATE_TRIGGERS(ATABLE VARCHAR(128))
     SPECIFIC RECREATE_TRIGGERS2
     MODIFIES SQL DATA
     NOT DETERMINISTIC
     NO EXTERNAL ACTION
     LANGUAGE SQL
 BEGIN ATOMIC
-    DECLARE SAVE_PATH VARCHAR(254);
-    DECLARE SAVE_SCHEMA VARCHAR(128);
-    SET SAVE_PATH = CURRENT PATH;
-    SET SAVE_SCHEMA = CURRENT SCHEMA;
-    FOR D AS
-        SELECT
-            'SET SCHEMA ' || QUOTE_IDENTIFIER(QUALIFIER)   AS SET_QUALIFIER,
-            'SET PATH '   || FUNC_PATH                     AS SET_PATH,
-            TEXT                                           AS TEXT,
-            'SET SCHEMA ' || QUOTE_IDENTIFIER(SAVE_SCHEMA) AS RESTORE_QUALIFIER,
-            'SET PATH '   || SAVE_PATH                     AS RESTORE_PATH
-        FROM
-            SYSCAT.TRIGGERS
-        WHERE
-            VALID = 'X'
-        ORDER BY
-            CREATE_TIME
-    DO
-        EXECUTE IMMEDIATE D.SET_QUALIFIER;
-        EXECUTE IMMEDIATE D.SET_PATH;
-        EXECUTE IMMEDIATE D.TEXT;
-        EXECUTE IMMEDIATE D.RESTORE_QUALIFIER;
-        EXECUTE IMMEDIATE D.RESTORE_PATH;
-    END FOR;
+    CALL RECREATE_TRIGGERS(CURRENT SCHEMA, ATABLE);
 END!
+
+COMMENT ON SPECIFIC PROCEDURE RECREATE_TRIGGERS1
+    IS 'Recreates all the inoperative triggers associated with the specified table from their definitions in the system catalogue'!
+COMMENT ON SPECIFIC PROCEDURE RECREATE_TRIGGERS2
+    IS 'Recreates all the inoperative triggers associated with the specified table from their definitions in the system catalogue'!
 
 -- SAVED_VIEWS
 -------------------------------------------------------------------------------
