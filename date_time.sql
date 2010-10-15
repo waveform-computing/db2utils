@@ -2072,4 +2072,161 @@ COMMENT ON SPECIFIC FUNCTION TS_FORMAT3
 COMMENT ON SPECIFIC FUNCTION TS_FORMAT4
     IS 'A version of C''s strftime() for DB2. Formats ATIMESTAMP according to the AFORMAT string, containing %-prefixed templates which will be replaced with elements of ATIMESTAMP'!
 
+-- VACATIONS
+-------------------------------------------------------------------------------
+-- Defines non-weekend vacation dates to be taken into account by the
+-- WORKINGDAY function defined below. A trigger on the table ensures that
+-- weekend dates cannot be inserted.
+-------------------------------------------------------------------------------
+
+CREATE TABLE VACATIONS (
+    LOCATION     VARCHAR(10) NOT NULL,
+    VACATION     DATE NOT NULL,
+    DESCRIPTION  VARCHAR(100) NOT NULL DEFAULT ''
+)!
+
+CREATE UNIQUE INDEX VACATIONS_PK
+    ON VACATIONS (LOCATION, VACATION)
+    INCLUDE (DESCRIPTION)
+    CLUSTER!
+
+ALTER TABLE VACATIONS
+    ADD CONSTRAINT PK PRIMARY KEY (LOCATION, VACATION)!
+
+CREATE TRIGGER VACATIONS_INSERT
+    NO CASCADE BEFORE INSERT ON VACATIONS
+    REFERENCING NEW AS NEW
+    FOR EACH ROW
+WHEN (
+    DAYOFWEEK(NEW.VACATION) IN (1, 7)
+)
+BEGIN ATOMIC
+    SIGNAL SQLSTATE '75001'
+        SET MESSAGE_TEXT = 'Cannot insert a weekend (Saturday / Sunday) date into VACATIONS';
+END!
+
+CREATE TRIGGER VACATIONS_UPDATE
+    NO CASCADE BEFORE UPDATE OF VACATION ON VACATIONS
+    REFERENCING OLD AS OLD NEW AS NEW
+    FOR EACH ROW
+WHEN (
+    DAYOFWEEK(NEW.VACATION) IN (1, 7)
+)
+BEGIN ATOMIC
+    SIGNAL SQLSTATE '75001'
+        SET MESSAGE_TEXT = 'Cannot change a date to a weekend (Saturday / Sunday) in VACATIONS';
+END!
+
+COMMENT ON TABLE VACATIONS
+    IS 'Utility table used to define additional non-weekend vacations for the WORKINGDAY function'!
+
+-- WORKINGDAY(ADATE, RELATIVE_TO, ALOCATION)
+-- WORKINGDAY(ADATE, RELATIVE_TO)
+-- WORKINGDAY(ADATE, ALOCATION)
+-- WORKINGDAY(ADATE)
+-------------------------------------------------------------------------------
+-- The WORKINGDAY function calculates the working day of a specified date
+-- relative to another date. The working day is defined as the number of days
+-- which are not Saturday or Sunday from the starting date to the specified
+-- date, plus one. Hence, if the starting date is neither a Saturday nor a
+-- Sunday, it is working day 1, the next non-weekend-day is working day 2 and
+-- so on.
+--
+-- Requesting the working day of a Saturday or a Sunday will return the working
+-- day value of the prior Friday; it is not an error to query the working day
+-- of a weekend day, you should instead check for this in the calling code.
+--
+-- If the RELATIVE_TO parameter is omitted it will default to the start of the
+-- month of the ADATE parameter. In other words, by default this function
+-- calculates the working day of the month of a given date.
+--
+-- If you wish to take into account more than merely weekend days when
+-- calculating working days, insert values into the associated VACATIONS table.
+-- If a vacation date occurs between the starting date and the target date
+-- (inclusive), it will count as another weekend date resulting in a working
+-- day one less than would otherwise be calculated. Note that the VACATIONS
+-- table will only be used when you specify a value for the optional ALOCATION
+-- parameter. This parameter is used to filter the content of the VACATIONS
+-- table under the assumption that different locations, most likely countries,
+-- will have different public holidays.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION WORKINGDAY$DAY(ADATE DATE, RELATIVE_TO DATE)
+    RETURNS INTEGER
+    SPECIFIC WORKINGDAY$DAY
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    DAYS(ADATE) - DAYS(RELATIVE_TO) + 1!
+
+CREATE FUNCTION WORKINGDAY$SDOW(RELATIVE_TO DATE)
+    RETURNS INTEGER
+    SPECIFIC WORKINGDAY$SDOW
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    DAYOFWEEK_ISO(RELATIVE_TO)!
+
+CREATE FUNCTION WORKINGDAY(ADATE DATE, RELATIVE_TO DATE)
+    RETURNS INTEGER
+    SPECIFIC WORKINGDAY1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WORKINGDAY$DAY(ADATE, RELATIVE_TO) - (
+        ((WORKINGDAY$DAY(ADATE, RELATIVE_TO) + WORKINGDAY$SDOW(RELATIVE_TO)) / 7) +
+        ((WORKINGDAY$DAY(ADATE, RELATIVE_TO) + WORKINGDAY$SDOW(RELATIVE_TO) - 1) / 7) -
+        (WORKINGDAY$SDOW(RELATIVE_TO) / 7)
+    )!
+
+CREATE FUNCTION WORKINGDAY(ADATE DATE, RELATIVE_TO DATE, ALOCATION VARCHAR(10))
+    RETURNS INTEGER
+    SPECIFIC WORKINGDAY2
+    LANGUAGE SQL
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+    READS SQL DATA
+RETURN
+    WORKINGDAY(ADATE, RELATIVE_TO) - (
+        SELECT COUNT(*)
+        FROM VACATIONS
+        WHERE VACATION BETWEEN RELATIVE_TO AND ADATE
+        AND LOCATION = ALOCATION
+    )!
+
+CREATE FUNCTION WORKINGDAY(ADATE DATE, ALOCATION VARCHAR(10))
+    RETURNS INTEGER
+    SPECIFIC WORKINGDAY3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WORKINGDAY(ADATE, MONTHSTART(ADATE), ALOCATION)!
+
+CREATE FUNCTION WORKINGDAY(ADATE DATE)
+    RETURNS INTEGER
+    SPECIFIC WORKINGDAY4
+    LANGUAGE SQL
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+    READS SQL DATA
+RETURN
+    WORKINGDAY(ADATE, MONTHSTART(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION WORKINGDAY1
+    IS 'Calculates the working day of a specified date relative to another date which defaults to the start of the month'!
+COMMENT ON SPECIFIC FUNCTION WORKINGDAY2
+    IS 'Calculates the working day of a specified date relative to another date which defaults to the start of the month'!
+COMMENT ON SPECIFIC FUNCTION WORKINGDAY3
+    IS 'Calculates the working day of a specified date relative to another date which defaults to the start of the month'!
+COMMENT ON SPECIFIC FUNCTION WORKINGDAY4
+    IS 'Calculates the working day of a specified date relative to another date which defaults to the start of the month'!
+
 -- vim: set et sw=4 sts=4:
