@@ -2,17 +2,17 @@
 -- TOGGLE TRIGGERS
 -------------------------------------------------------------------------------
 -- Copyright (c) 2005-2010 Dave Hughes <dave@waveform.org.uk>
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to
 -- deal in the Software without restriction, including without limitation the
 -- rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 -- sell copies of the Software, and to permit persons to whom the Software is
 -- furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Software.
--- 
+--
 -- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -118,6 +118,11 @@ BEGIN ATOMIC
     CALL DISABLE_TRIGGER(CURRENT SCHEMA, ATRIGGER);
 END!
 
+COMMENT ON SPECIFIC PROCEDURE DISABLE_TRIGGER1
+    IS 'Disables the specified trigger by saving its definition to a table and dropping it'!
+COMMENT ON SPECIFIC PROCEDURE DISABLE_TRIGGER2
+    IS 'Disables the specified trigger by saving its definition to a table and dropping it'!
+
 -- DISABLE_TRIGGERS(ASCHEMA, ATABLE)
 -- DISABLE_TRIGGERS(ATABLE)
 -------------------------------------------------------------------------------
@@ -180,6 +185,11 @@ BEGIN ATOMIC
     CALL DISABLE_TRIGGERS(CURRENT SCHEMA, ATABLE);
 END!
 
+COMMENT ON SPECIFIC PROCEDURE DISABLE_TRIGGERS1
+    IS 'Disables all triggers associated with the specified table by saving their definitions to a table and dropping them'!
+COMMENT ON SPECIFIC PROCEDURE DISABLE_TRIGGERS2
+    IS 'Disables all triggers associated with the specified table by saving their definitions to a table and dropping them'!
+
 -- ENABLE_TRIGGER(ASCHEMA, ATRIGGER)
 -- ENABLE_TRIGGER(ATRIGGER)
 -------------------------------------------------------------------------------
@@ -240,14 +250,18 @@ BEGIN ATOMIC
     CALL ENABLE_TRIGGER(CURRENT SCHEMA, ATRIGGER);
 END!
 
+COMMENT ON SPECIFIC PROCEDURE ENABLE_TRIGGER1
+    IS 'Enables the specified trigger by restoring its definition from a table'!
+COMMENT ON SPECIFIC PROCEDURE ENABLE_TRIGGER2
+    IS 'Enables the specified trigger by restoring its definition from a table'!
+
 -- ENABLE_TRIGGERS(ASCHEMA, ATABLE)
 -- ENABLE_TRIGGERS(ATABLE)
 -------------------------------------------------------------------------------
 -- Enables all the disabled triggers for a given table. Note that this does not
 -- affect inactive triggers which are still attached to the table, just those
 -- triggers that have been disabled with DISABLE_TRIGGER or DISABLE_TRIGGERS.
--- To reactivate inactive triggers, see RECREATE_TRIGGER and RECREATE_TRIGGERS
--- above.
+-- To reactivate inactive triggers, see RECREATE_TRIGGER and RECREATE_TRIGGERS.
 -------------------------------------------------------------------------------
 
 CREATE PROCEDURE ENABLE_TRIGGERS(ASCHEMA VARCHAR(128), ATABLE VARCHAR(128))
@@ -302,5 +316,10 @@ CREATE PROCEDURE ENABLE_TRIGGERS(ATABLE VARCHAR(128))
 BEGIN ATOMIC
     CALL ENABLE_TRIGGERS(CURRENT SCHEMA, ATABLE);
 END!
+
+COMMENT ON SPECIFIC PROCEDURE ENABLE_TRIGGERS1
+    IS 'Enables all disabled triggers associated with a specified table'!
+COMMENT ON SPECIFIC PROCEDURE ENABLE_TRIGGERS2
+    IS 'Enables all disabled triggers associated with a specified table'!
 
 -- vim: set et sw=4 sts=4:
