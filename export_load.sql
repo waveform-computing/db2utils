@@ -58,9 +58,17 @@ CREATE FUNCTION TABLE_COLUMNS(
     READS SQL DATA
 RETURN
     WITH C AS (
-        SELECT VARCHAR(REPLACE(REPLACE(XML2CLOB(XMLAGG(
-            XMLELEMENT(NAME A, QUOTE_IDENTIFIER(COLNAME)) ORDER BY COLNO)), '<A>', ''),
-            '</A>', ','), 8000) AS COLS
+        SELECT VARCHAR(
+            REPLACE(
+            REPLACE(
+            REPLACE(
+            REPLACE(
+                XML2CLOB(XMLAGG(XMLELEMENT(NAME A, QUOTE_IDENTIFIER(COLNAME)) ORDER BY COLNO)),
+                '<A>', ''),
+                '</A>', ','),
+                '&lt;', '<'),
+                '&gt;', '>'),
+            8000) AS COLS
         FROM SYSCAT.COLUMNS
         WHERE TABSCHEMA = ASCHEMA
         AND TABNAME = ATABLE
@@ -92,6 +100,13 @@ CREATE FUNCTION TABLE_COLUMNS(ATABLE VARCHAR(128))
     READS SQL DATA
 RETURN
     TABLE_COLUMNS(CURRENT SCHEMA, ATABLE, 'Y', 'Y')!
+
+COMMENT ON SPECIFIC FUNCTION TABLE_COLUMNS1
+    IS 'Returns a string containing the comma-separated list of columns of the specified table in the order they are defined'!
+COMMENT ON SPECIFIC FUNCTION TABLE_COLUMNS2
+    IS 'Returns a string containing the comma-separated list of columns of the specified table in the order they are defined'!
+COMMENT ON SPECIFIC FUNCTION TABLE_COLUMNS3
+    IS 'Returns a string containing the comma-separated list of columns of the specified table in the order they are defined'!
 
 -- EXPORT_TABLE(ASCHEMA, ATABLE, INCLUDE_GENERATED, INCLUDE_IDENTITY)
 -- EXPORT_TABLE(ATABLE, INCLUDE_GENERATED, INCLUDE_IDENTITY)
