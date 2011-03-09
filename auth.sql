@@ -77,6 +77,7 @@ COMMENT ON SPECIFIC FUNCTION AUTH_TYPE1
 -- AUTHS_HELD(AUTH_NAME, AUTH_TYPE, INCLUDE_COLUMNS, INCLUDE_PERSONAL)
 -- AUTHS_HELD(AUTH_NAME, INCLUDE_COLUMNS, INCLUDE_PERSONAL)
 -- AUTHS_HELD(AUTH_NAME, INCLUDE_COLUMNS)
+-- AUTHS_HELD(AUTH_NAME)
 -------------------------------------------------------------------------------
 -- This is a utility function used by the COPY_AUTH procedure, and other
 -- associated procedures, below. Given an authorization name and type, and a
@@ -90,7 +91,8 @@ COMMENT ON SPECIFIC FUNCTION AUTH_TYPE1
 -- The INCLUDE_COLUMNS parameter specifies whether column-level REFERENCES
 -- and UPDATES authorziations are included ('Y') or excluded ('N'). This is
 -- useful when generating REVOKE statements from the result (column level
--- authorizations cannot be revoked directly).
+-- authorizations cannot be revoked directly). This parameter is optional
+-- and defaults to 'N' if omitted.
 --
 -- The INCLUDE_PERSONAL parameter specifies whether, in the case where
 -- AUTH_NAME is a user, the content of the user's personal schema will be
@@ -154,6 +156,23 @@ RETURN
         FROM SYSCAT.ROLEAUTH
         WHERE GRANTEE = AUTH_NAME
             AND GRANTEETYPE = AUTH_TYPE
+    ),
+    SURROGATE_AUTHS(OBJECT_TYPE, OBJECT_ID, AUTH, SUFFIX, LEVEL) AS (
+        SELECT
+            CASE SURROGATEAUTHIDTYPE
+                WHEN 'G' THEN 'PUBLIC'
+                WHEN 'U' THEN 'USER'
+            END,
+            CASE SURROGATEAUTHIDTYPE
+                WHEN 'G' THEN ''
+                WHEN 'U' THEN SURROGATEAUTHID
+            END,
+            'SETSESSIONUSER',
+            '',
+            0
+        FROM SYSCAT.SURROGATEAUTHIDS
+        WHERE TRUSTEDID = AUTH_NAME
+            AND TRUSTEDIDTYPE = AUTH_TYPE
     ),
     TBSPACE_AUTHS(OBJECT_TYPE, OBJECT_ID, AUTH, SUFFIX, LEVEL) AS (
         SELECT
@@ -425,20 +444,21 @@ RETURN
                 OR AUTH_NAME <> SCHEMA
             )
     )
-    SELECT * FROM DB_AUTHS       UNION
-    SELECT * FROM ROLE_AUTHS     UNION
-    SELECT * FROM TBSPACE_AUTHS  UNION
-    SELECT * FROM WORKLOAD_AUTHS UNION
-    SELECT * FROM SECLABEL_AUTHS UNION
-    SELECT * FROM SERVER_AUTHS   UNION
-    SELECT * FROM SCHEMA_AUTHS   UNION
-    SELECT * FROM TABLE_AUTHS    UNION
-    SELECT * FROM COLUMN_AUTHS   UNION
-    SELECT * FROM INDEX_AUTHS    UNION
-    SELECT * FROM PACKAGE_AUTHS  UNION
-    SELECT * FROM VARIABLE_AUTHS UNION
-    SELECT * FROM SEQUENCE_AUTHS UNION
-    SELECT * FROM XSR_AUTHS      UNION
+    SELECT * FROM DB_AUTHS        UNION
+    SELECT * FROM ROLE_AUTHS      UNION
+    SELECT * FROM SURROGATE_AUTHS UNION
+    SELECT * FROM TBSPACE_AUTHS   UNION
+    SELECT * FROM WORKLOAD_AUTHS  UNION
+    SELECT * FROM SECLABEL_AUTHS  UNION
+    SELECT * FROM SERVER_AUTHS    UNION
+    SELECT * FROM SCHEMA_AUTHS    UNION
+    SELECT * FROM TABLE_AUTHS     UNION
+    SELECT * FROM COLUMN_AUTHS    UNION
+    SELECT * FROM INDEX_AUTHS     UNION
+    SELECT * FROM PACKAGE_AUTHS   UNION
+    SELECT * FROM VARIABLE_AUTHS  UNION
+    SELECT * FROM SEQUENCE_AUTHS  UNION
+    SELECT * FROM XSR_AUTHS       UNION
     SELECT * FROM ROUTINE_AUTHS!
 
 CREATE FUNCTION AUTHS_HELD(
@@ -492,16 +512,43 @@ RETURN
         'N'
     )) AS T!
 
+CREATE FUNCTION AUTHS_HELD(
+    AUTH_NAME VARCHAR(128)
+)
+    RETURNS TABLE (
+        OBJECT_TYPE VARCHAR(18),
+        OBJECT_ID VARCHAR(262),
+        AUTH VARCHAR(140),
+        SUFFIX VARCHAR(20),
+        LEVEL SMALLINT
+    )
+    SPECIFIC AUTHS_HELD4
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+    READS SQL DATA
+    LANGUAGE SQL
+RETURN
+    SELECT *
+    FROM TABLE(AUTHS_HELD(
+        AUTH_NAME,
+        AUTH_TYPE(AUTH_NAME),
+        'N',
+        'N'
+    )) AS T!
+
 COMMENT ON SPECIFIC FUNCTION AUTHS_HELD1
     IS 'Utility table function which returns all the authorizations held by a specific name'!
 COMMENT ON SPECIFIC FUNCTION AUTHS_HELD2
     IS 'Utility table function which returns all the authorizations held by a specific name'!
 COMMENT ON SPECIFIC FUNCTION AUTHS_HELD3
     IS 'Utility table function which returns all the authorizations held by a specific name'!
+COMMENT ON SPECIFIC FUNCTION AUTHS_HELD4
+    IS 'Utility table function which returns all the authorizations held by a specific name'!
 
 -- AUTH_DIFF(SOURCE, SOURCE_TYPE, DEST, DEST_TYPE, INCLUDE_COLUMNS, INCLUDE_PERSONAL)
 -- AUTH_DIFF(SOURCE, DEST, INCLUDE_COLUMNS, INCLUDE_PERSONAL)
 -- AUTH_DIFF(SOURCE, DEST, INCLUDE_COLUMNS)
+-- AUTH_DIFF(SOURCE, DEST)
 -------------------------------------------------------------------------------
 -- This utility function determines the difference in authorizations held by
 -- two different entities. Essentially it takes the authorizations of the
@@ -513,7 +560,7 @@ COMMENT ON SPECIFIC FUNCTION AUTHS_HELD3
 -- types of SOURCE and DEST will be determined by the AUTH_TYPE function above.
 --
 -- The INCLUDE_COLUMNS parameter determines if column level authorizations are
--- included in the results ('Y') or not ('N').
+-- included in the results ('Y') or not ('N'). Defaults to 'N' if omitted.
 --
 -- The optional INCLUDE_PERSONAL parameter determines whether, in the case
 -- where SOURCE is a user, the content of the user's personal schema will be
@@ -648,11 +695,40 @@ RETURN
         'N'
     )) AS T!
 
+CREATE FUNCTION AUTH_DIFF(
+    SOURCE           VARCHAR(128),
+    DEST             VARCHAR(128)
+)
+    RETURNS TABLE(
+        OBJECT_TYPE  VARCHAR(18),
+        OBJECT_ID    VARCHAR(262),
+        AUTH         VARCHAR(140),
+        SUFFIX       VARCHAR(20),
+        LEVEL        SMALLINT
+    )
+    SPECIFIC AUTH_DIFF4
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+    READS SQL DATA
+    LANGUAGE SQL
+RETURN
+    SELECT *
+    FROM TABLE(AUTH_DIFF(
+        SOURCE,
+        AUTH_TYPE(SOURCE),
+        DEST,
+        AUTH_TYPE(DEST),
+        'N',
+        'N'
+    )) AS T!
+
 COMMENT ON SPECIFIC FUNCTION AUTH_DIFF1
     IS 'Utility table function which returns the difference between the authorities held by two names'!
 COMMENT ON SPECIFIC FUNCTION AUTH_DIFF2
     IS 'Utility table function which returns the difference between the authorities held by two names'!
 COMMENT ON SPECIFIC FUNCTION AUTH_DIFF3
+    IS 'Utility table function which returns the difference between the authorities held by two names'!
+COMMENT ON SPECIFIC FUNCTION AUTH_DIFF4
     IS 'Utility table function which returns the difference between the authorities held by two names'!
 
 -- COPY_AUTH(SOURCE, SOURCE_TYPE, DEST, DEST_TYPE, INCLUDE_PERSONAL)
@@ -677,6 +753,55 @@ COMMENT ON SPECIFIC FUNCTION AUTH_DIFF3
 -- 'N' if omitted, and has no effect in the case where SOURCE is not a user.
 -------------------------------------------------------------------------------
 
+CREATE FUNCTION COPY$LIST(
+    SOURCE VARCHAR(128),
+    SOURCE_TYPE VARCHAR(1),
+    DEST VARCHAR(128),
+    DEST_TYPE VARCHAR(1),
+    INCLUDE_PERSONAL VARCHAR(1)
+)
+    RETURNS TABLE (
+        OBJECT_TYPE VARCHAR(18),
+        OBJECT_ID VARCHAR(262),
+        DDL VARCHAR(2000)
+    )
+    SPECIFIC COPY$LIST
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+    READS SQL DATA
+    LANGUAGE SQL
+RETURN
+    SELECT
+        OBJECT_TYPE,
+        OBJECT_ID,
+        'GRANT ' || AUTH ||
+        CASE OBJECT_TYPE
+            WHEN '' THEN ''
+            ELSE
+                CASE OBJECT_TYPE
+                    WHEN 'TABLESPACE' THEN ' OF '
+                    ELSE ' ON '
+                END || OBJECT_TYPE || ' ' || OBJECT_ID
+        END || ' TO ' ||
+        CASE DEST_TYPE
+            WHEN 'U' THEN 'USER ' || QUOTE_IDENTIFIER(DEST)
+            WHEN 'R' THEN 'ROLE ' || QUOTE_IDENTIFIER(DEST)
+            WHEN 'G' THEN
+                CASE DEST
+                    WHEN 'PUBLIC' THEN DEST
+                    ELSE 'GROUP ' || QUOTE_IDENTIFIER(DEST)
+                END
+        END || ' ' || SUFFIX AS DDL
+    FROM
+        TABLE(AUTH_DIFF(
+            SOURCE,
+            SOURCE_TYPE,
+            DEST,
+            DEST_TYPE,
+            CHAR('Y'),
+            INCLUDE_PERSONAL
+        )) AS T!
+
 CREATE PROCEDURE COPY_AUTH(
     SOURCE VARCHAR(128),
     SOURCE_TYPE VARCHAR(1),
@@ -694,34 +819,8 @@ BEGIN ATOMIC
         SIGNAL SQLSTATE '80002'
         SET MESSAGE_TEXT = 'Ambiguous type for authorization name';
     FOR D AS
-        SELECT
-            'GRANT ' || AUTH ||
-            CASE OBJECT_TYPE
-                WHEN '' THEN ''
-                ELSE
-                    CASE OBJECT_TYPE
-                        WHEN 'TABLESPACE' THEN ' OF '
-                        ELSE ' ON '
-                    END || OBJECT_TYPE || ' ' || OBJECT_ID
-            END || ' TO ' ||
-            CASE DEST_TYPE
-                WHEN 'U' THEN 'USER ' || QUOTE_IDENTIFIER(DEST)
-                WHEN 'R' THEN 'ROLE ' || QUOTE_IDENTIFIER(DEST)
-                WHEN 'G' THEN
-                    CASE DEST
-                        WHEN 'PUBLIC' THEN DEST
-                        ELSE 'GROUP ' || QUOTE_IDENTIFIER(DEST)
-                    END
-            END || ' ' || SUFFIX AS DDL
-        FROM
-            TABLE(AUTH_DIFF(
-                SOURCE,
-                SOURCE_TYPE,
-                DEST,
-                DEST_TYPE,
-                CHAR('Y'),
-                INCLUDE_PERSONAL
-            )) AS T
+        SELECT DDL
+        FROM TABLE(COPY$LIST(SOURCE, SOURCE_TYPE, DEST, DEST_TYPE, INCLUDE_PERSONAL))
     DO
         EXECUTE IMMEDIATE D.DDL;
     END FOR;
@@ -781,6 +880,58 @@ COMMENT ON SPECIFIC PROCEDURE COPY_AUTH3
 -- be handled manually.
 -------------------------------------------------------------------------------
 
+CREATE FUNCTION REMOVE$LIST(
+    AUTH_NAME VARCHAR(128),
+    AUTH_TYPE VARCHAR(1),
+    INCLUDE_PERSONAL VARCHAR(1)
+)
+    RETURNS TABLE (
+        OBJECT_TYPE VARCHAR(18),
+        OBJECT_ID VARCHAR(262),
+        DDL VARCHAR(2000)
+    )
+    SPECIFIC REMOVE$LIST
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+    READS SQL DATA
+    LANGUAGE SQL
+RETURN
+    SELECT
+        OBJECT_TYPE,
+        OBJECT_ID,
+        'REVOKE ' || AUTH ||
+        CASE OBJECT_TYPE
+            WHEN '' THEN ''
+            ELSE
+                CASE OBJECT_TYPE
+                    WHEN 'TABLESPACE' THEN ' OF '
+                    ELSE ' ON '
+                END || OBJECT_TYPE || ' ' || OBJECT_ID
+        END || ' FROM ' ||
+        CASE AUTH_TYPE
+            WHEN 'U' THEN 'USER ' || QUOTE_IDENTIFIER(AUTH_NAME)
+            WHEN 'R' THEN 'ROLE ' || QUOTE_IDENTIFIER(AUTH_NAME)
+            WHEN 'G' THEN
+                CASE AUTH_NAME
+                    WHEN 'PUBLIC' THEN AUTH_NAME
+                    ELSE 'GROUP ' || QUOTE_IDENTIFIER(AUTH_NAME)
+                END
+        END || ' ' ||
+        CASE OBJECT_TYPE
+            WHEN 'SPECIFIC FUNCTION'  THEN 'RESTRICT'
+            WHEN 'SPECIFIC PROCEDURE' THEN 'RESTRICT'
+            WHEN 'FUNCTION'           THEN 'RESTRICT'
+            WHEN 'PROCEDURE'          THEN 'RESTRICT'
+            ELSE ''
+        END AS DDL
+    FROM
+        TABLE(AUTHS_HELD(
+            AUTH_NAME,
+            AUTH_TYPE,
+            'N',
+            INCLUDE_PERSONAL
+        )) AS T!
+
 CREATE PROCEDURE REMOVE_AUTH(
     AUTH_NAME VARCHAR(128),
     AUTH_TYPE VARCHAR(1),
@@ -796,32 +947,8 @@ BEGIN ATOMIC
         SIGNAL SQLSTATE '80002'
         SET MESSAGE_TEXT = 'Ambiguous type for authorization name';
     FOR D AS
-        SELECT
-            'REVOKE ' || AUTH ||
-            CASE OBJECT_TYPE
-                WHEN '' THEN ''
-                ELSE
-                    CASE OBJECT_TYPE
-                        WHEN 'TABLESPACE' THEN ' OF '
-                        ELSE ' ON '
-                    END || OBJECT_TYPE || ' ' || OBJECT_ID
-            END || ' FROM ' ||
-            CASE AUTH_TYPE
-                WHEN 'U' THEN 'USER ' || QUOTE_IDENTIFIER(AUTH_NAME)
-                WHEN 'R' THEN 'ROLE ' || QUOTE_IDENTIFIER(AUTH_NAME)
-                WHEN 'G' THEN
-                    CASE AUTH_NAME
-                        WHEN 'PUBLIC' THEN AUTH_NAME
-                        ELSE 'GROUP ' || QUOTE_IDENTIFIER(AUTH_NAME)
-                    END
-            END AS DDL
-        FROM
-            TABLE(AUTHS_HELD(
-                AUTH_NAME,
-                AUTH_TYPE,
-                'N',
-                INCLUDE_PERSONAL
-            )) AS T
+        SELECT DDL
+        FROM TABLE(REMOVE$LIST(AUTH_NAME, AUTH_TYPE, INCLUDE_PERSONAL))
     DO
         EXECUTE IMMEDIATE D.DDL;
     END FOR;
