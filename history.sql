@@ -32,7 +32,6 @@
 -- for creating views providing commonly requested transformations of the
 -- history such as "what changed when" and "snapshots over constant periods".
 -------------------------------------------------------------------------------
---@depends date_time.sql
 
 -- HISTORY$EFFNAME(RESOLUTION)
 -- HISTORY$EXPNAME(RESOLUTION)
