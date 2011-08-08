@@ -100,7 +100,7 @@ RETURN
     END!
 
 CREATE FUNCTION HISTORY$EXPDEFAULT(RESOLUTION VARCHAR(11))
-    RETURNS VARCHAR(20)
+    RETURNS VARCHAR(28)
     SPECIFIC HISTORY$EXPDEFAULT
     LANGUAGE SQL
     DETERMINISTIC
@@ -108,7 +108,7 @@ CREATE FUNCTION HISTORY$EXPDEFAULT(RESOLUTION VARCHAR(11))
     CONTAINS SQL
 RETURN
     CASE
-        WHEN RESOLUTION IN ('MICROSECOND', 'SECOND', 'MINUTE', 'HOUR') THEN '''9999-12-31 23:59:99.999999'''
+        WHEN RESOLUTION IN ('MICROSECOND', 'SECOND', 'MINUTE', 'HOUR') THEN '''9999-12-31 23:59:59.999999'''
         WHEN RESOLUTION IN ('DAY', 'WEEK', 'WEEK_ISO', 'MONTH') THEN '''9999-12-31'''
         ELSE RAISE_ERROR('70001', 'Invalid RESOLUTION value ' || RESOLUTION)
     END!
@@ -744,11 +744,11 @@ BEGIN ATOMIC
     -- comments for all fields from the source table
     SET DDL = 'COMMENT ON COLUMN '
         || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_TABLE) || '.' || QUOTE_IDENTIFIER(HISTORY$EFFNAME(RESOLUTION))
-        || ' IS ' || QUOTE_STRING('The date from which this row was present in the source table');
+        || ' IS ' || QUOTE_STRING('The date/timestamp from which this row was present in the source table');
     EXECUTE IMMEDIATE DDL;
     SET DDL = 'COMMENT ON COLUMN '
         || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_TABLE) || '.' || QUOTE_IDENTIFIER(HISTORY$EXPNAME(RESOLUTION))
-        || ' IS ' || QUOTE_STRING('The date until which this row was present in the source table (rows with 9999-12-31 currently exist in the source table)');
+        || ' IS ' || QUOTE_STRING('The date/timestamp until which this row was present in the source table (rows with 9999-12-31 currently exist in the source table)');
     EXECUTE IMMEDIATE DDL;
     SET DDL = 'COMMENT ON TABLE '
         || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_TABLE)
@@ -882,6 +882,33 @@ BEGIN ATOMIC
     WHERE TABSCHEMA = SOURCE_SCHEMA
         AND TABNAME = SOURCE_TABLE;
     CALL RESTORE_AUTH(DEST_SCHEMA, DEST_VIEW);
+    -- Set up comments for the effective and expiry fields then copy the
+    -- comments for all fields from the source table
+    SET DDL = 'COMMENT ON COLUMN '
+        || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_VIEW) || '.' || QUOTE_IDENTIFIER('CHANGED')
+        || ' IS ' || QUOTE_STRING('The date/timestamp on which this row changed');
+    EXECUTE IMMEDIATE DDL;
+    SET DDL = 'COMMENT ON TABLE '
+        || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_VIEW)
+        || ' IS ' || QUOTE_STRING('View showing the content of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE || ' as a series of changes');
+    EXECUTE IMMEDIATE DDL;
+    FOR C AS
+        SELECT
+            VARCHAR('COMMENT ON COLUMN '
+                || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_VIEW) || '.' || QUOTE_IDENTIFIER('OLD_' || COLNAME)
+                || ' IS ' || QUOTE_STRING('Value of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE || COLNAME || ' prior to change')) AS COMMENT_OLD_STMT,
+            VARCHAR('COMMENT ON COLUMN '
+                || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_VIEW) || '.' || QUOTE_IDENTIFIER('NEW_' || COLNAME)
+                || ' IS ' || QUOTE_STRING('Value of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE || COLNAME || ' after change')) AS COMMENT_NEW_STMT
+        FROM SYSCAT.COLUMNS
+        WHERE TABSCHEMA = SOURCE_SCHEMA
+        AND TABNAME = SOURCE_TABLE
+        AND REMARKS IS NOT NULL
+        AND COLNO >= 2
+    DO
+        EXECUTE IMMEDIATE C.COMMENT_OLD_STMT;
+        EXECUTE IMMEDIATE C.COMMENT_NEW_STMT;
+    END FOR;
 END!
 
 CREATE PROCEDURE CREATE_HISTORY_CHANGES(
@@ -974,6 +1001,29 @@ BEGIN ATOMIC
     WHERE TABSCHEMA = SOURCE_SCHEMA
         AND TABNAME = SOURCE_TABLE;
     CALL RESTORE_AUTH(DEST_SCHEMA, DEST_VIEW);
+    -- Set up comments for the effective and expiry fields then copy the
+    -- comments for all fields from the source table
+    SET DDL = 'COMMENT ON COLUMN '
+        || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_VIEW) || '.' || QUOTE_IDENTIFIER('SNAPSHOT')
+        || ' IS ' || QUOTE_STRING('The date/timestamp of this row''s snapshot');
+    EXECUTE IMMEDIATE DDL;
+    SET DDL = 'COMMENT ON TABLE '
+        || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_VIEW)
+        || ' IS ' || QUOTE_STRING('View showing the content of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE || ' as a series of snapshots');
+    EXECUTE IMMEDIATE DDL;
+    FOR C AS
+        SELECT
+            VARCHAR('COMMENT ON COLUMN '
+                || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_VIEW) || '.' || QUOTE_IDENTIFIER('OLD_' || COLNAME)
+                || ' IS ' || QUOTE_STRING('Value of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE || COLNAME || ' at the time of the snapshot')) AS COMMENT_STMT
+        FROM SYSCAT.COLUMNS
+        WHERE TABSCHEMA = SOURCE_SCHEMA
+        AND TABNAME = SOURCE_TABLE
+        AND REMARKS IS NOT NULL
+        AND COLNO >= 2
+    DO
+        EXECUTE IMMEDIATE C.COMMENT_STMT;
+    END FOR;
 END!
 
 CREATE PROCEDURE CREATE_HISTORY_SNAPSHOTS(
