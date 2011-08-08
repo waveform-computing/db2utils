@@ -42,10 +42,7 @@ uninstall.sql: install.sql
 	echo "CONNECT TO $(DBNAME)!" > $@
 	echo "SET SCHEMA $(SCHEMANAME)!" >> $@
 	echo "SET PATH SYSTEM PATH, USER, $(SCHEMANAME)!" >> $@
-	awk '\
-		/^CREATE +(FUNCTION|PROCEDURE) +([A-Za-z0-9_#$$@]+)\>/ { routine=$$2; } \
-		/^[[:space:]]*\<SPECIFIC +([A-Za-z0-9_#$$@]+)\>/ { print "DROP SPECIFIC " routine " " $$2 "!"; } \
-		/^CREATE +(ALIAS|TABLE|VIEW|ROLE|TRIGGER) +([A-Za-z0-9_#$$@]+)\>/ { print "DROP " $$2 " " gensub("!$$", "", 1, $$3) "!"; }' $< | tac >> $@
+	awk -f uninstall.awk $< | tac >> $@
 	echo "COMMIT!" >> $@
 
 export_load.foo: sql.foo
