@@ -743,25 +743,26 @@ BEGIN ATOMIC
     -- Set up comments for the effective and expiry fields then copy the
     -- comments for all fields from the source table
     SET DDL = 'COMMENT ON COLUMN '
-        || QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE) || '.' || QUOTE_IDENTIFIER(HISTORY$EFFNAME(RESOLUTION))
+        || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_TABLE) || '.' || QUOTE_IDENTIFIER(HISTORY$EFFNAME(RESOLUTION))
         || ' IS ' || QUOTE_STRING('The date from which this row was present in the source table');
     EXECUTE IMMEDIATE DDL;
     SET DDL = 'COMMENT ON COLUMN '
-        || QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE) || '.' || QUOTE_IDENTIFIER(HISTORY$EXPNAME(RESOLUTION))
+        || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_TABLE) || '.' || QUOTE_IDENTIFIER(HISTORY$EXPNAME(RESOLUTION))
         || ' IS ' || QUOTE_STRING('The date until which this row was present in the source table (rows with 9999-12-31 currently exist in the source table)');
     EXECUTE IMMEDIATE DDL;
     SET DDL = 'COMMENT ON TABLE '
-        || QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE)
+        || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_TABLE)
         || ' IS ' || QUOTE_STRING('History table which tracks the content of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE);
     EXECUTE IMMEDIATE DDL;
     FOR C AS
         SELECT
             VARCHAR('COMMENT ON COLUMN '
-                || QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE) || '.' || QUOTE_IDENTIFIER(COLNAME)
+                || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_TABLE) || '.' || QUOTE_IDENTIFIER(COLNAME)
                 || ' IS ' || QUOTE_STRING(REMARKS)) AS COMMENT_STMT
         FROM SYSCAT.COLUMNS
         WHERE TABSCHEMA = SOURCE_SCHEMA
         AND TABNAME = SOURCE_TABLE
+        AND REMARKS IS NOT NULL
     DO
         EXECUTE IMMEDIATE C.COMMENT_STMT;
     END FOR;
