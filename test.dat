@@ -196,3 +196,9 @@ PCRE_SUB('Q(?!U)', '\0', 'QUACK')
 NULL
 PCRE_SUB('Q(?!U)', '\0', 'QI')
 'Q'
+QUOTE_STRING('A string')
+'''A string'''
+QUOTE_STRING('Frank''s string')
+'''Frank''''s string'''
+QUOTE_STRING('A multi' || X'0A' || 'line string')
+'''A multi'' || X''0A'' || ''line string'''

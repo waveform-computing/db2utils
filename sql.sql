@@ -77,6 +77,9 @@ BEGIN ATOMIC
     RETURN RESULT || '''';
 END!
 
+COMMENT ON SPECIFIC FUNCTION QUOTE_STRING1
+    IS 'Returns ASTRING surrounded by single quotes with all necessary escaping. Useful when constructing SQL for EXECUTE IMMEDIATE within a procedure'!
+
 -- QUOTE_IDENTIFIER(AIDENT)
 -------------------------------------------------------------------------------
 -- Returns AIDENT surrounded by double quotes if AIDENT contains any characters
@@ -110,5 +113,8 @@ RETURN
         ELSE
             '"' || REPLACE(RTRIM(AIDENT), '"', '""') || '"'
     END!
+
+COMMENT ON SPECIFIC FUNCTION QUOTE_STRING1
+    IS 'If AIDENT is an identifier which requires quoting, returns AIDENT surrounded by double quotes with all contained double quotes doubled. Useful when constructing SQL for EXECUTE IMMEDIATE within a procedure'!
 
 -- vim: set et sw=4 sts=4:
