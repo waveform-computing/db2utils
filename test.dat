@@ -202,3 +202,11 @@ QUOTE_STRING('Frank''s string')
 '''Frank''''s string'''
 QUOTE_STRING('A multi' || X'0A' || 'line string')
 '''A multi'' || X''0A'' || ''line string'''
+QUOTE_IDENTIFIER('MY_TABLE')
+'MY_TABLE'
+QUOTE_IDENTIFIER('MY#TABLE')
+'MY#TABLE'
+QUOTE_IDENTIFIER('MyTable')
+'"MyTable"'
+QUOTE_IDENTIFIER('My "Table"')
+'"My ""Table"""'
