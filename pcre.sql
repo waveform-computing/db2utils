@@ -103,6 +103,10 @@ CREATE FUNCTION PCRE_SEARCH(PATTERN VARCHAR(1000), TEXT VARCHAR(4000))
 RETURN
     PCRE_SEARCH(PATTERN, TEXT, 1)!
 
+COMMENT ON SPECIFIC FUNCTION PCRE_SEARCH1
+    IS 'Searches for regular expression PATTERN within TEXT starting at 1-based START'!
+OMMENT ON SPECIFIC FUNCTION PCRE_SEARCH2
+    IS 'Searches for regular expression PATTERN within TEXT'!
 
 -- PCRE_SUB(PATTERN, REPL, TEXT, START)
 -- PCRE_SUB(PATTERN, REPL, TEXT)
@@ -171,6 +175,10 @@ CREATE FUNCTION PCRE_SUB(PATTERN VARCHAR(1000), REPL VARCHAR(4000), TEXT VARCHAR
 RETURN
     PCRE_SUB(PATTERN, REPL, TEXT, 1)!
 
+COMMENT ON SPECIFIC FUNCTION PCRE_SUB1
+    IS 'Returns replacement pattern REPL with substitutions from matched groups of regular expression PATTERN in TEXT starting from 1-based START'!
+COMMENT ON SPECIFIC FUNCTION PCRE_SUB2
+    IS 'Returns replacement pattern REPL with substitutions from matched groups of regular expression PATTERN in TEXT'!
 
 -- PCRE_GROUPS(PATTERN, TEXT)
 -------------------------------------------------------------------------------
@@ -252,6 +260,8 @@ CREATE FUNCTION PCRE_GROUPS(PATTERN VARCHAR(1000), TEXT VARCHAR(4000))
     NO FINAL CALL
     DISALLOW PARALLEL!
 
+COMMENT ON SPECIFIC FUNCTION PCRE_GROUPS1
+    IS 'Searches for regular expression PATTERN in TEXT, returning a table detailing all matched groups'!
 
 -- PCRE_SPLIT(PATTERN, TEXT)
 -------------------------------------------------------------------------------
@@ -347,5 +357,8 @@ CREATE FUNCTION PCRE_SPLIT(PATTERN VARCHAR(1000), TEXT VARCHAR(4000))
     SCRATCHPAD 100
     NO FINAL CALL
     DISALLOW PARALLEL!
+
+COMMENT ON SPECIFIC FUNCTION PCRE_SPLIT1
+    IS 'Searches for all occurrences of regular expression PATTERN in TEXT, returning a table of all matches and the text between each match'!
 
 -- vim: set et sw=4 sts=4:
