@@ -1301,13 +1301,13 @@ CREATE FUNCTION WEEKSINMONTH_ISO(ADATE VARCHAR(26))
 RETURN
     WEEKSINMONTH_ISO(DATE(ADATE))!
 
-COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH1
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH_ISO1
     IS 'Returns the number of weeks (ranging from Monday to Sunday, including partials) in AMONTH in AYEAR'!
-COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH2
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH_ISO2
     IS 'Returns the number of weeks (randing from Monday to Sunday, including partials) in the month in which ADATE exists'!
-COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH3
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH_ISO3
     IS 'Returns the number of weeks (randing from Monday to Sunday, including partials) in the month in which ADATE exists'!
-COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH4
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH_ISO4
     IS 'Returns the number of weeks (randing from Monday to Sunday, including partials) in the month in which ADATE exists'!
 
 -- HOURSTART(AYEAR, AMONTH, ADAY, AHOUR)
