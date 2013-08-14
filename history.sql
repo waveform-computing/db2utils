@@ -833,6 +833,15 @@ BEGIN ATOMIC
     CALL CREATE_HISTORY_TABLE(SOURCE_TABLE, SOURCE_TABLE || '_HISTORY', RESOLUTION);
 END!
 
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_TABLE1
+    IS 'Creates a temporal history table based on the structure of the specified table'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_TABLE2
+    IS 'Creates a temporal history table based on the structure of the specified table'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_TABLE3
+    IS 'Creates a temporal history table based on the structure of the specified table'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_TABLE4
+    IS 'Creates a temporal history table based on the structure of the specified table'!
+
 -- CREATE_HISTORY_CHANGES(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_VIEW, RESOLUTION)
 -- CREATE_HISTORY_CHANGES(SOURCE_TABLE, DEST_VIEW, RESOLUTION)
 -- CREATE_HISTORY_CHANGES(SOURCE_TABLE, RESOLUTION)
@@ -958,6 +967,13 @@ CREATE PROCEDURE CREATE_HISTORY_CHANGES(
 BEGIN ATOMIC
     CALL CREATE_HISTORY_CHANGES(SOURCE_TABLE, REPLACE(SOURCE_TABLE, '_HISTORY', '_CHANGES'), RESOLUTION);
 END!
+
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_CHANGES1
+    IS 'Creates an "OLD vs NEW" changes view on top of the specified history table'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_CHANGES2
+    IS 'Creates an "OLD vs NEW" changes view on top of the specified history table'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_CHANGES3
+    IS 'Creates an "OLD vs NEW" changes view on top of the specified history table'!
 
 -- CREATE_HISTORY_SNAPSHOTS(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_VIEW, RESOLUTION)
 -- CREATE_HISTORY_SNAPSHOTS(SOURCE_TABLE, DEST_VIEW, RESOLUTION)
@@ -1085,6 +1101,13 @@ BEGIN ATOMIC
             ELSE RAISE_ERROR('70001', 'Invalid RESOLUTION value ' || RESOLUTION)
         END), RESOLUTION);
 END!
+
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_SNAPSHOTS1
+    IS 'Creates an exploded view of the specified history table with one row per entity per resolution time-slice (e.g. daily, monthly, yearly, etc.)'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_SNAPSHOTS2
+    IS 'Creates an exploded view of the specified history table with one row per entity per resolution time-slice (e.g. daily, monthly, yearly, etc.)'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_SNAPSHOTS3
+    IS 'Creates an exploded view of the specified history table with one row per entity per resolution time-slice (e.g. daily, monthly, yearly, etc.)'!
 
 -- CREATE_HISTORY_TRIGGERS(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE, RESOLUTION, OFFSET)
 -- CREATE_HISTORY_TRIGGERS(SOURCE_TABLE, DEST_TABLE, RESOLUTION, OFFSET)
@@ -1288,5 +1311,14 @@ CREATE PROCEDURE CREATE_HISTORY_TRIGGERS(
 BEGIN ATOMIC
     CALL CREATE_HISTORY_TRIGGERS(SOURCE_TABLE, SOURCE_TABLE || '_HISTORY', RESOLUTION, '');
 END!
+
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_TRIGGERS1
+    IS 'Creates the triggers to link the specified table to its corresponding history table'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_TRIGGERS2
+    IS 'Creates the triggers to link the specified table to its corresponding history table'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_TRIGGERS3
+    IS 'Creates the triggers to link the specified table to its corresponding history table'!
+COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_TRIGGERS4
+    IS 'Creates the triggers to link the specified table to its corresponding history table'!
 
 -- vim: set et sw=4 sts=4:
