@@ -10,11 +10,6 @@
 CC:=gcc
 CCFLAGS:=
 
-# The name of the target database and target schema name into which the default
-# register target will add the functions. Adjust as necessary
-DBNAME:=SAMPLE
-SCHEMANAME:=UTILS
-
 HARDWAREPLAT:=$(shell uname -m)
 DB2PATH:=$(shell getent passwd ${DB2INSTANCE} | cut -d':' -f6)/sqllib
 
@@ -44,16 +39,15 @@ LINK_FLAGS:=$(EXTRA_C_FLAGS) $(SHARED_LIB_FLAG)
 EXTRA_LFLAG:=-Wl,-rpath,$(DB2PATH)/$(LIB)
 
 install: build
+	cp pcre_udfs $(DB2PATH)/function/
+
+uninstall:
 	rm -f $(DB2PATH)/function/pcre_udfs
-	cp pcre_udfs $(DB2PATH)/function
 
 build: pcre_udfs
 
 clean:
 	rm -f pcre_udfs.o pcre_udfs
-
-test: pcre_udfs.o
-	$(CC) $(EXTRA_C_FLAGS) -o pcre_udfs pcre_udfs.o $(EXTRA_LFLAG) -L$(DB2PATH)/$(LIB) -ldb2 -lpthread $(shell pcre-config --libs)
 
 pcre_udfs: pcre_udfs.o
 	$(CC) $(LINK_FLAGS) -o pcre_udfs pcre_udfs.o $(EXTRA_LFLAG) -L$(DB2PATH)/$(LIB) -ldb2 -lpthread $(shell pcre-config --libs)
@@ -61,4 +55,4 @@ pcre_udfs: pcre_udfs.o
 pcre_udfs.o: pcre_udfs.c pcre_udfs.h
 	$(CC) $(EXTRA_C_FLAGS) -I$(DB2PATH)/include -c pcre_udfs.c -D_REENTRANT
 
-.PHONY: install build register unregister clean
+.PHONY: uninstall install build clean

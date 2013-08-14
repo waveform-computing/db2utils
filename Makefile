@@ -5,11 +5,12 @@ ALL_SQL:=$(filter-out install.sql uninstall.sql test.sql,$(wildcard *.sql))
 ALL_FOO:=$(ALL_SQL:%.sql=%.foo)
 
 install: install.sql
-	cd pcre && $(MAKE) install
+	$(MAKE) -C pcre install
 	db2 -td! +c -s -vf $< || [ $$? -lt 4 ] && true
 
 uninstall: uninstall.sql
 	db2 -td! +c +s -vf $< || true
+	$(MAKE) -C pcre uninstall
 
 test: test.awk test.dat
 	echo "CONNECT TO $(DBNAME);" > foo
@@ -19,7 +20,8 @@ test: test.awk test.dat
 	db2 -tvf foo || true
 	rm -f foo
 
-clean:
+clean: $(SUBDIRS)
+	$(MAKE) -C pcre clean
 	rm -f foo
 	rm -f *.foo
 	rm -f install.sql
