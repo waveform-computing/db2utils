@@ -126,8 +126,8 @@ CREATE FUNCTION HISTORY$EXPDEFAULT(RESOLUTION VARCHAR(11))
     CONTAINS SQL
 RETURN
     CASE
-        WHEN RESOLUTION IN ('MICROSECOND', 'SECOND', 'MINUTE', 'HOUR') THEN '''9999-12-31 23:59:59.999999'''
-        WHEN RESOLUTION IN ('DAY', 'WEEK', 'WEEK_ISO', 'MONTH', 'YEAR') THEN '''9999-12-31'''
+        WHEN RESOLUTION IN ('MICROSECOND', 'SECOND', 'MINUTE', 'HOUR') THEN 'TIMESTAMP(''9999-12-31 23:59:59.999999'')'
+        WHEN RESOLUTION IN ('DAY', 'WEEK', 'WEEK_ISO', 'MONTH', 'YEAR') THEN 'DATE(''9999-12-31'')'
         ELSE RAISE_ERROR('70001', 'Invalid RESOLUTION value ' || RESOLUTION)
     END!
 
@@ -1158,6 +1158,10 @@ COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_SNAPSHOTS3
 -- 'MONTH'
 -- Quantizes history into blocks starting on the 1st of a month and ending
 -- on the last day of the corresponding month.
+--
+-- 'YEAR'
+-- Quantizes history into blocks starting on the 1st of a year and ending on
+-- the last day of the corresponding year.
 --
 -- The OFFSET parameter specifies an SQL phrase that will be used to offset the
 -- effective dates of new history records. For example, if the source table is
