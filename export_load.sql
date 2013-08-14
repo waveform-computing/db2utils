@@ -166,11 +166,11 @@ CREATE FUNCTION EXPORT_TABLE(ATABLE VARCHAR(128))
 RETURN
     EXPORT_TABLE(CURRENT SCHEMA, ATABLE, 'Y', 'Y')!
 
-COMMENT ON SPECIFIC PROCEDURE EXPORT_TABLE1
+COMMENT ON SPECIFIC FUNCTION EXPORT_TABLE1
     IS 'Generates an EXPORT command for the specified table including or excluding generated and/or identity columns as requested'!
-COMMENT ON SPECIFIC PROCEDURE EXPORT_TABLE2
+COMMENT ON SPECIFIC FUNCTION EXPORT_TABLE2
     IS 'Generates an EXPORT command for the specified table including or excluding generated and/or identity columns as requested'!
-COMMENT ON SPECIFIC PROCEDURE EXPORT_TABLE3
+COMMENT ON SPECIFIC FUNCTION EXPORT_TABLE3
     IS 'Generates an EXPORT command for the specified table including or excluding generated and/or identity columns as requested'!
 
 -- EXPORT_SCHEMA(ASCHEMA, INCLUDE_GENERATED, INCLUDE_IDENTITY)
@@ -261,11 +261,11 @@ RETURN
     SELECT *
     FROM TABLE(EXPORT_SCHEMA(CURRENT SCHEMA, 'Y', 'Y')) AS T!
 
-COMMENT ON SPECIFIC PROCEDURE EXPORT_SCHEMA1
+COMMENT ON SPECIFIC FUNCTION EXPORT_SCHEMA1
     IS 'Generates EXPORT commands for all tables in the specified schema, including or excluding generated and/or identity columns as requested'!
-COMMENT ON SPECIFIC PROCEDURE EXPORT_SCHEMA2
+COMMENT ON SPECIFIC FUNCTION EXPORT_SCHEMA2
     IS 'Generates EXPORT commands for all tables in the specified schema, including or excluding generated and/or identity columns as requested'!
-COMMENT ON SPECIFIC PROCEDURE EXPORT_SCHEMA3
+COMMENT ON SPECIFIC FUNCTION EXPORT_SCHEMA3
     IS 'Generates EXPORT commands for all tables in the specified schema, including or excluding generated and/or identity columns as requested'!
 
 -- LOAD_TABLE(ASCHEMA, ATABLE, INCLUDE_GENERATED, INCLUDE_IDENTITY)
@@ -374,11 +374,11 @@ CREATE FUNCTION LOAD_TABLE(ATABLE VARCHAR(128))
 RETURN
     LOAD_TABLE(CURRENT SCHEMA, ATABLE, 'Y', 'Y')!
 
-COMMENT ON SPECIFIC PROCEDURE LOAD_TABLE1
+COMMENT ON SPECIFIC FUNCTION LOAD_TABLE1
     IS 'Generates a LOAD command for the specified table including or excluding generated and/or identity columns as requested'!
-COMMENT ON SPECIFIC PROCEDURE LOAD_TABLE2
+COMMENT ON SPECIFIC FUNCTION LOAD_TABLE2
     IS 'Generates a LOAD command for the specified table including or excluding generated and/or identity columns as requested'!
-COMMENT ON SPECIFIC PROCEDURE LOAD_TABLE3
+COMMENT ON SPECIFIC FUNCTION LOAD_TABLE3
     IS 'Generates a LOAD command for the specified table including or excluding generated and/or identity columns as requested'!
 
 -- LOAD_SCHEMA(ASCHEMA, INCLUDE_GENERATED, INCLUDE_IDENTITY)
@@ -457,11 +457,11 @@ RETURN
     SELECT *
     FROM TABLE(LOAD_SCHEMA(CURRENT SCHEMA, 'Y', 'Y')) AS T!
 
-COMMENT ON SPECIFIC PROCEDURE LOAD_SCHEMA1
+COMMENT ON SPECIFIC FUNCTION LOAD_SCHEMA1
     IS 'Generates LOAD commands for all tables in the specified schema, including or excluding generated and/or identity columns as requested'!
-COMMENT ON SPECIFIC PROCEDURE LOAD_SCHEMA2
+COMMENT ON SPECIFIC FUNCTION LOAD_SCHEMA2
     IS 'Generates LOAD commands for all tables in the specified schema, including or excluding generated and/or identity columns as requested'!
-COMMENT ON SPECIFIC PROCEDURE LOAD_SCHEMA3
+COMMENT ON SPECIFIC FUNCTION LOAD_SCHEMA3
     IS 'Generates LOAD commands for all tables in the specified schema, including or excluding generated and/or identity columns as requested'!
 
 -- vim: set et sw=4 sts=4:
