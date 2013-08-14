@@ -1,5 +1,7 @@
 -------------------------------------------------------------------------------
--- Copyright (c) 2005-2010 Dave Hughes <dave@waveform.org.uk>
+-- DROP SCHEMA UTILITY
+-------------------------------------------------------------------------------
+-- Copyright (c) 2005-2013 Dave Hughes <dave@waveform.org.uk>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to

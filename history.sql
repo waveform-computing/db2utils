@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- HISTORY FRAMEWORK
 -------------------------------------------------------------------------------
--- Copyright (c) 2005-2010 Dave Hughes <dave@waveform.org.uk>
+-- Copyright (c) 2005-2013 Dave Hughes <dave@waveform.org.uk>
 -- 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to
@@ -896,10 +896,10 @@ BEGIN ATOMIC
         SELECT
             VARCHAR('COMMENT ON COLUMN '
                 || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_VIEW) || '.' || QUOTE_IDENTIFIER('OLD_' || COLNAME)
-                || ' IS ' || QUOTE_STRING('Value of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE || COLNAME || ' prior to change')) AS COMMENT_OLD_STMT,
+                || ' IS ' || QUOTE_STRING('Value of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE || '.' || COLNAME || ' prior to change')) AS COMMENT_OLD_STMT,
             VARCHAR('COMMENT ON COLUMN '
                 || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_VIEW) || '.' || QUOTE_IDENTIFIER('NEW_' || COLNAME)
-                || ' IS ' || QUOTE_STRING('Value of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE || COLNAME || ' after change')) AS COMMENT_NEW_STMT
+                || ' IS ' || QUOTE_STRING('Value of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE || '.' || COLNAME || ' after change')) AS COMMENT_NEW_STMT
         FROM SYSCAT.COLUMNS
         WHERE TABSCHEMA = SOURCE_SCHEMA
         AND TABNAME = SOURCE_TABLE
@@ -1015,7 +1015,7 @@ BEGIN ATOMIC
         SELECT
             VARCHAR('COMMENT ON COLUMN '
                 || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_VIEW) || '.' || QUOTE_IDENTIFIER('OLD_' || COLNAME)
-                || ' IS ' || QUOTE_STRING('Value of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE || COLNAME || ' at the time of the snapshot')) AS COMMENT_STMT
+                || ' IS ' || QUOTE_STRING('Value of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE || '.' || COLNAME || ' at the time of the snapshot')) AS COMMENT_STMT
         FROM SYSCAT.COLUMNS
         WHERE TABSCHEMA = SOURCE_SCHEMA
         AND TABNAME = SOURCE_TABLE

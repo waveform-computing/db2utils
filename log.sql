@@ -1,4 +1,6 @@
 -------------------------------------------------------------------------------
+-- LOGGING FRAMEWORK
+-------------------------------------------------------------------------------
 -- Copyright (c) 2005-2010 Dave Hughes <dave@waveform.org.uk>
 -- 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
