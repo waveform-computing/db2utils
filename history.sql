@@ -397,9 +397,9 @@ CREATE FUNCTION HISTORY$CHANGES(
 BEGIN ATOMIC
     DECLARE SELECT_STMT CLOB(64K) DEFAULT '';
     DECLARE FROM_STMT CLOB(64K) DEFAULT '';
-    SET SELECT_STMT =
-        'SELECT'
-        || '    COALESCE(OLD.' || QUOTE_IDENTIFIER(HISTORY$EXPNAME(RESOLUTION)) || ', NEW.' || QUOTE_IDENTIFIER(HISTORY$EFFNAME(RESOLUTION)) || ') AS CHANGED';
+    DECLARE INSERT_TEST CLOB(64K) DEFAULT '';
+    DECLARE UPDATE_TEST CLOB(64K) DEFAULT '';
+    DECLARE DELETE_TEST CLOB(64K) DEFAULT '';
     SET FROM_STMT =
         ' FROM ' || QUOTE_IDENTIFIER('OLD_' || SOURCE_TABLE) || ' AS OLD'
         || ' FULL OUTER JOIN ' || QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE) || ' AS NEW'
@@ -417,14 +417,36 @@ BEGIN ATOMIC
         AND TABNAME = SOURCE_TABLE
         AND COLNAME <> HISTORY$EFFNAME(RESOLUTION)
         AND COLNAME <> HISTORY$EXPNAME(RESOLUTION)
+        ORDER BY COLNO
     DO
         SET SELECT_STMT = SELECT_STMT
             || ', OLD.' || QUOTE_IDENTIFIER(C.COLNAME) || ' AS ' || QUOTE_IDENTIFIER('OLD_' || C.COLNAME)
             || ', NEW.' || QUOTE_IDENTIFIER(C.COLNAME) || ' AS ' || QUOTE_IDENTIFIER('NEW_' || C.COLNAME);
         IF C.KEYSEQ > 0 THEN
-            SET FROM_STMT = FROM_STMT || ' AND OLD.' || QUOTE_IDENTIFIER(C.COLNAME) || ' = NEW.' || QUOTE_IDENTIFIER(C.COLNAME);
+            SET FROM_STMT = FROM_STMT
+                || ' AND OLD.' || QUOTE_IDENTIFIER(C.COLNAME) || ' = NEW.' || QUOTE_IDENTIFIER(C.COLNAME);
+            SET INSERT_TEST = INSERT_TEST
+                || 'AND OLD.' || QUOTE_IDENTIFIER(C.COLNAME) || ' IS NULL '
+                || 'AND NEW.' || QUOTE_IDENTIFIER(C.COLNAME) || ' IS NOT NULL ';
+            SET UPDATE_TEST = UPDATE_TEST
+                || 'AND OLD.' || QUOTE_IDENTIFIER(C.COLNAME) || ' IS NOT NULL '
+                || 'AND NEW.' || QUOTE_IDENTIFIER(C.COLNAME) || ' IS NOT NULL ';
+            SET DELETE_TEST = DELETE_TEST
+                || 'AND OLD.' || QUOTE_IDENTIFIER(C.COLNAME) || ' IS NOT NULL '
+                || 'AND NEW.' || QUOTE_IDENTIFIER(C.COLNAME) || ' IS NULL ';
         END IF;
     END FOR;
+    SET SELECT_STMT =
+        'SELECT'
+        || ' COALESCE(OLD.'
+            || QUOTE_IDENTIFIER(HISTORY$EXPNAME(RESOLUTION)) || ', NEW.'
+            || QUOTE_IDENTIFIER(HISTORY$EFFNAME(RESOLUTION)) || ') AS CHANGED'
+        || ', CHAR(CASE '
+            || 'WHEN' || SUBSTR(INSERT_TEST, 4) || 'THEN ''INSERT'' '
+            || 'WHEN' || SUBSTR(UPDATE_TEST, 4) || 'THEN ''UPDATE'' '
+            || 'WHEN' || SUBSTR(DELETE_TEST, 4) || 'THEN ''DELETE'' '
+            || 'ELSE ''ERROR'' END) AS CHANGE'
+        || SELECT_STMT;
     RETURN
         'WITH ' || QUOTE_IDENTIFIER('OLD_' || SOURCE_TABLE) || ' AS ('
         || '    SELECT *'
@@ -448,7 +470,7 @@ CREATE FUNCTION HISTORY$SNAPSHOTS(
     READS SQL DATA
 BEGIN ATOMIC
     DECLARE SELECT_STMT CLOB(64K) DEFAULT '';
-    SET SELECT_STMT = 
+    SET SELECT_STMT =
         'WITH RANGE(D) AS ('
         || '    SELECT MIN(' || QUOTE_IDENTIFIER(HISTORY$EFFNAME(RESOLUTION)) || ')'
         || '    FROM ' || QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE)
@@ -858,8 +880,8 @@ COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_TABLE4
 -- not specified they default to the current schema.
 --
 -- The RESOLUTION parameter determines the smallest unit of time that a history
--- record can cover. See the CREATE_HISTORY_TRIGGER documentation for a list of
--- the possible values.
+-- record can cover. See the CREATE_HISTORY_TRIGGERS documentation for a list
+-- of the possible values.
 --
 -- All SELECT and CONTROL authorities present on the source table will be
 -- copied to the destination table.
@@ -1112,8 +1134,9 @@ COMMENT ON SPECIFIC PROCEDURE CREATE_HISTORY_SNAPSHOTS3
 -- CREATE_HISTORY_TRIGGERS(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE, RESOLUTION, OFFSET)
 -- CREATE_HISTORY_TRIGGERS(SOURCE_TABLE, DEST_TABLE, RESOLUTION, OFFSET)
 -- CREATE_HISTORY_TRIGGERS(SOURCE_TABLE, RESOLUTION, OFFSET)
+-- CREATE_HISTORY_TRIGGERS(SOURCE_TABLE, RESOLUTION)
 -------------------------------------------------------------------------------
--- The CREATE_HISTORY_TIGGERS procedure creates several trigger linking the
+-- The CREATE_HISTORY_TRIGGERS procedure creates several trigger linking the
 -- specified source table to the destination table which is assumed to have a
 -- structure compatible with the result of running CREATE_HISTORY_TABLE above,
 -- i.e. two extra columns called EFFECTIVE_DATE and EXPIRY_DATE.
