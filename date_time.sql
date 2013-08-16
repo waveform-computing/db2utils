@@ -301,8 +301,35 @@ CREATE FUNCTION TIMESTAMP(ASECONDS BIGINT)
 RETURN
     TIMESTAMP(DATE(ASECONDS / (24 * 60 * 60)), TIME(ASECONDS))!
 
+CREATE FUNCTION TIMESTAMP(
+    AYEAR INTEGER,
+    AMONTH INTEGER,
+    ADAY INTEGER,
+    AHOUR INTEGER,
+    AMINUTE INTEGER,
+    ASECOND INTEGER,
+    AMICROSECOND INTEGER
+)
+    RETURNS TIMESTAMP
+    SPECIFIC TIMESTAMP2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    TIMESTAMP(CHAR(
+        RIGHT(DIGITS(AYEAR), 4) || '-' ||
+        RIGHT(DIGITS(AMONTH), 2) || '-' ||
+        RIGHT(DIGITS(ADAY), 2) || ' ' ||
+        RIGHT(DIGITS(AHOUR), 2) || ':' ||
+        RIGHT(DIGITS(AMINUTE), 2) || ':' ||
+        RIGHT(DIGITS(ASECOND), 2) || '.' ||
+        RIGHT(DIGITS(AMICROSECOND), 6), 26))!
+
 COMMENT ON SPECIFIC FUNCTION TIMESTAMP1
     IS 'Constructs a TIMESTAMP from the specified seconds after the epoch. This is the inverse function of SECONDS'!
+COMMENT ON SPECIFIC FUNCTION TIMESTAMP2
+    IS 'Constructs a TIMESTAMP from the specified year, month, day, hours, minutes, seconds, and microseconds'!
 
 -- YEAR_ISO(ADATE)
 -------------------------------------------------------------------------------
