@@ -1,6 +1,8 @@
 DBNAME:=SAMPLE
 SCHEMANAME:=UTILS
 
+VERSION:=0.1
+ALL_EXT:=$(wildcard pcre/*.c) $(wildcard pcre/*.h)
 ALL_SQL:=$(filter-out install.sql uninstall.sql test.sql,$(wildcard *.sql))
 ALL_FOO:=$(ALL_SQL:%.sql=%.foo)
 
@@ -26,6 +28,19 @@ clean: $(SUBDIRS)
 	rm -f *.foo
 	rm -f install.sql
 	rm -f uninstall.sql
+	rm -fr build/ dist/
+
+dist: $(ALL_SQL) $(ALL_EXT) \
+		INSTALL LICENSE \
+		Makefile pcre/Makefile \
+		uninstall.awk test.awk test.dat
+	mkdir -p build/db2utils/
+	mkdir -p dist/
+	for f in $^; do \
+		mkdir -p build/db2utils/$$(dirname $$f)/ ; \
+		cp $$f build/db2utils/$$(dirname $$f)/ ; \
+	done
+	tar -cvzf dist/db2utils-$(VERSION).tar.gz -C build/ db2utils/
 
 %.foo: %.sql
 	cat $< >> foo
