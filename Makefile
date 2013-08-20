@@ -17,7 +17,7 @@ uninstall: uninstall.sql
 test: test.awk test.dat
 	echo "CONNECT TO $(DBNAME);" > foo
 	echo "SET SCHEMA $(SCHEMANAME);" >> foo
-	echo "SET PATH SYSTEM PATH, USER, $(SCHEMANAME);" >> foo
+	echo "SET PATH SYSTEM PATH, $(SCHEMANAME), USER;" >> foo
 	awk --re-interval -f test.awk test.dat >> foo
 	db2 -tvf foo || true
 	rm -f foo
@@ -49,7 +49,7 @@ dist: $(ALL_SQL) $(ALL_EXT) \
 install.sql: $(ALL_FOO)
 	echo "CONNECT TO $(DBNAME)!" > $@
 	echo "SET SCHEMA $(SCHEMANAME)!" >> $@
-	echo "SET PATH SYSTEM PATH, USER, $(SCHEMANAME)!" >> $@
+	echo "SET PATH SYSTEM PATH, $(SCHEMANAME), USER!" >> $@
 	cat foo >> $@
 	echo "COMMIT!" >> $@
 	rm foo
@@ -58,7 +58,7 @@ install.sql: $(ALL_FOO)
 uninstall.sql: install.sql
 	echo "CONNECT TO $(DBNAME)!" > $@
 	echo "SET SCHEMA $(SCHEMANAME)!" >> $@
-	echo "SET PATH SYSTEM PATH, USER, $(SCHEMANAME)!" >> $@
+	echo "SET PATH SYSTEM PATH, $(SCHEMANAME), USER!" >> $@
 	awk -f uninstall.awk $< | tac >> $@
 	echo "COMMIT!" >> $@
 
