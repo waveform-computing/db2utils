@@ -33,9 +33,11 @@
 CREATE VARIABLE ASSERT_SQLSTATE CHAR(5) DEFAULT '90001'!
 
 
--- ASSERT_SIGNALS(state, sql)
+-- ASSERT_SIGNALS(STATE, SQL)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if executing sql does NOT raise SQLSTATE state.
+-- Raises the ASSERT_SQLSTATE if executing SQL does NOT raise SQLSTATE STATE.
+-- SQL must be capable of being executed by EXECUTE IMMEDIATE, i.e. no queries
+-- or SIGNAL calls.
 -------------------------------------------------------------------------------
 
 CREATE PROCEDURE ASSERT_SIGNALS(STATE CHAR(5), SQL CLOB(64K))
@@ -51,18 +53,23 @@ BEGIN ATOMIC
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
         IF SQLSTATE <> STATE THEN
             SET NEWSTATE = ASSERT_SQLSTATE;
-            SET MESSAGE = SUBSTR(SQL, 1, 20) || '... signalled SQLSTATE ' || SQLSTATE || ' instead of ' || STATE;
+            SET MESSAGE = SUBSTR(SQL, 1, 20)
+                || CASE WHEN LENGTH(SQL) > 20 THEN '...' ELSE '' END
+                || ' signalled SQLSTATE ' || SQLSTATE
+                || ' instead of ' || STATE;
             SIGNAL SQLSTATE NEWSTATE SET MESSAGE_TEXT = MESSAGE;
         END IF;
     EXECUTE IMMEDIATE SQL;
     SET NEWSTATE = ASSERT_SQLSTATE;
-    SET MESSAGE = SUBSTR(SQL, 1, 20) || '... did not signal SQLSTATE ' || STATE;
+    SET MESSAGE = SUBSTR(SQL, 1, 20)
+        || CASE WHEN LENGTH(SQL) > 20 THEN '...' ELSE '' END
+        || ' did not signal SQLSTATE ' || STATE;
     SIGNAL SQLSTATE NEWSTATE SET MESSAGE_TEXT = MESSAGE;
 END!
 
--- ASSERT_IS_NULL(a)
+-- ASSERT_IS_NULL(A)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if a is not NULL. The function is overloaded
+-- Raises the ASSERT_SQLSTATE if A is not NULL. The function is overloaded
 -- for most common types and generally should not need CASTs for usage.
 -------------------------------------------------------------------------------
 
@@ -120,9 +127,9 @@ RETURN
             ' is non-NULL')
     END!
 
--- ASSERT_IS_NOT_NULL(a)
+-- ASSERT_IS_NOT_NULL(A)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if a is not NULL. The function is overloaded
+-- Raises the ASSERT_SQLSTATE if A is not NULL. The function is overloaded
 -- for most common types and generally should not need CASTs for usage.
 -------------------------------------------------------------------------------
 
@@ -180,9 +187,9 @@ RETURN
         ELSE 0
     END!
 
--- ASSERT_EQUALS(a, b)
+-- ASSERT_EQUALS(A, B)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if a does not equal b. The function is
+-- Raises the ASSERT_SQLSTATE if A does not equal B. The function is
 -- overloaded for most common types and generally should not need CASTs for
 -- usage.
 -------------------------------------------------------------------------------
