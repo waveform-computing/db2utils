@@ -37,7 +37,9 @@ CREATE VARIABLE ASSERT_SQLSTATE CHAR(5) DEFAULT '90001'!
 -------------------------------------------------------------------------------
 -- Raises the ASSERT_SQLSTATE if executing SQL does NOT raise SQLSTATE STATE.
 -- SQL must be capable of being executed by EXECUTE IMMEDIATE, i.e. no queries
--- or SIGNAL calls.
+-- or SIGNAL calls. In order to permit simple testing of ASSERT_SIGNALS an
+-- additional procedure is defined below which simply calls SIGNAL; EXECUTE
+-- IMMEDIATE can execute a SIGNAL within a CALL, but not a SIGNAL directly...
 -------------------------------------------------------------------------------
 
 CREATE PROCEDURE ASSERT_SIGNALS(STATE CHAR(5), SQL CLOB(64K))
@@ -65,6 +67,16 @@ BEGIN ATOMIC
         || CASE WHEN LENGTH(SQL) > 20 THEN '...' ELSE '' END
         || ' did not signal SQLSTATE ' || STATE;
     SIGNAL SQLSTATE NEWSTATE SET MESSAGE_TEXT = MESSAGE;
+END!
+
+CREATE PROCEDURE TEST_SIGNAL(STATE CHAR(5))
+    SPECIFIC TEST_SIGNAL1
+    LANGUAGE SQL
+    MODIFIES SQL DATA
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+BEGIN ATOMIC
+    SIGNAL SQLSTATE STATE
 END!
 
 -- ASSERT_IS_NULL(A)
