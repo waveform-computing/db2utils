@@ -930,7 +930,11 @@ RETURN
             AUTH_TYPE,
             'N',
             INCLUDE_PERSONAL
-        )) AS T!
+        )) AS T
+    ORDER BY
+        -- CONTROL must be removed before SELECT/INSERT/UPDATE/DELETE or
+        -- DB2 complains that CONTROL implies the others
+        CASE AUTH WHEN 'CONTROL' THEN 0 ELSE 1 END!
 
 CREATE PROCEDURE REMOVE_AUTH(
     AUTH_NAME VARCHAR(128),
@@ -946,6 +950,17 @@ BEGIN ATOMIC
     DECLARE EXIT HANDLER FOR SQLSTATE '21000'
         SIGNAL SQLSTATE '80002'
         SET MESSAGE_TEXT = 'Ambiguous type for authorization name';
+    -- If we remove CONTROL from a table, and the user holds CONTROL on a view
+    -- defined over that table, the user implicitly loses CONTROL from the
+    -- view. If we subsequently attempt to remove CONTROL the view then
+    -- SQLSTATE 42504 will be raised but should be ignored. This SQLSTATE is
+    -- also raised in the event that a REVOKE fails because CONTROL implies
+    -- SELECT/INSERT/UPDATE/DELETE but the ORDER BY in REMOVE$LIST handles that
+    -- particular case. Annoyingly, these two cases have the same SQLSTATE but
+    -- different SQLCODEs - but we can only trap SQLSTATE with these handlers.
+    DECLARE CONTINUE HANDLER FOR SQLSTATE '42504'
+        BEGIN
+        END;
     FOR D AS
         SELECT DDL
         FROM TABLE(REMOVE$LIST(AUTH_NAME, AUTH_TYPE, INCLUDE_PERSONAL))
