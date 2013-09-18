@@ -2252,13 +2252,1108 @@ CREATE FUNCTION WORKINGDAY(ADATE DATE)
 RETURN
     WORKINGDAY(ADATE, MONTHSTART(ADATE))!
 
-COMMENT ON SPECIFIC FUNCTION WORKINGDAY1
-    IS 'Calculates the working day of a specified date relative to another date which defaults to the start of the month'!
-COMMENT ON SPECIFIC FUNCTION WORKINGDAY2
-    IS 'Calculates the working day of a specified date relative to another date which defaults to the start of the month'!
-COMMENT ON SPECIFIC FUNCTION WORKINGDAY3
-    IS 'Calculates the working day of a specified date relative to another date which defaults to the start of the month'!
-COMMENT ON SPECIFIC FUNCTION WORKINGDAY4
-    IS 'Calculates the working day of a specified date relative to another date which defaults to the start of the month'!
+comment on specific function workingday1
+    is 'calculates the working day of a specified date relative to another date which defaults to the start of the month'!
+comment on specific function workingday2
+    is 'calculates the working day of a specified date relative to another date which defaults to the start of the month'!
+comment on specific function workingday3
+    is 'calculates the working day of a specified date relative to another date which defaults to the start of the month'!
+comment on specific function workingday4
+    is 'calculates the working day of a specified date relative to another date which defaults to the start of the month'!
+
+-------------------------------------------------------------------------------
+-- The following functions are specific to IBM's CLAIM calendar which is has a
+-- fixed number of weeks per month (4 or 5), and in which weeks start on a
+-- Saturday and end on a Friday. Which week in the calendar month ends the
+-- corresponding CLAIM month has varied over the years and hence the
+-- MONTHEND_CLAIM function, which all the other *_CLAIM functions rely upon,
+-- contains a CASE statement testing the year for the generated date.
+-------------------------------------------------------------------------------
+
+-- MONTHEND_CLAIM(AYEAR, AMONTH)
+-- MONTHEND_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns a DATE value representing the last day (always a Friday) of AMONTH
+-- within AYEAR according to the CLAIM calendar.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION MONTHEND_CLAIM(AYEAR INTEGER, AMONTH INTEGER)
+    RETURNS DATE
+    SPECIFIC MONTHEND_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+BEGIN ATOMIC
+    DECLARE ME DATE;
+    SET ME = MONTHEND(AYEAR, AMONTH);
+    RETURN
+        CASE
+            WHEN AYEAR >= 2014 THEN ME - (MOD(DAYOFWEEK_ISO(ME) + 6, 7) + 3) DAYS
+            WHEN AYEAR >= 2013 THEN ME - (MOD(DAYOFWEEK_ISO(ME), 7) + 2) DAYS
+            WHEN AYEAR >= 2009 THEN ME - (DAYOFWEEK_ISO(ME) + 2) DAYS
+            ELSE ME - (MOD(DAYOFWEEK_ISO(ME) + 4, 7) + 5) DAYS
+        END;
+END!
+
+-- See below for overloaded versions
+
+-- MONTHSTART_CLAIM(AYEAR, AMONTH)
+-- MONTHSTART_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns a DATE value representing the first day (always a Saturday) of
+-- AMONTH within AYEAR according to the CLAIM calendar.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION MONTHSTART_CLAIM(AYEAR INTEGER, AMONTH INTEGER)
+    RETURNS DATE
+    SPECIFIC MONTHSTART_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    CASE AMONTH
+        WHEN 1 THEN MONTHEND_CLAIM(AYEAR - 1, 12)
+        ELSE MONTHEND_CLAIM(AYEAR, AMONTH - 1)
+    END + 1 DAY!
+
+-- See below for overloaded versions
+
+-- YEAREND_CLAIM(AYEAR)
+-- YEAREND_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns a DATE value representing the last day (always a Friday) of AYEAR
+-- according to the CLAIM calendar.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION YEAREND_CLAIM(AYEAR INTEGER)
+    RETURNS DATE
+    SPECIFIC YEAREND_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHEND_CLAIM(AYEAR, 12)!
+
+-- See below for overloaded versions
+
+-- YEARSTART_CLAIM(AYEAR)
+-- YEARSTART_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns a DATE value representing the first day (always a Saturday) of
+-- AYEAR according to the CLAIM calendar.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION YEARSTART_CLAIM(AYEAR INTEGER)
+    RETURNS DATE
+    SPECIFIC YEARSTART_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHSTART_CLAIM(AYEAR, 1)!
+
+-- See below for overloaded versions
+
+-- MONTH_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns the number of the month in the CLAIM calendar that ADATE exists in.
+-- ADATE can be expressed as a DATE value, a TIMESTAMP, or a VARCHAR containing
+-- a valid string representation of a date or timestmap. If ADATE is NULL, the
+-- result is NULL. Otherwise, the result is a SMALLINT in the range 1 - 12.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION MONTH_CLAIM(ADATE DATE)
+    RETURNS SMALLINT
+    SPECIFIC MONTH_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    CASE WHEN ADATE <= MONTHEND_CLAIM(YEAR(ADATE), MONTH(ADATE))
+        THEN MONTH(ADATE)
+        ELSE MOD(MONTH(ADATE), 12) + 1
+    END!
+
+CREATE FUNCTION MONTH_CLAIM(ADATE TIMESTAMP)
+    RETURNS SMALLINT
+    SPECIFIC MONTH_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTH_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION MONTH_CLAIM(ADATE VARCHAR(26))
+    RETURNS SMALLINT
+    SPECIFIC MONTH_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTH_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION MONTH_CLAIM1
+    IS 'Returns the month of ADATE according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION MONTH_CLAIM2
+    IS 'Returns the month of ADATE according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION MONTH_CLAIM3
+    IS 'Returns the month of ADATE according to the CLAIM calendar'!
+
+-- YEAR_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns the number of the year in the CLAIM calendar that ADATE exists in.
+-- ADATE can be expressed as a DATE value, a TIMESTAMP, or a VARCHAR containing
+-- a valid string representation of a date or timestmap. If ADATE is NULL, the
+-- result is NULL. Otherwise, the result is a SMALLINT.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION YEAR_CLAIM(ADATE DATE)
+    RETURNS SMALLINT
+    SPECIFIC YEAR_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    CASE WHEN ADATE <= YEAREND_CLAIM(YEAR(ADATE))
+        THEN YEAR(ADATE)
+        ELSE YEAR(ADATE) + 1
+    END!
+
+CREATE FUNCTION YEAR_CLAIM(ADATE TIMESTAMP)
+    RETURNS SMALLINT
+    SPECIFIC YEAR_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    YEAR_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION YEAR_CLAIM(ADATE VARCHAR(26))
+    RETURNS SMALLINT
+    SPECIFIC YEAR_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    YEAR_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION YEAR_CLAIM1
+    IS 'Returns the year of ADATE according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION YEAR_CLAIM2
+    IS 'Returns the year of ADATE according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION YEAR_CLAIM3
+    IS 'Returns the year of ADATE according to the CLAIM calendar'!
+
+-- OVERLOADS
+-------------------------------------------------------------------------------
+-- The following definitions are simply overloaded versions of the functions
+-- above which have to be defined after the definition of YEAR_CLAIM and
+-- MONTH_CLAIM.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION MONTHEND_CLAIM(ADATE DATE)
+    RETURNS DATE
+    SPECIFIC MONTHEND_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHEND_CLAIM(YEAR_CLAIM(ADATE), MONTH_CLAIM(ADATE))!
+
+CREATE FUNCTION MONTHEND_CLAIM(ADATE TIMESTAMP)
+    RETURNS DATE
+    SPECIFIC MONTHEND_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHEND_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION MONTHEND_CLAIM(ADATE VARCHAR(26))
+    RETURNS DATE
+    SPECIFIC MONTHEND_CLAIM4
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHEND_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION MONTHEND_CLAIM1
+    IS 'Returns the last day of month AMONTH in the year AYEAR, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION MONTHEND_CLAIM2
+    IS 'Returns the last day of the month that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION MONTHEND_CLAIM3
+    IS 'Returns the last day of the month that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION MONTHEND_CLAIM4
+    IS 'Returns the last day of the month that ADATE exists within, according to the CLAIM calendar'!
+
+CREATE FUNCTION MONTHSTART_CLAIM(ADATE DATE)
+    RETURNS DATE
+    SPECIFIC MONTHSTART_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHSTART_CLAIM(YEAR_CLAIM(ADATE), MONTH_CLAIM(ADATE))!
+
+CREATE FUNCTION MONTHSTART_CLAIM(ADATE TIMESTAMP)
+    RETURNS DATE
+    SPECIFIC MONTHSTART_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHSTART_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION MONTHSTART_CLAIM(ADATE VARCHAR(26))
+    RETURNS DATE
+    SPECIFIC MONTHSTART_CLAIM4
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHSTART_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION MONTHSTART_CLAIM1
+    IS 'Returns the first day of month AMONTH in the year AYEAR, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION MONTHSTART_CLAIM2
+    IS 'Returns the first day of the month that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION MONTHSTART_CLAIM3
+    IS 'Returns the first day of the month that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION MONTHSTART_CLAIM4
+    IS 'Returns the first day of the month that ADATE exists within, according to the CLAIM calendar'!
+
+CREATE FUNCTION YEAREND_CLAIM(ADATE DATE)
+    RETURNS DATE
+    SPECIFIC YEAREND_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHEND_CLAIM(YEAR_CLAIM(ADATE), 12)!
+
+CREATE FUNCTION YEAREND_CLAIM(ADATE TIMESTAMP)
+    RETURNS DATE
+    SPECIFIC YEAREND_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    YEAREND_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION YEAREND_CLAIM(ADATE VARCHAR(26))
+    RETURNS DATE
+    SPECIFIC YEAREND_CLAIM4
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    YEAREND_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION YEAREND_CLAIM1
+    IS 'Returns the last day of year AYEAR in the year AYEAR, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION YEAREND_CLAIM2
+    IS 'Returns the last day of the year that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION YEAREND_CLAIM3
+    IS 'Returns the last day of the year that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION YEAREND_CLAIM4
+    IS 'Returns the last day of the year that ADATE exists within, according to the CLAIM calendar'!
+
+CREATE FUNCTION YEARSTART_CLAIM(ADATE DATE)
+    RETURNS DATE
+    SPECIFIC YEARSTART_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHSTART_CLAIM(YEAR_CLAIM(ADATE), 1)!
+
+CREATE FUNCTION YEARSTART_CLAIM(ADATE TIMESTAMP)
+    RETURNS DATE
+    SPECIFIC YEARSTART_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    YEARSTART_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION YEARSTART_CLAIM(ADATE VARCHAR(26))
+    RETURNS DATE
+    SPECIFIC YEARSTART_CLAIM4
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    YEARSTART_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION YEARSTART_CLAIM1
+    IS 'Returns the first day of year AYEAR in the year AYEAR, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION YEARSTART_CLAIM2
+    IS 'Returns the first day of the year that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION YEARSTART_CLAIM3
+    IS 'Returns the first day of the year that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION YEARSTART_CLAIM4
+    IS 'Returns the first day of the year that ADATE exists within, according to the CLAIM calendar'!
+
+-- WEEK_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns the number of the week in the CLAIM calendar that ADATE exists in.
+-- ADATE can be expressed as a DATE value, a TIMESTAMP, or a VARCHAR containing
+-- a valid string representation of a date or timestmap. If ADATE is NULL, the
+-- result is NULL. Otherwise, the result is a SMALLINT in the range 1 - 53.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION WEEK_CLAIM(ADATE DATE)
+    RETURNS SMALLINT
+    SPECIFIC WEEK_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    ((DAYS(ADATE) - DAYS(YEARSTART_CLAIM(ADATE))) / 7) + 1!
+
+CREATE FUNCTION WEEK_CLAIM(ADATE TIMESTAMP)
+    RETURNS SMALLINT
+    SPECIFIC WEEK_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEK_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION WEEK_CLAIM(ADATE VARCHAR(26))
+    RETURNS SMALLINT
+    SPECIFIC WEEK_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEK_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION WEEK_CLAIM1
+    IS 'Returns the week of ADATE in the year, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEK_CLAIM2
+    IS 'Returns the week of ADATE in the year, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEK_CLAIM3
+    IS 'Returns the week of ADATE in the year, according to the CLAIM calendar'!
+
+-- QUARTER_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns the number of the quarter in the CLAIM calendar that ADATE exists in.
+-- ADATE can be expressed as a DATE value, a TIMESTAMP, or a VARCHAR containing
+-- a valid string representation of a date or timestmap. If ADATE is NULL, the
+-- result is NULL. Otherwise, the result is a SMALLINT in the range 1 - 4.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION QUARTER_CLAIM(ADATE DATE)
+    RETURNS SMALLINT
+    SPECIFIC QUARTER_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    ((MONTH_CLAIM(ADATE) - 1) / 3) + 1!
+
+CREATE FUNCTION QUARTER_CLAIM(ADATE TIMESTAMP)
+    RETURNS SMALLINT
+    SPECIFIC QUARTER_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    QUARTER_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION QUARTER_CLAIM(ADATE VARCHAR(26))
+    RETURNS SMALLINT
+    SPECIFIC QUARTER_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    QUARTER_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION QUARTER_CLAIM1
+    IS 'Returns the quarter of ADATE in the year, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION QUARTER_CLAIM2
+    IS 'Returns the quarter of ADATE in the year, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION QUARTER_CLAIM3
+    IS 'Returns the quarter of ADATE in the year, according to the CLAIM calendar'!
+
+-- MONTHWEEK_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns the week of the month of the specified date
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION MONTHWEEK_CLAIM(ADATE DATE)
+    RETURNS SMALLINT
+    SPECIFIC MONTHWEEK_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEK_CLAIM(ADATE) - WEEK_CLAIM(MONTHSTART_CLAIM(ADATE)) + 1!
+
+CREATE FUNCTION MONTHWEEK_CLAIM(ADATE TIMESTAMP)
+    RETURNS SMALLINT
+    SPECIFIC MONTHWEEK_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHWEEK_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION MONTHWEEK_CLAIM(ADATE VARCHAR(26))
+    RETURNS SMALLINT
+    SPECIFIC MONTHWEEK_CLAIM3
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHWEEK_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION MONTHWEEK_CLAIM1
+    IS 'Returns the week of the month that ADATE exists within, according to the CLAIM calendar (weeks start on a Saturday, result will be in the range 1-5)'!
+COMMENT ON SPECIFIC FUNCTION MONTHWEEK_CLAIM2
+    IS 'Returns the week of the month that ADATE exists within, according to the CLAIM calendar (weeks start on a Saturday, result will be in the range 1-5)'!
+COMMENT ON SPECIFIC FUNCTION MONTHWEEK_CLAIM3
+    IS 'Returns the week of the month that ADATE exists within, according to the CLAIM calendar (weeks start on a Saturday, result will be in the range 1-5)'!
+
+-- QUARTERSTART_CLAIM(AYEAR, AQUARTER)
+-- QUARTERSTART_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns a DATE value representing the first day of AQUARTER in AYEAR.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION QUARTERSTART_CLAIM(AYEAR INTEGER, AQUARTER INTEGER)
+    RETURNS DATE
+    SPECIFIC QTRSTART_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHSTART_CLAIM(AYEAR, ((AQUARTER - 1) * 3) + 1)!
+
+CREATE FUNCTION QUARTERSTART_CLAIM(ADATE DATE)
+    RETURNS DATE
+    SPECIFIC QTRSTART_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    QUARTERSTART_CLAIM(YEAR_CLAIM(ADATE), QUARTER_CLAIM(ADATE))!
+
+CREATE FUNCTION QUARTERSTART_CLAIM(ADATE TIMESTAMP)
+    RETURNS DATE
+    SPECIFIC QTRSTART_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    QUARTERSTART_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION QUARTERSTART_CLAIM(ADATE VARCHAR(26))
+    RETURNS DATE
+    SPECIFIC QTRSTART_CLAIM4
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    QUARTERSTART_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION QUARTERSTART_CLAIM1
+    IS 'Returns the first day of quarter AQUARTER in the year AYEAR, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION QUARTERSTART_CLAIM2
+    IS 'Returns the first day of the quarter that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION QUARTERSTART_CLAIM3
+    IS 'Returns the first day of the quarter that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION QUARTERSTART_CLAIM4
+    IS 'Returns the first day of the quarter that ADATE exists within, according to the CLAIM calendar'!
+
+-- QUARTEREND_CLAIM(AYEAR, AQUARTER)
+-- QUARTEREND_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns a DATE value representing the final day of AQUARTER in AYEAR.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION QUARTEREND_CLAIM(AYEAR INTEGER, AQUARTER INTEGER)
+    RETURNS DATE
+    SPECIFIC QUARTEREND_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    CASE AQUARTER
+        WHEN 4 THEN QUARTERSTART_CLAIM(AYEAR + 1, 1)
+        ELSE QUARTERSTART_CLAIM(AYEAR, AQUARTER + 1)
+    END - 1 DAY!
+
+CREATE FUNCTION QUARTEREND_CLAIM(ADATE DATE)
+    RETURNS DATE
+    SPECIFIC QUARTEREND_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    QUARTEREND_CLAIM(YEAR_CLAIM(ADATE), QUARTER_CLAIM(ADATE))!
+
+CREATE FUNCTION QUARTEREND_CLAIM(ADATE TIMESTAMP)
+    RETURNS DATE
+    SPECIFIC QUARTEREND_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    QUARTEREND_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION QUARTEREND_CLAIM(ADATE VARCHAR(26))
+    RETURNS DATE
+    SPECIFIC QUARTEREND_CLAIM4
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    QUARTEREND_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION QUARTEREND_CLAIM1
+    IS 'Returns the last day of quarter AQUARTER in the year AYEAR, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION QUARTEREND_CLAIM2
+    IS 'Returns the last day of the quarter that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION QUARTEREND_CLAIM3
+    IS 'Returns the last day of the quarter that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION QUARTEREND_CLAIM4
+    IS 'Returns the last day of the quarter that ADATE exists within, according to the CLAIM calendar'!
+
+-- QUARTERWEEK_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns the week of the month of the ADATE, where weeks start on a Sunday.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION QUARTERWEEK_CLAIM(ADATE DATE)
+    RETURNS SMALLINT
+    SPECIFIC QUARTERWEEK_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEK_CLAIM(ADATE) - WEEK_CLAIM(QUARTERSTART_CLAIM(ADATE)) + 1!
+
+CREATE FUNCTION QUARTERWEEK_CLAIM(ADATE TIMESTAMP)
+    RETURNS SMALLINT
+    SPECIFIC QUARTERWEEK_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    QUARTERWEEK_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION QUARTERWEEK_CLAIM(ADATE VARCHAR(26))
+    RETURNS SMALLINT
+    SPECIFIC QUARTERWEEK_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    QUARTERWEEK_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION QUARTERWEEK_CLAIM1
+    IS 'Returns the week of the quarter that ADATE exists within, according to the CLAIM calendar (weeks start on a Saturday, result will be in the range 1-14)'!
+COMMENT ON SPECIFIC FUNCTION QUARTERWEEK_CLAIM2
+    IS 'Returns the week of the quarter that ADATE exists within, according to the CLAIM calendar (weeks start on a Saturday, result will be in the range 1-14)'!
+COMMENT ON SPECIFIC FUNCTION QUARTERWEEK_CLAIM3
+    IS 'Returns the week of the quarter that ADATE exists within, according to the CLAIM calendar (weeks start on a Saturday, result will be in the range 1-14)'!
+
+-- DAY_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns the day of the month of the specified date, according to the
+-- CLAIM calendar (i.e. the number of days from the start of the month of
+-- ADATE to ADATE inclusive).
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION DAY_CLAIM(ADATE DATE)
+    RETURNS SMALLINT
+    SPECIFIC DAY_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    DAYS(ADATE) - DAYS(MONTHSTART_CLAIM(ADATE)) + 1!
+
+CREATE FUNCTION DAY_CLAIM(ADATE TIMESTAMP)
+    RETURNS SMALLINT
+    SPECIFIC DAY_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    DAY_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION DAY_CLAIM(ADATE VARCHAR(26))
+    RETURNS SMALLINT
+    SPECIFIC DAY_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    DAY_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION DAY_CLAIM1
+    IS 'Returns the day of month of ADATE according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION DAY_CLAIM2
+    IS 'Returns the day of month of ADATE according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION DAY_CLAIM3
+    IS 'Returns the day of month of ADATE according to the CLAIM calendar'!
+
+-- DAYOFYEAR_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns the number of days from the start of the year of ADATE to ADATE
+-- inclusive (i.e. the day of the year), according to the CLAIM calendar.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION DAYOFYEAR_CLAIM(ADATE DATE)
+    RETURNS SMALLINT
+    SPECIFIC DAYOFYEAR_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    DAYS(ADATE) - DAYS(YEARSTART_CLAIM(ADATE)) + 1!
+
+CREATE FUNCTION DAYOFYEAR_CLAIM(ADATE TIMESTAMP)
+    RETURNS SMALLINT
+    SPECIFIC DAYOFYEAR_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    DAYOFYEAR_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION DAYOFYEAR_CLAIM(ADATE VARCHAR(26))
+    RETURNS SMALLINT
+    SPECIFIC DAYOFYEAR_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    DAYOFYEAR_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION DAYOFYEAR_CLAIM1
+    IS 'Returns the day of year of ADATE according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION DAYOFYEAR_CLAIM2
+    IS 'Returns the day of year of ADATE according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION DAYOFYEAR_CLAIM3
+    IS 'Returns the day of year of ADATE according to the CLAIM calendar'!
+
+-- WEEKSTART_CLAIM(AYEAR, AWEEK)
+-- WEEKSTART_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns a DATE value representing the first day (always a Saturday) of AWEEK
+-- in AYEAR according to the CLAIM calendar.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION WEEKSTART_CLAIM(AYEAR INTEGER, AWEEK INTEGER)
+    RETURNS DATE
+    SPECIFIC WEEKSTART_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    MONTHSTART_CLAIM(AYEAR, 1) + ((AWEEK - 1) * 7) DAYS!
+
+CREATE FUNCTION WEEKSTART_CLAIM(ADATE DATE)
+    RETURNS DATE
+    SPECIFIC WEEKSTART_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    ADATE - MOD(DAYOFWEEK(ADATE), 7) DAYS!
+
+CREATE FUNCTION WEEKSTART_CLAIM(ADATE TIMESTAMP)
+    RETURNS DATE
+    SPECIFIC WEEKSTART_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEKSTART_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION WEEKSTART_CLAIM(ADATE VARCHAR(26))
+    RETURNS DATE
+    SPECIFIC WEEKSTART_CLAIM4
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEKSTART_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION WEEKSTART_CLAIM1
+    IS 'Returns the first day of week AWEEK in the year AYEAR, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEKSTART_CLAIM2
+    IS 'Returns the first day of the week that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEKSTART_CLAIM3
+    IS 'Returns the first day of the week that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEKSTART_CLAIM4
+    IS 'Returns the first day of the week that ADATE exists within, according to the CLAIM calendar'!
+
+-- WEEKEND_CLAIM(AYEAR, AWEEK)
+-- WEEKEND_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns a DATE value representing the last day (always a Friday) of AWEEK
+-- within AYEAR according to the CLAIM calendar.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION WEEKEND_CLAIM(AYEAR INTEGER, AWEEK INTEGER)
+    RETURNS DATE
+    SPECIFIC WEEKEND_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEKSTART_CLAIM(AYEAR, AWEEK) + 6 DAYS!
+
+CREATE FUNCTION WEEKEND_CLAIM(ADATE DATE)
+    RETURNS DATE
+    SPECIFIC WEEKEND_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    ADATE + MOD(13 - DAYOFWEEK(ADATE), 7) DAYS!
+
+CREATE FUNCTION WEEKEND_CLAIM(ADATE TIMESTAMP)
+    RETURNS DATE
+    SPECIFIC WEEKEND_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEKEND_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION WEEKEND_CLAIM(ADATE VARCHAR(26))
+    RETURNS DATE
+    SPECIFIC WEEKEND_CLAIM4
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEKEND_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION WEEKEND_CLAIM1
+    IS 'Returns the last day of week AWEEK in the year AYEAR, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEKEND_CLAIM2
+    IS 'Returns the last day of the week that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEKEND_CLAIM3
+    IS 'Returns the last day of the week that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEKEND_CLAIM4
+    IS 'Returns the last day of the week that ADATE exists within, according to the CLAIM calendar'!
+
+-- WEEKSINYEAR_CLAIM(AYEAR)
+-- WEEKSINYEAR_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns the number of weeks in AYEAR according to the CLAIM calendar.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION WEEKSINYEAR_CLAIM(AYEAR INTEGER)
+    RETURNS SMALLINT
+    SPECIFIC WEEKSINYEAR_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEK_CLAIM(YEAREND_CLAIM(AYEAR))!
+
+CREATE FUNCTION WEEKSINYEAR_CLAIM(ADATE DATE)
+    RETURNS SMALLINT
+    SPECIFIC WEEKSINYEAR_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEK_CLAIM(YEAREND_CLAIM(ADATE))!
+
+CREATE FUNCTION WEEKSINYEAR_CLAIM(ADATE TIMESTAMP)
+    RETURNS SMALLINT
+    SPECIFIC WEEKSINYEAR_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEKSINYEAR_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION WEEKSINYEAR_CLAIM(ADATE VARCHAR(26))
+    RETURNS SMALLINT
+    SPECIFIC WEEKSINYEAR_CLAIM4
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEKSINYEAR_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION WEEKSINYEAR1
+    IS 'Returns the number of weeks in AYEAR, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINYEAR2
+    IS 'Returns the number of weeks in the year that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINYEAR3
+    IS 'Returns the number of weeks in the year that ADATE exists within, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINYEAR4
+    IS 'Returns the number of weeks in the year that ADATE exists within, according to the CLAIM calendar'!
+
+-- WEEKSINMONTH_CLAIM(AYEAR, AMONTH)
+-- WEEKSINMONTH_CLAIM(ADATE)
+-------------------------------------------------------------------------------
+-- Returns the number of weeks (always exactly 4 or 5) in AMONTH within AYEAR
+-- according to the CLAIM calendar.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION WEEKSINMONTH_CLAIM(AYEAR INTEGER, AMONTH INTEGER)
+    RETURNS SMALLINT
+    SPECIFIC WKSINMONTH_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    (DAYS(MONTHEND_CLAIM(AYEAR, AMONTH)) - DAYS(MONTHSTART_CLAIM(AYEAR, AMONTH)) + 1) / 7!
+
+CREATE FUNCTION WEEKSINMONTH_CLAIM(ADATE DATE)
+    RETURNS SMALLINT
+    SPECIFIC WKSINMONTH_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    (DAYS(MONTHEND_CLAIM(ADATE)) - DAYS(MONTHSTART_CLAIM(ADATE)) + 1) / 7!
+
+CREATE FUNCTION WEEKSINMONTH_CLAIM(ADATE TIMESTAMP)
+    RETURNS SMALLINT
+    SPECIFIC WKSINMONTH_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEKSINMONTH_CLAIM(DATE(ADATE))!
+
+CREATE FUNCTION WEEKSINMONTH_CLAIM(ADATE VARCHAR(26))
+    RETURNS SMALLINT
+    SPECIFIC WKSINMONTH_CLAIM4
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    WEEKSINMONTH_CLAIM(DATE(ADATE))!
+
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH_CLAIM1
+    IS 'Returns the number of weeks (ranging from Saturday to Friday, including partials) in AMONTH in AYEAR, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH_CLAIM2
+    IS 'Returns the number of weeks (randing from Saturday to Friday, including partials) in the month in which ADATE exists, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH_CLAIM3
+    IS 'Returns the number of weeks (randing from Saturday to Friday, including partials) in the month in which ADATE exists, according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION WEEKSINMONTH_CLAIM4
+    IS 'Returns the number of weeks (randing from Saturday to Friday, including partials) in the month in which ADATE exists, according to the CLAIM calendar'!
+
+-- TS_FORMAT_CLAIM(AFORMAT, ATIMESTAMP)
+-------------------------------------------------------------------------------
+-- Equivalent to the TS_FORMAT function defined above, but uses the CLAIM
+-- calendar functions instead of the standard date functions. See the TS_FORMAT
+-- function for a description of the available templates.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION TS_FORMAT_CLAIM(AFORMAT VARCHAR(100), ATIMESTAMP TIMESTAMP)
+    RETURNS VARCHAR(100)
+    SPECIFIC TS_FORMAT_CLAIM1
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+BEGIN ATOMIC
+    DECLARE I SMALLINT;
+    DECLARE J SMALLINT;
+    DECLARE RESULT VARCHAR(100);
+    DECLARE FLAGS VARCHAR(5);
+    DECLARE MINLEN INTEGER;
+    SET I = 1;
+    SET RESULT = '';
+    WHILE I <= LENGTH(AFORMAT) DO
+        IF SUBSTR(AFORMAT, I, 1) = '%' AND I < LENGTH(AFORMAT) THEN
+            SET I = I + 1;
+            -- Extract the optional flags
+            SET J = I;
+            WHILE I < LENGTH(AFORMAT) AND LOCATE(SUBSTR(AFORMAT, J, 1), '_-0^#') > 0 DO
+                SET J = J + 1;
+            END WHILE;
+            IF J > I THEN
+                SET FLAGS = SUBSTR(AFORMAT, I, J - I);
+                SET I = J;
+            ELSE
+                SET FLAGS = '';
+            END IF;
+            -- Extract the optional minimum length specification
+            SET J = I;
+            WHILE J < LENGTH(AFORMAT) AND LOCATE(SUBSTR(AFORMAT, J, 1), '0123456789') > 0 DO
+                SET J = J + 1;
+            END WHILE;
+            IF J > I THEN
+                SET MINLEN = INT(SUBSTR(AFORMAT, I, J - I));
+                SET I = J;
+            ELSE
+                SET MINLEN = NULL;
+            END IF;
+            -- Act on the format specification
+            SET RESULT = RESULT ||
+                CASE SUBSTR(AFORMAT, I, 1)
+                    WHEN '%' THEN '%'
+                    WHEN 'a' THEN LEFT(DAYNAME(ATIMESTAMP), 3)
+                    WHEN 'A' THEN DAYNAME(ATIMESTAMP)
+                    -- XXX Fix with proper CLAIM month
+                    WHEN 'b' THEN LEFT(MONTHNAME(ATIMESTAMP), 3)
+                    WHEN 'B' THEN MONTHNAME(ATIMESTAMP)
+                    WHEN 'c' THEN CHAR(DATE(ATIMESTAMP), LOCAL) || ' ' || CHAR(TIME(ATIMESTAMP), LOCAL)
+                    WHEN 'C' THEN TS$FMT(YEAR_CLAIM(ATIMESTAMP) / 100,            FLAGS, COALESCE(MINLEN, 2), '0')
+                    WHEN 'd' THEN TS$FMT(DAY_CLAIM(ATIMESTAMP),                   FLAGS, COALESCE(MINLEN, 2), '0')
+                    WHEN 'D' THEN INSERT(CHAR(DATE(ATIMESTAMP), USA), 7, 2, '')
+                    WHEN 'e' THEN TS$FMT(DAY_CLAIM(ATIMESTAMP),                   FLAGS, COALESCE(MINLEN, 2), ' ')
+                    WHEN 'F' THEN CHAR(DATE(ATIMESTAMP), ISO)
+                    WHEN 'g' THEN TS$FMT(MOD(YEAR_ISO(ATIMESTAMP), 100),          FLAGS, COALESCE(MINLEN, 2), '0')
+                    WHEN 'G' THEN TS$FMT(YEAR_ISO(ATIMESTAMP),                    FLAGS, COALESCE(MINLEN, 4), '0')
+                    WHEN 'h' THEN TS$FMT(((MONTH_CLAIM(ATIMESTAMP) - 1) / 6) + 1, FLAGS, COALESCE(MINLEN, 1), '0')
+                    WHEN 'H' THEN TS$FMT(HOUR(ATIMESTAMP),                        FLAGS, COALESCE(MINLEN, 2), '0')
+                    WHEN 'I' THEN TS$FMT(MOD(HOUR(ATIMESTAMP) + 11, 12) + 1,      FLAGS, COALESCE(MINLEN, 2), '0')
+                    WHEN 'j' THEN TS$FMT(DAYOFYEAR_CLAIM(ATIMESTAMP),             FLAGS, COALESCE(MINLEN, 3), '0')
+                    WHEN 'k' THEN TS$FMT(HOUR(ATIMESTAMP),                        FLAGS, COALESCE(MINLEN, 2), ' ')
+                    WHEN 'l' THEN TS$FMT(MOD(HOUR(ATIMESTAMP) + 11, 12) + 1,      FLAGS, COALESCE(MINLEN, 2), ' ')
+                    WHEN 'm' THEN TS$FMT(MONTH_CLAIM(ATIMESTAMP),                 FLAGS, COALESCE(MINLEN, 2), '0')
+                    WHEN 'M' THEN TS$FMT(MINUTE(ATIMESTAMP),                      FLAGS, COALESCE(MINLEN, 2), '0')
+                    WHEN 'n' THEN X'0A'
+                    WHEN 'p' THEN CASE WHEN HOUR(ATIMESTAMP) < 12 THEN 'AM' ELSE 'PM' END
+                    WHEN 'P' THEN CASE WHEN HOUR(ATIMESTAMP) < 12 THEN 'am' ELSE 'pm' END
+                    WHEN 'q' THEN TS$FMT(QUARTER_CLAIM(ATIMESTAMP),               FLAGS, COALESCE(MINLEN, 1), '0')
+                    WHEN 'S' THEN TS$FMT(SECOND(ATIMESTAMP),                      FLAGS, COALESCE(MINLEN, 2), '0')
+                    WHEN 't' THEN X'09'
+                    WHEN 'T' THEN CHAR(TIME(ATIMESTAMP), JIS)
+                    WHEN 'u' THEN TS$FMT(DAYOFWEEK_ISO(ATIMESTAMP),               FLAGS, COALESCE(MINLEN, 1), '0')
+                    WHEN 'U' THEN TS$FMT(WEEK_CLAIM(ATIMESTAMP),                  FLAGS, COALESCE(MINLEN, 2), '0')
+                    WHEN 'V' THEN TS$FMT(WEEK_ISO(ATIMESTAMP),                    FLAGS, COALESCE(MINLEN, 2), '0')
+                    WHEN 'w' THEN TS$FMT(DAYOFWEEK(ATIMESTAMP),                   FLAGS, COALESCE(MINLEN, 1), '0')
+                    WHEN 'W' THEN TS$FMT(WEEK_ISO(ATIMESTAMP),                    FLAGS, COALESCE(MINLEN, 2), '0')
+                    WHEN 'x' THEN CHAR(DATE(ATIMESTAMP), LOCAL)
+                    WHEN 'X' THEN CHAR(TIME(ATIMESTAMP), LOCAL)
+                    WHEN 'y' THEN TS$FMT(MOD(YEAR_CLAIM(ATIMESTAMP), 100),        FLAGS, COALESCE(MINLEN, 2), '0')
+                    WHEN 'Y' THEN TS$FMT(YEAR_CLAIM(ATIMESTAMP),                  FLAGS, COALESCE(MINLEN, 4), '0')
+                    WHEN 'Z' THEN
+                        CASE WHEN CURRENT TIMEZONE < 0 THEN '-' ELSE '+' END ||
+                        TRANSLATE('AB:CD', DIGITS(CURRENT TIMEZONE), 'ABCDEF')
+                    ELSE ''
+                END;
+        ELSE
+            SET RESULT = RESULT || SUBSTR(AFORMAT, I, 1);
+        END IF;
+        SET I = I + 1;
+    END WHILE;
+    RETURN RESULT;
+END!
+
+CREATE FUNCTION TS_FORMAT_CLAIM(AFORMAT VARCHAR(100), ADATE DATE)
+    RETURNS VARCHAR(100)
+    SPECIFIC TS_FORMAT_CLAIM2
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    TS_FORMAT_CLAIM(AFORMAT, TIMESTAMP(ADATE, '00:00:00'))!
+
+CREATE FUNCTION TS_FORMAT_CLAIM(AFORMAT VARCHAR(100), ATIME TIME)
+    RETURNS VARCHAR(100)
+    SPECIFIC TS_FORMAT_CLAIM3
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    TS_FORMAT_CLAIM(AFORMAT, TIMESTAMP('0001-01-01', ATIME))!
+
+CREATE FUNCTION TS_FORMAT_CLAIM(AFORMAT VARCHAR(100), ATIMESTAMP VARCHAR(26))
+    RETURNS VARCHAR(100)
+    SPECIFIC TS_FORMAT_CLAIM4
+    LANGUAGE SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+    CONTAINS SQL
+RETURN
+    CASE LENGTH(ATIMESTAMP)
+        WHEN 10 THEN TS_FORMAT_CLAIM(AFORMAT, DATE(ATIMESTAMP))
+        ELSE TS_FORMAT_CLAIM(AFORMAT, TIMESTAMP(ATIMESTAMP))
+    END!
+
+COMMENT ON SPECIFIC FUNCTION TS_FORMAT_CLAIM1
+    IS 'A version of C''s strftime() for DB2. Formats ATIMESTAMP according to the AFORMAT string, containing %-prefixed templates which will be replaced with elements of ATIMESTAMP. Calculations will be done according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION TS_FORMAT_CLAIM2
+    IS 'A version of C''s strftime() for DB2. Formats ATIMESTAMP according to the AFORMAT string, containing %-prefixed templates which will be replaced with elements of ATIMESTAMP. Calculations will be done according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION TS_FORMAT_CLAIM3
+    IS 'A version of C''s strftime() for DB2. Formats ATIMESTAMP according to the AFORMAT string, containing %-prefixed templates which will be replaced with elements of ATIMESTAMP. Calculations will be done according to the CLAIM calendar'!
+COMMENT ON SPECIFIC FUNCTION TS_FORMAT_CLAIM4
+    IS 'A version of C''s strftime() for DB2. Formats ATIMESTAMP according to the AFORMAT string, containing %-prefixed templates which will be replaced with elements of ATIMESTAMP. Calculations will be done according to the CLAIM calendar'!
 
 -- vim: set et sw=4 sts=4:
