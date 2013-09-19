@@ -77,4 +77,6 @@ corrections.foo: sql.foo log.foo
 
 toggle_triggers.foo: sql.foo
 
+log.foo: date_time.foo
+
 .PHONY: install uninstall clean test
