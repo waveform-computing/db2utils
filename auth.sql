@@ -820,7 +820,8 @@ BEGIN ATOMIC
         SET MESSAGE_TEXT = 'Ambiguous type for authorization name';
     FOR D AS
         SELECT DDL
-        FROM TABLE(COPY$LIST(SOURCE, SOURCE_TYPE, DEST, DEST_TYPE, INCLUDE_PERSONAL))
+        FROM
+            TABLE(COPY$LIST(SOURCE, SOURCE_TYPE, DEST, DEST_TYPE, INCLUDE_PERSONAL)) AS T
     DO
         EXECUTE IMMEDIATE D.DDL;
     END FOR;
@@ -930,11 +931,7 @@ RETURN
             AUTH_TYPE,
             'N',
             INCLUDE_PERSONAL
-        )) AS T
-    ORDER BY
-        -- CONTROL must be removed before SELECT/INSERT/UPDATE/DELETE or
-        -- DB2 complains that CONTROL implies the others
-        CASE AUTH WHEN 'CONTROL' THEN 0 ELSE 1 END!
+        )) AS T!
 
 CREATE PROCEDURE REMOVE_AUTH(
     AUTH_NAME VARCHAR(128),
@@ -963,7 +960,12 @@ BEGIN ATOMIC
         END;
     FOR D AS
         SELECT DDL
-        FROM TABLE(REMOVE$LIST(AUTH_NAME, AUTH_TYPE, INCLUDE_PERSONAL))
+        FROM
+            TABLE(REMOVE$LIST(AUTH_NAME, AUTH_TYPE, INCLUDE_PERSONAL)) AS T
+        ORDER BY
+            -- CONTROL must be removed before SELECT/INSERT/UPDATE/DELETE or
+            -- DB2 complains that CONTROL implies the others
+            CASE AUTH WHEN 'CONTROL' THEN 0 ELSE 1 END
     DO
         EXECUTE IMMEDIATE D.DDL;
     END FOR;
