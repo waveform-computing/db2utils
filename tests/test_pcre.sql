@@ -15,3 +15,4 @@ VALUES ASSERT_EQUALS(PCRE_SUB('\b(\d{1,3}(\.\d{1,3}){3})\b', '\1', 'IP address: 
 VALUES ASSERT_EQUALS(PCRE_SUB('<([A-Z][A-Z0-9]*)[^>]*>(.*?)</\1>', '<I>\2</I>', '<B>BOLD!</B>'), '<I>BOLD!</I>')!
 VALUES ASSERT_EQUALS(PCRE_SUB('Q(?!U)', '\0', 'QI'), 'Q')!
 
+-- vim: set et sw=4 sts=4:

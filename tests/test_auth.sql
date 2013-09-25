@@ -104,3 +104,5 @@ VALUES ASSERT_EQUALS((
     AND AUTH = 'CONTROL'), 1)!
 
 DROP TABLE FOO!
+
+-- vim: set et sw=4 sts=4:
