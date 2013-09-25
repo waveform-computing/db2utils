@@ -217,6 +217,50 @@ COMMENT ON SPECIFIC FUNCTION ASSERT_TRIGGER_EXISTS1
 COMMENT ON SPECIFIC FUNCTION ASSERT_TRIGGER_EXISTS2
     IS 'Signals ASSERT_SQLSTATE if the specified trigger does not exist'!
 
+-- ASSERT_ROUTINE_EXISTS(ASCHEMA, AROUTINE)
+-- ASSERT_ROUTINE_EXISTS(AROUTINE)
+-------------------------------------------------------------------------------
+-- Raises the ASSERT_SQLSTATE if ASCHEMA.AROUTINE does not exist, or is not a
+-- routine. If not specified, ASCHEMA defaults to the value of the CURRENT
+-- SCHEMA special register. Note that the function doesn't check whether an
+-- existing routine is currently marked inoperative, merely for existence.
+-------------------------------------------------------------------------------
+
+CREATE FUNCTION ASSERT_ROUTINE_EXISTS(ASCHEMA VARCHAR(128), AROUTINE VARCHAR(128))
+    RETURNS INTEGER
+    SPECIFIC ASSERT_ROUTINE_EXISTS1
+    LANGUAGE SQL
+    READS SQL DATA
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+RETURN
+    CASE (
+            SELECT COUNT(*)
+            FROM SYSCAT.ROUTINES
+            WHERE ROUTINESCHEMA = ASCHEMA
+            AND ROUTINENAME = AROUTINE
+        )
+        WHEN 1 THEN 0
+        ELSE RAISE_ERROR(ASSERT_SQLSTATE, SUBSTR(ASCHEMA || '.' || AROUTINE, 1, 50)
+            || CASE WHEN LENGTH(ASCHEMA) + 1 + LENGTH(AROUTINE) > 50 THEN '...' ELSE '' END
+            || ' does not exist')
+    END!
+
+CREATE FUNCTION ASSERT_ROUTINE_EXISTS(AROUTINE VARCHAR(128))
+    RETURNS INTEGER
+    SPECIFIC ASSERT_ROUTINE_EXISTS2
+    LANGUAGE SQL
+    READS SQL DATA
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+RETURN
+    VALUES ASSERT_ROUTINE_EXISTS(CURRENT SCHEMA, AROUTINE)!
+
+COMMENT ON SPECIFIC FUNCTION ASSERT_ROUTINE_EXISTS1
+    IS 'Signals ASSERT_SQLSTATE if the specified routine does not exist'!
+COMMENT ON SPECIFIC FUNCTION ASSERT_ROUTINE_EXISTS2
+    IS 'Signals ASSERT_SQLSTATE if the specified routine does not exist'!
+
 -- ASSERT_IS_NULL(A)
 -------------------------------------------------------------------------------
 -- Raises the ASSERT_SQLSTATE if A is not NULL. The function is overloaded
