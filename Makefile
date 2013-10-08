@@ -3,7 +3,8 @@ SCHEMANAME:=UTILS
 
 VERSION:=0.1
 ALL_EXT:=$(wildcard pcre/*.c) $(wildcard pcre/*.h)
-ALL_SQL:=$(filter-out install.sql uninstall.sql test.sql,$(wildcard *.sql))
+ALL_TESTS:=$(wildcard tests/*.sql)
+ALL_SQL:=$(filter-out install.sql uninstall.sql,$(wildcard *.sql))
 ALL_FOO:=$(ALL_SQL:%.sql=%.foo)
 
 install: install.sql
@@ -14,26 +15,22 @@ uninstall: uninstall.sql
 	db2 -td! +c +s -vf $< || true
 	$(MAKE) -C pcre uninstall
 
-test: test.awk test.dat
-	echo "CONNECT TO $(DBNAME);" > foo
-	echo "SET SCHEMA $(SCHEMANAME);" >> foo
-	echo "SET PATH SYSTEM PATH, $(SCHEMANAME), USER;" >> foo
-	awk --re-interval -f test.awk test.dat >> foo
-	db2 -tvf foo || true
-	rm -f foo
+test:
+	$(MAKE) -C tests test DBNAME=$(DBNAME) SCHEMANAME=$(SCHEMANAME)
 
 clean: $(SUBDIRS)
 	$(MAKE) -C pcre clean
+	$(MAKE) -C tests clean
 	rm -f foo
 	rm -f *.foo
 	rm -f install.sql
 	rm -f uninstall.sql
 	rm -fr build/ dist/
 
-dist: $(ALL_SQL) $(ALL_EXT) \
+dist: $(ALL_SQL) $(ALL_EXT) $(ALL_TESTS) \
 		INSTALL LICENSE \
-		Makefile pcre/Makefile \
-		uninstall.awk test.awk test.dat
+		Makefile pcre/Makefile tests/Makefile \
+		uninstall.awk
 	mkdir -p build/db2utils/
 	mkdir -p dist/
 	for f in $^; do \
@@ -61,6 +58,8 @@ uninstall.sql: install.sql
 	echo "SET PATH SYSTEM PATH, $(SCHEMANAME), USER!" >> $@
 	awk -f uninstall.awk $< | tac >> $@
 	echo "COMMIT!" >> $@
+
+assert.foo: sql.foo
 
 export_load.foo: sql.foo
 

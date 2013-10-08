@@ -889,6 +889,7 @@ CREATE FUNCTION REMOVE$LIST(
     RETURNS TABLE (
         OBJECT_TYPE VARCHAR(18),
         OBJECT_ID VARCHAR(262),
+        AUTH VARCHAR(140),
         DDL VARCHAR(2000)
     )
     SPECIFIC REMOVE$LIST
@@ -900,6 +901,7 @@ RETURN
     SELECT
         OBJECT_TYPE,
         OBJECT_ID,
+        AUTH,
         'REVOKE ' || AUTH ||
         CASE OBJECT_TYPE
             WHEN '' THEN ''
