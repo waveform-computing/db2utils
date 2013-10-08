@@ -44,7 +44,7 @@ COMMENT ON VARIABLE ASSERT_SQLSTATE
 -- IMMEDIATE can execute a SIGNAL within a CALL, but not a SIGNAL directly...
 -------------------------------------------------------------------------------
 
-CREATE PROCEDURE ASSERT_SIGNALS(STATE CHAR(5), SQL CLOB(64K))
+CREATE PROCEDURE ASSERT_SIGNALS(STATE CHAR(5), SQL CLOB(2M))
     SPECIFIC ASSERT_SIGNALS1
     LANGUAGE SQL
     MODIFIES SQL DATA
