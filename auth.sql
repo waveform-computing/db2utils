@@ -33,6 +33,18 @@
 -- possible.
 -------------------------------------------------------------------------------
 
+
+-- SQLSTATES
+-------------------------------------------------------------------------------
+-- The following variables define the set of SQLSTATEs raised by the procedures
+-- and functions in this module.
+-------------------------------------------------------------------------------
+
+CREATE VARIABLE AUTH_AMBIGUOUS_STATE CHAR(5) CONSTANT '90002'!
+
+COMMENT ON VARIABLE AUTH_AMBIGUOUS_STATE
+    IS 'The SQLSTATE raised when an authentication type is ambiguous (e.g. refers to both a user & group)'!
+
 -- AUTH_TYPE(AUTH_NAME)
 -------------------------------------------------------------------------------
 -- This is a utility function used by the COPY_AUTH procedure, and other
@@ -815,9 +827,13 @@ CREATE PROCEDURE COPY_AUTH(
     MODIFIES SQL DATA
     LANGUAGE SQL
 BEGIN ATOMIC
+    DECLARE NEWSTATE CHAR(5);
     DECLARE EXIT HANDLER FOR SQLSTATE '21000'
-        SIGNAL SQLSTATE '80002'
-        SET MESSAGE_TEXT = 'Ambiguous type for authorization name';
+        BEGIN
+            SET NEWSTATE = AUTH_AMBIGUOUS_STATE;
+            SIGNAL SQLSTATE NEWSTATE
+                SET MESSAGE_TEXT = 'Ambiguous type for authorization name';
+        END;
     FOR D AS
         SELECT DDL
         FROM
@@ -946,9 +962,13 @@ CREATE PROCEDURE REMOVE_AUTH(
     MODIFIES SQL DATA
     LANGUAGE SQL
 BEGIN ATOMIC
+    DECLARE NEWSTATE CHAR(5);
     DECLARE EXIT HANDLER FOR SQLSTATE '21000'
-        SIGNAL SQLSTATE '80002'
-        SET MESSAGE_TEXT = 'Ambiguous type for authorization name';
+        BEGIN
+            SET NEWSTATE = AUTH_AMBIGUOUS_STATE;
+            SIGNAL SQLSTATE NEWSTATE
+                SET MESSAGE_TEXT = 'Ambiguous type for authorization name';
+        END;
     -- If we remove CONTROL from a table, and the user holds CONTROL on a view
     -- defined over that table, the user implicitly loses CONTROL from the
     -- view. If we subsequently attempt to remove CONTROL the view then

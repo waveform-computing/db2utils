@@ -33,10 +33,34 @@
 -- history such as "what changed when" and "snapshots over constant periods".
 -------------------------------------------------------------------------------
 
+
+-- SQLSTATES
+-------------------------------------------------------------------------------
+-- The following variables define the set of SQLSTATEs raised by the procedures
+-- and functions in this module.
+-------------------------------------------------------------------------------
+
+CREATE VARIABLE HISTORY_KEY_FIELDS_STATE CHAR(5) CONSTANT '90004'!
+CREATE VARIABLE HISTORY_NO_PK_STATE CHAR(5) CONSTANT '90005'!
+CREATE VARIABLE HISTORY_UPDATE_PK_STATE CHAR(5) CONSTANT '90006'!
+
+COMMENT ON VARIABLE HISTORY_KEY_FIELDS_STATE
+    IS 'The SQLSTATE raised when a history sub-routine is called with something other than ''Y'' or ''N'' as the KEY_FIELDS parameter'!
+
+COMMENT ON VARIABLE HISTORY_NO_PK_STATE
+    IS 'The SQLSTATE raised when an attempt is made to create a history table for a table without a primary key'!
+
+COMMENT ON VARIABLE HISTORY_UPDATE_PK_STATE
+    IS 'The SQLSTATE raised when an attempt is made to update a primary key''s value in a table with an associated history table'!
+
 -- HISTORY$EFFNAME(RESOLUTION)
+-- HISTORY$EFFNAME(SOURCE_SCHEMA, SOURCE_TABLE)
 -- HISTORY$EXPNAME(RESOLUTION)
+-- HISTORY$EXPNAME(SOURCE_SCHEMA, SOURCE_TABLE)
 -- HISTORY$EFFDEFAULT(RESOLUTION)
+-- HISTORY$EFFDEFAULT(SOURCE_SCHEMA, SOURCE_TABLE)
 -- HISTORY$EXPDEFAULT(RESOLUTION)
+-- HISTORY$EXPDEFAULT(SOURCE_SCHEMA, SOURCE_TABLE)
 -- HISTORY$PERIODSTART(RESOLUTION, EXPRESSION)
 -- HISTORY$PERIODEND(RESOLUTION, EXPRESSION)
 -- HISTORY$PERIODLEN(RESOLUTION)
@@ -595,8 +619,7 @@ CREATE FUNCTION HISTORY$UPDATE_FIELDS(
 BEGIN ATOMIC
     DECLARE RESULT CLOB(64K) DEFAULT '';
     IF NOT KEY_FIELDS IN ('N', 'Y') THEN
-        SIGNAL SQLSTATE '70001'
-        SET MESSAGE_TEXT = 'KEY_FIELDS must be N or Y';
+        CALL SIGNAL_STATE(HISTORY_KEY_FIELDS_STATE, 'KEY_FIELDS must be N or Y');
     END IF;
     FOR C AS
         SELECT COLNAME
@@ -628,8 +651,7 @@ CREATE FUNCTION HISTORY$UPDATE_WHEN(
 BEGIN ATOMIC
     DECLARE RESULT CLOB(64K) DEFAULT '';
     IF NOT KEY_FIELDS IN ('N', 'Y') THEN
-        SIGNAL SQLSTATE '70001'
-        SET MESSAGE_TEXT = 'KEY_FIELDS must be N or Y';
+        CALL SIGNAL_STATE(HISTORY_KEY_FIELDS_STATE, 'KEY_FIELDS must be N or Y');
     END IF;
     FOR C AS
         SELECT COLNAME, NULLS
@@ -713,8 +735,7 @@ BEGIN ATOMIC
         FROM SYSCAT.TABLES
         WHERE TABSCHEMA = SOURCE_SCHEMA
         AND TABNAME = SOURCE_TABLE) = 0 THEN
-        SIGNAL SQLSTATE '70001'
-        SET MESSAGE_TEXT = 'Source table must have a primary key';
+            CALL SIGNAL_STATE(HISTORY_NO_PK_STATE, 'Source table must have a primary key');
     END IF;
     SET TAB_COMPRESSED = (
         SELECT
@@ -1319,8 +1340,8 @@ BEGIN ATOMIC
         ||      HISTORY$UPDATE_WHEN(SOURCE_SCHEMA, SOURCE_TABLE, CHAR('Y'))
         || ') '
         || 'BEGIN ATOMIC'
-        || '    SIGNAL SQLSTATE ''75001'''
-        || '        SET MESSAGE_TEXT = ''Cannot update unique key of a ' || REPLACE(QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE), '''', '''''') || ' row''; '
+        || '    CALL SIGNAL_STATE(HISTORY_UPDATE_PK_STATE,'
+        || '        ''Cannot update unique key of a ' || REPLACE(QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE), '''', '''''') || ' row''); '
         || 'END';
     EXECUTE IMMEDIATE DDL;
     -- Create the INSERT trigger
