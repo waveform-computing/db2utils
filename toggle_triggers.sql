@@ -31,6 +31,26 @@
 -- triggers on a specified table.
 -------------------------------------------------------------------------------
 
+
+-- SQLSTATES
+-------------------------------------------------------------------------------
+-- The following variables define the set of SQLSTATEs raised by the procedures
+-- and functions in this module.
+-------------------------------------------------------------------------------
+
+CREATE VARIABLE TRIGGER_NOT_FOUND_STATE CHAR(5) CONSTANT '90007'!
+CREATE VARIABLE TRIGGER_NOT_DISABLED_STATE CHAR(5) CONSTANT '90008'!
+CREATE VARIABLE TRIGGER_NOT_ENABLED_STATE CHAR(5) CONSTANT '90009'!
+
+COMMENT ON VARIABLE TRIGGER_NOT_FOUND_STATE
+    IS 'The SQLSTATE raised when the trigger to be enabled/disabled cannot be found'!
+
+COMMENT ON VARIABLE TRIGGER_NOT_DISABLED_STATE
+    IS 'The SQLSTATE raised when an attempt to disable a trigger fails'!
+
+COMMENT ON VARIABLE TRIGGER_NOT_ENABLED_STATE
+    IS 'The SQLSTATE raised when an attempt to enable a trigger fails'!
+
 -- DISABLED_TRIGGERS
 -------------------------------------------------------------------------------
 -- The DISABLED_TRIGGERS table holds all the details necessary to recreate
@@ -76,11 +96,9 @@ CREATE PROCEDURE DISABLE_TRIGGER(ASCHEMA VARCHAR(128), ATRIGGER VARCHAR(128))
 BEGIN ATOMIC
     DECLARE SQLCODE INTEGER DEFAULT 0;
     DECLARE EXIT HANDLER FOR NOT FOUND
-        SIGNAL SQLSTATE '80000'
-        SET MESSAGE_TEXT = 'Trigger not found';
+        CALL SIGNAL_STATE(TRIGGER_NOT_FOUND_STATE, 'Trigger not found');
     DECLARE EXIT HANDLER FOR SQLWARNING
-        SIGNAL SQLSTATE '80001'
-        SET MESSAGE_TEXT = 'Unable to disable trigger';
+        CALL SIGNAL_STATE(TRIGGER_NOT_DISABLED_STATE, 'Unable to disable trigger');
     -- Copy the trigger's entry from SYSCAT.TRIGGERS to DISABLED_TRIGGERS
     INSERT INTO DISABLED_TRIGGERS
         SELECT
@@ -139,11 +157,9 @@ CREATE PROCEDURE DISABLE_TRIGGERS(ASCHEMA VARCHAR(128), ATABLE VARCHAR(128))
 BEGIN ATOMIC
     DECLARE SQLCODE INTEGER DEFAULT 0;
     DECLARE EXIT HANDLER FOR NOT FOUND
-        SIGNAL SQLSTATE '80000'
-        SET MESSAGE_TEXT = 'Trigger not found';
+        CALL SIGNAL_STATE(TRIGGER_NOT_FOUND_STATE, 'Trigger not found');
     DECLARE EXIT HANDLER FOR SQLWARNING
-        SIGNAL SQLSTATE '80001'
-        SET MESSAGE_TEXT = 'Unable to disable trigger';
+        CALL SIGNAL_STATE(TRIGGER_NOT_DISABLED_STATE, 'Unable to disable trigger');
     -- Copy all of ATABLE's triggers from SYSCAT.TRIGGERS to DISABLED_TRIGGERS
     INSERT INTO DISABLED_TRIGGERS
         SELECT
@@ -208,8 +224,7 @@ BEGIN ATOMIC
     DECLARE SAVE_PATH VARCHAR(254);
     DECLARE SAVE_SCHEMA VARCHAR(128);
     DECLARE EXIT HANDLER FOR SQLWARNING
-        SIGNAL SQLSTATE '80000'
-        SET MESSAGE_TEXT = 'Unable to enable trigger';
+        CALL SIGNAL_STATE(TRIGGER_NOT_ENABLED_STATE, 'Unable to enable trigger');
     -- Save the current function resolution path and implicit schema for later
     -- restoration
     SET SAVE_PATH = CURRENT PATH;
@@ -275,8 +290,7 @@ BEGIN ATOMIC
     DECLARE SAVE_PATH VARCHAR(254);
     DECLARE SAVE_SCHEMA VARCHAR(128);
     DECLARE EXIT HANDLER FOR SQLWARNING
-        SIGNAL SQLSTATE '80000'
-        SET MESSAGE_TEXT = 'Unable to enable trigger';
+        CALL SIGNAL_STATE(TRIGGER_NOT_ENABLED_STATE, 'Unable to enable trigger');
     -- Save the current function resolution path and implicit schema for later
     -- restoration
     SET SAVE_PATH = CURRENT PATH;

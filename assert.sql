@@ -23,24 +23,45 @@
 -------------------------------------------------------------------------------
 
 
--- ASSERT_SQLSTATE
+-- SQLSTATES
 -------------------------------------------------------------------------------
--- The ASSERT_SQLSTATE variable specifies the SQLSTATE that is raised in the
--- case that an assertion fails. If you need to catch this specific SQLSTATE it
--- is recommended you assign a unique (valid) SQLSTATE to this variable.
+-- The following variables define the set of SQLSTATEs raised by the procedures
+-- and functions in this module.
 -------------------------------------------------------------------------------
 
-CREATE VARIABLE ASSERT_SQLSTATE CHAR(5) DEFAULT '90001'!
+CREATE VARIABLE ASSERT_FAILED_STATE CHAR(5) CONSTANT '90001'!
 
-COMMENT ON VARIABLE ASSERT_SQLSTATE
-    IS 'The SQLSTATE to be raised by all ASSERT_* procedures and functions in the case of failure'!
+COMMENT ON VARIABLE ASSERT_FAILED_STATE
+    IS 'The SQLSTATE raised by all ASSERT_* procedures and functions in the case the assertion fails'!
+
+-- SIGNAL_STATE(STATE, MESSAGE)
+-------------------------------------------------------------------------------
+-- SIGNAL seems to be quite broken in DB2. It can't be called from a trigger
+-- with a variable for the state at all. It can be called from a procedure with
+-- a local variable for the state, but not an SQL variable, despite this being
+-- explicitly described in the docs. However, wrap it in a procedure and
+-- everything is suddenly fine...
+-------------------------------------------------------------------------------
+
+CREATE PROCEDURE SIGNAL_STATE(STATE CHAR(5), MESSAGE VARCHAR(70))
+    SPECIFIC SIGNAL_STATE1
+    LANGUAGE SQL
+    CONTAINS SQL
+    DETERMINISTIC
+    NO EXTERNAL ACTION
+BEGIN
+    SIGNAL SQLSTATE STATE SET MESSAGE_TEXT = MESSAGE;
+END!
+
+COMMENT ON SPECIFIC PROCEDURE SIGNAL_STATE1
+    IS 'Simply wraps SIGNAL so that it can be used in triggers, EXECUTE IMMEDIATE statements, etc.'!
 
 -- ASSERT_SIGNALS(STATE, SQL)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if executing SQL does NOT raise SQLSTATE STATE.
--- SQL must be capable of being executed by EXECUTE IMMEDIATE, i.e. no queries
--- or SIGNAL calls. In order to permit simple testing of ASSERT_SIGNALS an
--- additional procedure is defined below which simply calls SIGNAL; EXECUTE
+-- Raises the ASSERT_FAILED_STATE if executing SQL does NOT raise SQLSTATE
+-- STATE.  SQL must be capable of being executed by EXECUTE IMMEDIATE, i.e. no
+-- queries or SIGNAL calls. In order to permit simple testing of ASSERT_SIGNALS
+-- an additional procedure is defined below which simply calls SIGNAL; EXECUTE
 -- IMMEDIATE can execute a SIGNAL within a CALL, but not a SIGNAL directly...
 -------------------------------------------------------------------------------
 
@@ -51,40 +72,32 @@ CREATE PROCEDURE ASSERT_SIGNALS(STATE CHAR(5), SQL CLOB(2M))
     NOT DETERMINISTIC
     NO EXTERNAL ACTION
 BEGIN ATOMIC
-    DECLARE NEWSTATE CHAR(5);
     DECLARE SQLSTATE CHAR(5);
-    DECLARE SAVESTATE CHAR(5);
-    DECLARE MESSAGE VARCHAR(70);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
-        BEGIN
-            SET SAVESTATE = SQLSTATE;
-            SET NEWSTATE = ASSERT_SQLSTATE;
-            IF SAVESTATE <> STATE THEN
-                SET MESSAGE = SUBSTR(SQL, 1, 20)
+        IF SQLSTATE <> STATE THEN
+            CALL SIGNAL_STATE(ASSERT_FAILED_STATE,
+                SUBSTR(SQL, 1, 20)
                     || CASE WHEN LENGTH(SQL) > 20 THEN '...' ELSE '' END
-                    || ' signalled SQLSTATE ' || SAVESTATE
-                    || ' instead of ' || STATE;
-                SIGNAL SQLSTATE NEWSTATE SET MESSAGE_TEXT = MESSAGE;
-            END IF;
-        END;
+                    || ' signalled SQLSTATE ' || SQLSTATE
+                    || ' instead of ' || STATE);
+        END IF;
     EXECUTE IMMEDIATE SQL;
-    SET NEWSTATE = ASSERT_SQLSTATE;
-    SET MESSAGE = SUBSTR(SQL, 1, 20)
-        || CASE WHEN LENGTH(SQL) > 20 THEN '...' ELSE '' END
-        || ' did not signal SQLSTATE ' || STATE;
-    SIGNAL SQLSTATE NEWSTATE SET MESSAGE_TEXT = MESSAGE;
+    CALL SIGNAL_STATE(ASSERT_FAILED_STATE,
+        SUBSTR(SQL, 1, 20)
+            || CASE WHEN LENGTH(SQL) > 20 THEN '...' ELSE '' END
+            || ' did not signal SQLSTATE ' || STATE);
 END!
 
 COMMENT ON SPECIFIC PROCEDURE ASSERT_SIGNALS1
-    IS 'Signals ASSERT_SQLSTATE if the execution of SQL doesn''t signal SQLSTATE STATE, or signals a different SQLSTATE'!
+    IS 'Signals ASSERT_FAILED_STATE if the execution of SQL doesn''t signal SQLSTATE STATE, or signals a different SQLSTATE'!
 
 -- ASSERT_TABLE_EXISTS(ASCHEMA, ATABLE)
 -- ASSERT_TABLE_EXISTS(ATABLE)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if ASCHEMA.ATABLE does not exist, or is not a
+-- Raises the ASSERT_FAILED_STATE if ASCHEMA.ATABLE does not exist, or is not a
 -- table/view. If not specified, ASCHEMA defaults to the value of the CURRENT
--- SCHEMA special register. Note that the function doesn't check that
--- an existing table is currently marked invalid or inoperative, merely for
+-- SCHEMA special register. Note that the function doesn't check that an
+-- existing table is currently marked invalid or inoperative, merely for
 -- existence.
 -------------------------------------------------------------------------------
 
@@ -103,7 +116,7 @@ RETURN
             AND TABNAME = ATABLE
         )
         WHEN 1 THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE, SUBSTR(ASCHEMA || '.' || ATABLE, 1, 50)
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE, SUBSTR(ASCHEMA || '.' || ATABLE, 1, 50)
             || CASE WHEN LENGTH(ASCHEMA) + 1 + LENGTH(ATABLE) > 50 THEN '...' ELSE '' END
             || ' does not exist')
     END!
@@ -119,14 +132,14 @@ RETURN
     VALUES ASSERT_TABLE_EXISTS(CURRENT SCHEMA, ATABLE)!
 
 COMMENT ON SPECIFIC FUNCTION ASSERT_TABLE_EXISTS1
-    IS 'Signals ASSERT_SQLSTATE if the specified table does not exist'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified table does not exist'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_TABLE_EXISTS2
-    IS 'Signals ASSERT_SQLSTATE if the specified table does not exist'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified table does not exist'!
 
 -- ASSERT_COLUMN_EXISTS(ASCHEMA, ATABLE, ACOLNAME)
 -- ASSERT_COLUMN_EXISTS(ATABLE, ACOLNAME)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if ACOLNAME does not exist within the
+-- Raises the ASSERT_FAILED_STATE if ACOLNAME does not exist within the
 -- ASCHEMA.ATABLE.  If not specified, ASCHEMA defaults to the value of the
 -- CURRENT SCHEMA special register.
 -------------------------------------------------------------------------------
@@ -151,7 +164,7 @@ RETURN
             AND COLNAME = ACOLNAME
         )
         WHEN 1 THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE, SUBSTR(ACOLNAME, 1, 20)
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE, SUBSTR(ACOLNAME, 1, 20)
             || CASE WHEN LENGTH(ACOLNAME) > 20 THEN '...' ELSE '' END
             || ' does not exist in '
             || SUBSTR(ASCHEMA || '.' || ATABLE, 1, 30)
@@ -169,15 +182,15 @@ RETURN
     VALUES ASSERT_COLUMN_EXISTS(CURRENT SCHEMA, ATABLE, ACOLNAME)!
 
 COMMENT ON SPECIFIC FUNCTION ASSERT_COLUMN_EXISTS1
-    IS 'Signals ASSERT_SQLSTATE if the specified column does not exist'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified column does not exist'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_COLUMN_EXISTS2
-    IS 'Signals ASSERT_SQLSTATE if the specified column does not exist'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified column does not exist'!
 
 -- ASSERT_TRIGGER_EXISTS(ASCHEMA, ATRIGGER)
 -- ASSERT_TRIGGER_EXISTS(ATRIGGER)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if ASCHEMA.ATRIGGER does not exist, or is not a
--- trigger. If not specified, ASCHEMA defaults to the value of the CURRENT
+-- Raises the ASSERT_FAILED_STATE if ASCHEMA.ATRIGGER does not exist, or is not
+-- a trigger. If not specified, ASCHEMA defaults to the value of the CURRENT
 -- SCHEMA special register. Note that the function doesn't check whether an
 -- existing trigger is currently marked inoperative, merely for existence.
 -------------------------------------------------------------------------------
@@ -197,7 +210,7 @@ RETURN
             AND TRIGNAME = ATRIGGER
         )
         WHEN 1 THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE, SUBSTR(ASCHEMA || '.' || ATRIGGER, 1, 50)
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE, SUBSTR(ASCHEMA || '.' || ATRIGGER, 1, 50)
             || CASE WHEN LENGTH(ASCHEMA) + 1 + LENGTH(ATRIGGER) > 50 THEN '...' ELSE '' END
             || ' does not exist')
     END!
@@ -213,15 +226,15 @@ RETURN
     VALUES ASSERT_TRIGGER_EXISTS(CURRENT SCHEMA, ATRIGGER)!
 
 COMMENT ON SPECIFIC FUNCTION ASSERT_TRIGGER_EXISTS1
-    IS 'Signals ASSERT_SQLSTATE if the specified trigger does not exist'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified trigger does not exist'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_TRIGGER_EXISTS2
-    IS 'Signals ASSERT_SQLSTATE if the specified trigger does not exist'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified trigger does not exist'!
 
 -- ASSERT_ROUTINE_EXISTS(ASCHEMA, AROUTINE)
 -- ASSERT_ROUTINE_EXISTS(AROUTINE)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if ASCHEMA.AROUTINE does not exist, or is not a
--- routine. If not specified, ASCHEMA defaults to the value of the CURRENT
+-- Raises the ASSERT_FAILED_STATE if ASCHEMA.AROUTINE does not exist, or is not
+-- a routine. If not specified, ASCHEMA defaults to the value of the CURRENT
 -- SCHEMA special register. Note that the function doesn't check whether an
 -- existing routine is currently marked inoperative, merely for existence.
 -------------------------------------------------------------------------------
@@ -241,7 +254,7 @@ RETURN
             AND ROUTINENAME = AROUTINE
         )
         WHEN 1 THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE, SUBSTR(ASCHEMA || '.' || AROUTINE, 1, 50)
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE, SUBSTR(ASCHEMA || '.' || AROUTINE, 1, 50)
             || CASE WHEN LENGTH(ASCHEMA) + 1 + LENGTH(AROUTINE) > 50 THEN '...' ELSE '' END
             || ' does not exist')
     END!
@@ -257,13 +270,13 @@ RETURN
     VALUES ASSERT_ROUTINE_EXISTS(CURRENT SCHEMA, AROUTINE)!
 
 COMMENT ON SPECIFIC FUNCTION ASSERT_ROUTINE_EXISTS1
-    IS 'Signals ASSERT_SQLSTATE if the specified routine does not exist'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified routine does not exist'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_ROUTINE_EXISTS2
-    IS 'Signals ASSERT_SQLSTATE if the specified routine does not exist'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified routine does not exist'!
 
 -- ASSERT_IS_NULL(A)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if A is not NULL. The function is overloaded
+-- Raises the ASSERT_FAILED_STATE if A is not NULL. The function is overloaded
 -- for most common types and generally should not need CASTs for usage.
 -------------------------------------------------------------------------------
 
@@ -277,7 +290,7 @@ CREATE FUNCTION ASSERT_IS_NULL(A INTEGER)
 RETURN
     CASE WHEN A IS NULL
         THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' is non-NULL')
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' is non-NULL')
     END!
 
 CREATE FUNCTION ASSERT_IS_NULL(A DOUBLE)
@@ -290,7 +303,7 @@ CREATE FUNCTION ASSERT_IS_NULL(A DOUBLE)
 RETURN
     CASE WHEN A IS NULL
         THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' is non-NULL')
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' is non-NULL')
     END!
 
 CREATE FUNCTION ASSERT_IS_NULL(A TIMESTAMP)
@@ -303,7 +316,7 @@ CREATE FUNCTION ASSERT_IS_NULL(A TIMESTAMP)
 RETURN
     CASE WHEN A IS NULL
         THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' is non-NULL')
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' is non-NULL')
     END!
 
 CREATE FUNCTION ASSERT_IS_NULL(A TIME)
@@ -316,7 +329,7 @@ CREATE FUNCTION ASSERT_IS_NULL(A TIME)
 RETURN
     CASE WHEN A IS NULL
         THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' is non-NULL')
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' is non-NULL')
     END!
 
 CREATE FUNCTION ASSERT_IS_NULL(A VARCHAR(4000))
@@ -329,25 +342,25 @@ CREATE FUNCTION ASSERT_IS_NULL(A VARCHAR(4000))
 RETURN
     CASE WHEN A IS NULL
         THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE,
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE,
             QUOTE_STRING(SUBSTR(A, 1, 20) || CASE WHEN LENGTH(A) > 20 THEN '...' ELSE '' END) ||
             ' is non-NULL')
     END!
 
 COMMENT ON SPECIFIC FUNCTION ASSERT_IS_NULL1
-    IS 'Signals ASSERT_SQLSTATE if the specified value is not NULL'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified value is not NULL'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_IS_NULL2
-    IS 'Signals ASSERT_SQLSTATE if the specified value is not NULL'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified value is not NULL'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_IS_NULL3
-    IS 'Signals ASSERT_SQLSTATE if the specified value is not NULL'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified value is not NULL'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_IS_NULL4
-    IS 'Signals ASSERT_SQLSTATE if the specified value is not NULL'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified value is not NULL'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_IS_NULL5
-    IS 'Signals ASSERT_SQLSTATE if the specified value is not NULL'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified value is not NULL'!
 
 -- ASSERT_IS_NOT_NULL(A)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if A is not NULL. The function is overloaded
+-- Raises the ASSERT_FAILED_STATE if A is not NULL. The function is overloaded
 -- for most common types and generally should not need CASTs for usage.
 -------------------------------------------------------------------------------
 
@@ -360,7 +373,7 @@ CREATE FUNCTION ASSERT_IS_NOT_NULL(A INTEGER)
     NO EXTERNAL ACTION
 RETURN
     CASE WHEN A IS NULL
-        THEN RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' is non-NULL')
+        THEN RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' is non-NULL')
         ELSE 0
     END!
 
@@ -373,7 +386,7 @@ CREATE FUNCTION ASSERT_IS_NOT_NULL(A DOUBLE)
     NO EXTERNAL ACTION
 RETURN
     CASE WHEN A IS NULL
-        THEN RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' is non-NULL')
+        THEN RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' is non-NULL')
         ELSE 0
     END!
 
@@ -386,7 +399,7 @@ CREATE FUNCTION ASSERT_IS_NOT_NULL(A TIMESTAMP)
     NO EXTERNAL ACTION
 RETURN
     CASE WHEN A IS NULL
-        THEN RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' is non-NULL')
+        THEN RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' is non-NULL')
         ELSE 0
     END!
 
@@ -399,7 +412,7 @@ CREATE FUNCTION ASSERT_IS_NOT_NULL(A TIME)
     NO EXTERNAL ACTION
 RETURN
     CASE WHEN A IS NULL
-        THEN RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' is non-NULL')
+        THEN RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' is non-NULL')
         ELSE 0
     END!
 
@@ -412,26 +425,26 @@ CREATE FUNCTION ASSERT_IS_NOT_NULL(A VARCHAR(4000))
     NO EXTERNAL ACTION
 RETURN
     CASE WHEN A IS NULL
-        THEN RAISE_ERROR(ASSERT_SQLSTATE,
+        THEN RAISE_ERROR(ASSERT_FAILED_STATE,
             QUOTE_STRING(SUBSTR(A, 1, 20) || CASE WHEN LENGTH(A) > 20 THEN '...' ELSE '' END) ||
             ' is non-NULL')
         ELSE 0
     END!
 
 COMMENT ON SPECIFIC FUNCTION ASSERT_IS_NOT_NULL1
-    IS 'Signals ASSERT_SQLSTATE if the specified value is NULL'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified value is NULL'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_IS_NOT_NULL2
-    IS 'Signals ASSERT_SQLSTATE if the specified value is NULL'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified value is NULL'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_IS_NOT_NULL3
-    IS 'Signals ASSERT_SQLSTATE if the specified value is NULL'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified value is NULL'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_IS_NOT_NULL4
-    IS 'Signals ASSERT_SQLSTATE if the specified value is NULL'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified value is NULL'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_IS_NOT_NULL5
-    IS 'Signals ASSERT_SQLSTATE if the specified value is NULL'!
+    IS 'Signals ASSERT_FAILED_STATE if the specified value is NULL'!
 
 -- ASSERT_EQUALS(A, B)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if A does not equal B. The function is
+-- Raises the ASSERT_FAILED_STATE if A does not equal B. The function is
 -- overloaded for most common types and generally should not need CASTs for
 -- usage.
 -------------------------------------------------------------------------------
@@ -446,7 +459,7 @@ CREATE FUNCTION ASSERT_EQUALS(A INTEGER, B INTEGER)
 RETURN
     CASE A
         WHEN B THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' does not equal ' || VARCHAR(B))
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' does not equal ' || VARCHAR(B))
     END!
 
 CREATE FUNCTION ASSERT_EQUALS(A DOUBLE, B DOUBLE)
@@ -459,7 +472,7 @@ CREATE FUNCTION ASSERT_EQUALS(A DOUBLE, B DOUBLE)
 RETURN
     CASE A
         WHEN B THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' does not equal ' || VARCHAR(B))
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' does not equal ' || VARCHAR(B))
     END!
 
 CREATE FUNCTION ASSERT_EQUALS(A TIMESTAMP, B TIMESTAMP)
@@ -472,7 +485,7 @@ CREATE FUNCTION ASSERT_EQUALS(A TIMESTAMP, B TIMESTAMP)
 RETURN
     CASE A
         WHEN B THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR_FORMAT(A) || ' does not equal ' || VARCHAR_FORMAT(B))
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR_FORMAT(A) || ' does not equal ' || VARCHAR_FORMAT(B))
     END!
 
 CREATE FUNCTION ASSERT_EQUALS(A TIME, B TIME)
@@ -485,7 +498,7 @@ CREATE FUNCTION ASSERT_EQUALS(A TIME, B TIME)
 RETURN
     CASE A
         WHEN B THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' does not equal ' || VARCHAR(B))
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' does not equal ' || VARCHAR(B))
     END!
 
 CREATE FUNCTION ASSERT_EQUALS(A VARCHAR(4000), B VARCHAR(4000))
@@ -498,27 +511,27 @@ CREATE FUNCTION ASSERT_EQUALS(A VARCHAR(4000), B VARCHAR(4000))
 RETURN
     CASE A
         WHEN B THEN 0
-        ELSE RAISE_ERROR(ASSERT_SQLSTATE,
+        ELSE RAISE_ERROR(ASSERT_FAILED_STATE,
             QUOTE_STRING(SUBSTR(A, 1, 20) || CASE WHEN LENGTH(A) > 20 THEN '...' ELSE '' END) ||
             ' does not equal ' ||
             QUOTE_STRING(SUBSTR(B, 1, 20) || CASE WHEN LENGTH(B) > 20 THEN '...' ELSE '' END))
     END!
 
 COMMENT ON SPECIFIC FUNCTION ASSERT_EQUALS1
-    IS 'Signals ASSERT_SQLSTATE if A does not equal B'!
+    IS 'Signals ASSERT_FAILED_STATE if A does not equal B'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_EQUALS2
-    IS 'Signals ASSERT_SQLSTATE if A does not equal B'!
+    IS 'Signals ASSERT_FAILED_STATE if A does not equal B'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_EQUALS3
-    IS 'Signals ASSERT_SQLSTATE if A does not equal B'!
+    IS 'Signals ASSERT_FAILED_STATE if A does not equal B'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_EQUALS4
-    IS 'Signals ASSERT_SQLSTATE if A does not equal B'!
+    IS 'Signals ASSERT_FAILED_STATE if A does not equal B'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_EQUALS5
-    IS 'Signals ASSERT_SQLSTATE if A does not equal B'!
+    IS 'Signals ASSERT_FAILED_STATE if A does not equal B'!
 
 -- ASSERT_NOT_EQUALS(A, B)
 -------------------------------------------------------------------------------
--- Raises the ASSERT_SQLSTATE if A does equal B. The function is overloaded for
--- most common types and generally should not need CASTs for usage.
+-- Raises the ASSERT_FAILED_STATE if A does equal B. The function is overloaded
+-- for most common types and generally should not need CASTs for usage.
 -------------------------------------------------------------------------------
 
 CREATE FUNCTION ASSERT_NOT_EQUALS(A INTEGER, B INTEGER)
@@ -530,7 +543,7 @@ CREATE FUNCTION ASSERT_NOT_EQUALS(A INTEGER, B INTEGER)
     NO EXTERNAL ACTION
 RETURN
     CASE A
-        WHEN B THEN RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' does not equal ' || VARCHAR(B))
+        WHEN B THEN RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' does not equal ' || VARCHAR(B))
         ELSE 0
     END!
 
@@ -543,7 +556,7 @@ CREATE FUNCTION ASSERT_NOT_EQUALS(A DOUBLE, B DOUBLE)
     NO EXTERNAL ACTION
 RETURN
     CASE A
-        WHEN B THEN RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' does not equal ' || VARCHAR(B))
+        WHEN B THEN RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' does not equal ' || VARCHAR(B))
         ELSE 0
     END!
 
@@ -556,7 +569,7 @@ CREATE FUNCTION ASSERT_NOT_EQUALS(A TIMESTAMP, B TIMESTAMP)
     NO EXTERNAL ACTION
 RETURN
     CASE A
-        WHEN B THEN RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR_FORMAT(A) || ' does not equal ' || VARCHAR_FORMAT(B))
+        WHEN B THEN RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR_FORMAT(A) || ' does not equal ' || VARCHAR_FORMAT(B))
         ELSE 0
     END!
 
@@ -569,7 +582,7 @@ CREATE FUNCTION ASSERT_NOT_EQUALS(A TIME, B TIME)
     NO EXTERNAL ACTION
 RETURN
     CASE A
-        WHEN B THEN RAISE_ERROR(ASSERT_SQLSTATE, VARCHAR(A) || ' does not equal ' || VARCHAR(B))
+        WHEN B THEN RAISE_ERROR(ASSERT_FAILED_STATE, VARCHAR(A) || ' does not equal ' || VARCHAR(B))
         ELSE 0
     END!
 
@@ -582,7 +595,7 @@ CREATE FUNCTION ASSERT_NOT_EQUALS(A VARCHAR(4000), B VARCHAR(4000))
     NO EXTERNAL ACTION
 RETURN
     CASE A
-        WHEN B THEN RAISE_ERROR(ASSERT_SQLSTATE,
+        WHEN B THEN RAISE_ERROR(ASSERT_FAILED_STATE,
             QUOTE_STRING(SUBSTR(A, 1, 20) || CASE WHEN LENGTH(A) > 20 THEN '...' ELSE '' END) ||
             ' does not equal ' ||
             QUOTE_STRING(SUBSTR(B, 1, 20) || CASE WHEN LENGTH(B) > 20 THEN '...' ELSE '' END))
@@ -590,14 +603,14 @@ RETURN
     END!
 
 COMMENT ON SPECIFIC FUNCTION ASSERT_NOT_EQUALS1
-    IS 'Signals ASSERT_SQLSTATE if A equals B'!
+    IS 'Signals ASSERT_FAILED_STATE if A equals B'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_NOT_EQUALS2
-    IS 'Signals ASSERT_SQLSTATE if A equals B'!
+    IS 'Signals ASSERT_FAILED_STATE if A equals B'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_NOT_EQUALS3
-    IS 'Signals ASSERT_SQLSTATE if A equals B'!
+    IS 'Signals ASSERT_FAILED_STATE if A equals B'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_NOT_EQUALS4
-    IS 'Signals ASSERT_SQLSTATE if A equals B'!
+    IS 'Signals ASSERT_FAILED_STATE if A equals B'!
 COMMENT ON SPECIFIC FUNCTION ASSERT_NOT_EQUALS5
-    IS 'Signals ASSERT_SQLSTATE if A equals B'!
+    IS 'Signals ASSERT_FAILED_STATE if A equals B'!
 
 -- vim: set et sw=4 sts=4:

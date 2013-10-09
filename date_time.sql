@@ -2,17 +2,17 @@
 -- DATE, TIME, AND TIMESTAMP UTILITIES
 -------------------------------------------------------------------------------
 -- Copyright (c) 2005-2013 Dave Hughes <dave@waveform.org.uk>
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to
 -- deal in the Software without restriction, including without limitation the
 -- rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 -- sell copies of the Software, and to permit persons to whom the Software is
 -- furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Software.
--- 
+--
 -- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,6 +24,18 @@
 -- The following code defines a considerably expanded set of functions for
 -- dealing with datetime values.
 -------------------------------------------------------------------------------
+
+
+-- SQLSTATES
+-------------------------------------------------------------------------------
+-- The following variables define the set of SQLSTATEs raised by the procedures
+-- and functions in this module.
+-------------------------------------------------------------------------------
+
+CREATE VARIABLE VACATION_WEEKEND_STATE CHAR(5) CONSTANT '90003'!
+
+COMMENT ON VARIABLE VACATION_WEEKEND_STATE
+    IS 'The SQLSTATE raised when an attempt is made to define a weekend as a vacation'!
 
 -- PRIOR_DAYOFWEEK(ADATE, ADOW)
 -- PRIOR_DAYOFWEEK(ADOW)
@@ -2137,8 +2149,8 @@ WHEN (
     DAYOFWEEK(NEW.VACATION) IN (1, 7)
 )
 BEGIN ATOMIC
-    SIGNAL SQLSTATE '75001'
-        SET MESSAGE_TEXT = 'Cannot insert a weekend (Saturday / Sunday) date into VACATIONS';
+    CALL SIGNAL_STATE(VACATION_WEEKEND_STATE,
+        'Cannot insert a weekend (Saturday / Sunday) date into VACATIONS');
 END!
 
 CREATE TRIGGER VACATIONS_UPDATE
@@ -2149,8 +2161,8 @@ WHEN (
     DAYOFWEEK(NEW.VACATION) IN (1, 7)
 )
 BEGIN ATOMIC
-    SIGNAL SQLSTATE '75001'
-        SET MESSAGE_TEXT = 'Cannot change a date to a weekend (Saturday / Sunday) in VACATIONS';
+    CALL SIGNAL_STATE(VACATION_WEEKEND_STATE,
+        'Cannot change a date to a weekend (Saturday / Sunday) in VACATIONS');
 END!
 
 COMMENT ON TABLE VACATIONS

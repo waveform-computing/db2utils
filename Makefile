@@ -61,6 +61,8 @@ uninstall.sql: install.sql
 
 assert.foo: sql.foo
 
+date_time.foo: assert.foo
+
 export_load.foo: sql.foo
 
 exceptions.foo: sql.foo auth.foo
@@ -71,10 +73,10 @@ auth.foo: sql.foo
 
 drop_schema.foo: sql.foo
 
-history.foo: sql.foo auth.foo date_time.foo
+history.foo: sql.foo auth.foo date_time.foo assert.foo
 
 corrections.foo: sql.foo log.foo
 
-toggle_triggers.foo: sql.foo
+toggle_triggers.foo: sql.foo assert.foo
 
 .PHONY: install uninstall clean test

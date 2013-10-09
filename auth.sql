@@ -2,17 +2,17 @@
 -- AUTHORIZATION UTILITIES
 -------------------------------------------------------------------------------
 -- Copyright (c) 2005-2013 Dave Hughes <dave@waveform.org.uk>
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to
 -- deal in the Software without restriction, including without limitation the
 -- rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 -- sell copies of the Software, and to permit persons to whom the Software is
 -- furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Software.
--- 
+--
 -- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,6 +32,18 @@
 -- can be omitted in which case the type will be determined automatically if
 -- possible.
 -------------------------------------------------------------------------------
+
+
+-- SQLSTATES
+-------------------------------------------------------------------------------
+-- The following variables define the set of SQLSTATEs raised by the procedures
+-- and functions in this module.
+-------------------------------------------------------------------------------
+
+CREATE VARIABLE AUTH_AMBIGUOUS_STATE CHAR(5) CONSTANT '90002'!
+
+COMMENT ON VARIABLE AUTH_AMBIGUOUS_STATE
+    IS 'The SQLSTATE raised when an authentication type is ambiguous (e.g. refers to both a user & group)'!
 
 -- AUTH_TYPE(AUTH_NAME)
 -------------------------------------------------------------------------------
@@ -271,7 +283,7 @@ RETURN
         SELECT TABSCHEMA, TABNAME, 'INSERT',     INSERTAUTH FROM TABLE_AUTHS_1 WHERE INSERTAUTH IN ('Y', 'G') UNION ALL
         SELECT TABSCHEMA, TABNAME, 'REFERENCES', REFAUTH    FROM TABLE_AUTHS_1 WHERE REFAUTH    IN ('Y', 'G') UNION ALL
         SELECT TABSCHEMA, TABNAME, 'SELECT',     SELECTAUTH FROM TABLE_AUTHS_1 WHERE SELECTAUTH IN ('Y', 'G') UNION ALL
-        SELECT TABSCHEMA, TABNAME, 'UPDATE',     UPDATEAUTH FROM TABLE_AUTHS_1 WHERE UPDATEAUTH IN ('Y', 'G') 
+        SELECT TABSCHEMA, TABNAME, 'UPDATE',     UPDATEAUTH FROM TABLE_AUTHS_1 WHERE UPDATEAUTH IN ('Y', 'G')
     ),
     TABLE_AUTHS(OBJECT_TYPE, OBJECT_ID, AUTH, SUFFIX, LEVEL) AS (
         SELECT
@@ -598,7 +610,7 @@ RETURN
     ),
     DEST_AUTHS AS (
         SELECT * FROM TABLE(AUTHS_HELD(
-            DEST, 
+            DEST,
             DEST_TYPE,
             INCLUDE_COLUMNS,
             INCLUDE_PERSONAL
@@ -815,9 +827,13 @@ CREATE PROCEDURE COPY_AUTH(
     MODIFIES SQL DATA
     LANGUAGE SQL
 BEGIN ATOMIC
+    DECLARE NEWSTATE CHAR(5);
     DECLARE EXIT HANDLER FOR SQLSTATE '21000'
-        SIGNAL SQLSTATE '80002'
-        SET MESSAGE_TEXT = 'Ambiguous type for authorization name';
+        BEGIN
+            SET NEWSTATE = AUTH_AMBIGUOUS_STATE;
+            SIGNAL SQLSTATE NEWSTATE
+                SET MESSAGE_TEXT = 'Ambiguous type for authorization name';
+        END;
     FOR D AS
         SELECT DDL
         FROM
@@ -946,9 +962,13 @@ CREATE PROCEDURE REMOVE_AUTH(
     MODIFIES SQL DATA
     LANGUAGE SQL
 BEGIN ATOMIC
+    DECLARE NEWSTATE CHAR(5);
     DECLARE EXIT HANDLER FOR SQLSTATE '21000'
-        SIGNAL SQLSTATE '80002'
-        SET MESSAGE_TEXT = 'Ambiguous type for authorization name';
+        BEGIN
+            SET NEWSTATE = AUTH_AMBIGUOUS_STATE;
+            SIGNAL SQLSTATE NEWSTATE
+                SET MESSAGE_TEXT = 'Ambiguous type for authorization name';
+        END;
     -- If we remove CONTROL from a table, and the user holds CONTROL on a view
     -- defined over that table, the user implicitly loses CONTROL from the
     -- view. If we subsequently attempt to remove CONTROL the view then
@@ -1425,7 +1445,7 @@ CREATE PROCEDURE RESTORE_AUTHS(ASCHEMA VARCHAR(128))
     LANGUAGE SQL
 BEGIN ATOMIC
     FOR D AS
-        SELECT T.TABNAME
+        SELECT DISTINCT T.TABNAME
         FROM
             SYSCAT.TABLES T INNER JOIN SAVED_AUTH S
                 ON T.TABSCHEMA = S.TABSCHEMA
@@ -1445,16 +1465,7 @@ CREATE PROCEDURE RESTORE_AUTHS()
     NO EXTERNAL ACTION
     LANGUAGE SQL
 BEGIN ATOMIC
-    FOR D AS
-        SELECT T.TABSCHEMA, T.TABNAME
-        FROM
-            SYSCAT.TABLES T INNER JOIN SAVED_AUTH S
-                ON T.TABSCHEMA = S.TABSCHEMA
-                AND T.TABNAME = S.TABNAME
-    DO
-        CALL RESTORE_AUTH(D.TABSCHEMA, D.TABNAME);
-    END FOR;
-    DELETE FROM SAVED_AUTH;
+    CALL RESTORE_AUTH(CURRENT SCHEMA);
 END!
 
 COMMENT ON SPECIFIC PROCEDURE RESTORE_AUTHS1
