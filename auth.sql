@@ -2,17 +2,17 @@
 -- AUTHORIZATION UTILITIES
 -------------------------------------------------------------------------------
 -- Copyright (c) 2005-2013 Dave Hughes <dave@waveform.org.uk>
--- 
+--
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to
 -- deal in the Software without restriction, including without limitation the
 -- rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 -- sell copies of the Software, and to permit persons to whom the Software is
 -- furnished to do so, subject to the following conditions:
--- 
+--
 -- The above copyright notice and this permission notice shall be included in
 -- all copies or substantial portions of the Software.
--- 
+--
 -- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -283,7 +283,7 @@ RETURN
         SELECT TABSCHEMA, TABNAME, 'INSERT',     INSERTAUTH FROM TABLE_AUTHS_1 WHERE INSERTAUTH IN ('Y', 'G') UNION ALL
         SELECT TABSCHEMA, TABNAME, 'REFERENCES', REFAUTH    FROM TABLE_AUTHS_1 WHERE REFAUTH    IN ('Y', 'G') UNION ALL
         SELECT TABSCHEMA, TABNAME, 'SELECT',     SELECTAUTH FROM TABLE_AUTHS_1 WHERE SELECTAUTH IN ('Y', 'G') UNION ALL
-        SELECT TABSCHEMA, TABNAME, 'UPDATE',     UPDATEAUTH FROM TABLE_AUTHS_1 WHERE UPDATEAUTH IN ('Y', 'G') 
+        SELECT TABSCHEMA, TABNAME, 'UPDATE',     UPDATEAUTH FROM TABLE_AUTHS_1 WHERE UPDATEAUTH IN ('Y', 'G')
     ),
     TABLE_AUTHS(OBJECT_TYPE, OBJECT_ID, AUTH, SUFFIX, LEVEL) AS (
         SELECT
@@ -610,7 +610,7 @@ RETURN
     ),
     DEST_AUTHS AS (
         SELECT * FROM TABLE(AUTHS_HELD(
-            DEST, 
+            DEST,
             DEST_TYPE,
             INCLUDE_COLUMNS,
             INCLUDE_PERSONAL
