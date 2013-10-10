@@ -40,12 +40,8 @@ dist: $(ALL_SQL) $(ALL_EXT) $(ALL_TESTS) \
 	done
 	tar -cvzf dist/db2utils-$(VERSION).tar.gz -C build/ db2utils/
 
-utils.sql: Makefile
-	cat << EOF > $@ \
-	CREATE ROLE UTILS_USER!\
-	CREATE ROLE UTILS_ADMIN!\
-	GRANT CREATEIN, ALTERIN, DROPIN ON SCHEMA $(SCHEMANAME) TO ROLE UTILS_ADMIN WITH GRANT OPTION!\
-	EOF
+utils.sql: utils.sqt Makefile
+	sed -e 's/%SCHEMANAME%/$(SCHEMANAME)/' $< > $@
 
 %.foo: %.sql
 	cat $< >> foo

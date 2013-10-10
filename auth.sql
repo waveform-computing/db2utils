@@ -802,7 +802,7 @@ COMMENT ON SPECIFIC FUNCTION AUTH_DIFF4
 -- 'N' if omitted, and has no effect in the case where SOURCE is not a user.
 -------------------------------------------------------------------------------
 
-CREATE FUNCTION _COPY_LIST(
+CREATE FUNCTION COPY$LIST(
     SOURCE VARCHAR(128),
     SOURCE_TYPE VARCHAR(1),
     DEST VARCHAR(128),
@@ -814,7 +814,7 @@ CREATE FUNCTION _COPY_LIST(
         OBJECT_ID VARCHAR(262),
         DDL VARCHAR(2000)
     )
-    SPECIFIC _COPY_LIST
+    SPECIFIC COPY$LIST
     NOT DETERMINISTIC
     NO EXTERNAL ACTION
     READS SQL DATA
@@ -874,7 +874,7 @@ BEGIN ATOMIC
     FOR D AS
         SELECT DDL
         FROM
-            TABLE(_COPY_LIST(SOURCE, SOURCE_TYPE, DEST, DEST_TYPE, INCLUDE_PERSONAL)) AS T
+            TABLE(COPY$LIST(SOURCE, SOURCE_TYPE, DEST, DEST_TYPE, INCLUDE_PERSONAL)) AS T
     DO
         EXECUTE IMMEDIATE D.DDL;
     END FOR;
@@ -941,7 +941,7 @@ COMMENT ON SPECIFIC PROCEDURE COPY_AUTH3
 -- be handled manually.
 -------------------------------------------------------------------------------
 
-CREATE FUNCTION _REMOVE_LIST(
+CREATE FUNCTION REMOVE$LIST(
     AUTH_NAME VARCHAR(128),
     AUTH_TYPE VARCHAR(1),
     INCLUDE_PERSONAL VARCHAR(1)
@@ -952,7 +952,7 @@ CREATE FUNCTION _REMOVE_LIST(
         AUTH VARCHAR(140),
         DDL VARCHAR(2000)
     )
-    SPECIFIC _REMOVE_LIST
+    SPECIFIC REMOVE$LIST
     NOT DETERMINISTIC
     NO EXTERNAL ACTION
     READS SQL DATA
@@ -1018,17 +1018,16 @@ BEGIN ATOMIC
     -- view. If we subsequently attempt to remove CONTROL the view then
     -- SQLSTATE 42504 will be raised but should be ignored. This SQLSTATE is
     -- also raised in the event that a REVOKE fails because CONTROL implies
-    -- SELECT/INSERT/UPDATE/DELETE but the ORDER BY in _REMOVE_LIST handles
-    -- that particular case. Annoyingly, these two cases have the same SQLSTATE
-    -- but different SQLCODEs - but we can only trap SQLSTATE with these
-    -- handlers.
+    -- SELECT/INSERT/UPDATE/DELETE but the ORDER BY in REMOVE$LIST handles that
+    -- particular case. Annoyingly, these two cases have the same SQLSTATE but
+    -- different SQLCODEs - but we can only trap SQLSTATE with these handlers.
     DECLARE CONTINUE HANDLER FOR SQLSTATE '42504'
         BEGIN
         END;
     FOR D AS
         SELECT DDL
         FROM
-            TABLE(_REMOVE_LIST(AUTH_NAME, AUTH_TYPE, INCLUDE_PERSONAL)) AS T
+            TABLE(REMOVE$LIST(AUTH_NAME, AUTH_TYPE, INCLUDE_PERSONAL)) AS T
         ORDER BY
             -- CONTROL must be removed before SELECT/INSERT/UPDATE/DELETE or
             -- DB2 complains that CONTROL implies the others
