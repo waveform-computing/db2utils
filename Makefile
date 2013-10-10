@@ -23,6 +23,7 @@ clean: $(SUBDIRS)
 	$(MAKE) -C tests clean
 	rm -f foo
 	rm -f *.foo
+	rm -f utils.sql
 	rm -f install.sql
 	rm -f uninstall.sql
 	rm -fr build/ dist/
