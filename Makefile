@@ -59,24 +59,26 @@ uninstall.sql: install.sql
 	awk -f uninstall.awk $< | tac >> $@
 	echo "COMMIT!" >> $@
 
-assert.foo: sql.foo
+assert.foo: utils.foo sql.foo
 
-date_time.foo: assert.foo
+date_time.foo: utils.foo assert.foo
 
-export_load.foo: sql.foo
+export_load.foo: utils.foo sql.foo
 
-exceptions.foo: sql.foo auth.foo
+exceptions.foo: utils.foo sql.foo auth.foo
 
-evolve.foo: sql.foo auth.foo
+evolve.foo: utils.foo sql.foo auth.foo
 
-auth.foo: sql.foo
+auth.foo: utils.foo sql.foo
 
-drop_schema.foo: sql.foo
+drop_schema.foo: utils.foo sql.foo
 
-history.foo: sql.foo auth.foo date_time.foo assert.foo
+history.foo: utils.foo sql.foo auth.foo date_time.foo assert.foo
 
-corrections.foo: sql.foo log.foo
+corrections.foo: utils.foo sql.foo log.foo
 
-toggle_triggers.foo: sql.foo assert.foo
+toggle_triggers.foo: utils.foo sql.foo assert.foo
+
+sql.foo: utils.foo
 
 .PHONY: install uninstall clean test

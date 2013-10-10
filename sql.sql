@@ -25,6 +25,20 @@
 -- constructing SQL with SQL, including the appropriate escaping.
 -------------------------------------------------------------------------------
 
+
+-- ROLES
+-------------------------------------------------------------------------------
+-- The following roles grant usage and administrative rights to the objects
+-- created by this module.
+-------------------------------------------------------------------------------
+
+CREATE ROLE UTILS_SQL_USER!
+CREATE ROLE UTILS_SQL_ADMIN!
+
+GRANT ROLE UTILS_SQL_USER TO ROLE UTILS_USER!
+GRANT ROLE UTILS_SQL_USER TO ROLE UTILS_SQL_ADMIN WITH ADMIN OPTION!
+GRANT ROLE UTILS_SQL_ADMIN TO ROLE UTILS_ADMIN WITH ADMIN OPTION!
+
 -- QUOTE_STRING(ASTRING)
 -------------------------------------------------------------------------------
 -- Returns ASTRING surrounded by single quotes and performs any necessary
@@ -77,6 +91,9 @@ BEGIN ATOMIC
     RETURN RESULT || '''';
 END!
 
+GRANT EXECUTE ON SPECIFIC FUNCTION QUOTE_STRING1 TO ROLE UTILS_SQL_USER!
+GRANT EXECUTE ON SPECIFIC FUNCTION QUOTE_STRING1 TO ROLE UTILS_SQL_ADMIN WITH GRANT OPTION!
+
 COMMENT ON SPECIFIC FUNCTION QUOTE_STRING1
     IS 'Returns ASTRING surrounded by single quotes with all necessary escaping. Useful when constructing SQL for EXECUTE IMMEDIATE within a procedure'!
 
@@ -114,7 +131,10 @@ RETURN
             '"' || REPLACE(RTRIM(AIDENT), '"', '""') || '"'
     END!
 
-COMMENT ON SPECIFIC FUNCTION QUOTE_STRING1
+GRANT EXECUTE ON SPECIFIC FUNCTION QUOTE_IDENTIFIER1 TO ROLE UTILS_SQL_USER!
+GRANT EXECUTE ON SPECIFIC FUNCTION QUOTE_IDENTIFIER1 TO ROLE UTILS_SQL_ADMIN WITH GRANT OPTION!
+
+COMMENT ON SPECIFIC FUNCTION QUOTE_IDENTIFIER1
     IS 'If AIDENT is an identifier which requires quoting, returns AIDENT surrounded by double quotes with all contained double quotes doubled. Useful when constructing SQL for EXECUTE IMMEDIATE within a procedure'!
 
 -- vim: set et sw=4 sts=4:

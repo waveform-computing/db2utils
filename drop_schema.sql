@@ -22,6 +22,20 @@
 -- IN THE SOFTWARE.
 -------------------------------------------------------------------------------
 
+
+-- ROLES
+-------------------------------------------------------------------------------
+-- The following roles grant usage and administrative rights to the objects
+-- created by this module.
+-------------------------------------------------------------------------------
+
+CREATE ROLE UTILS_DROP_SCHEMA_USER!
+CREATE ROLE UTILS_DROP_SCHEMA_ADMIN!
+
+GRANT ROLE UTILS_DROP_SCHEMA_USER TO ROLE UTILS_USER!
+GRANT ROLE UTILS_DROP_SCHEMA_USER TO ROLE UTILS_DROP_SCHEMA_ADMIN WITH ADMIN OPTION!
+GRANT ROLE UTILS_DROP_SCHEMA_ADMIN TO ROLE UTILS_ADMIN WITH ADMIN OPTION!
+
 -- DROP_SCHEMA(ASCHEMA)
 -------------------------------------------------------------------------------
 -- DROP_SCHEMA is a utility procedure which drops all objects (tables, views,
@@ -115,6 +129,9 @@ BEGIN ATOMIC
         EXECUTE IMMEDIATE D.DDL;
     END FOR;
 END!
+
+GRANT EXECUTE ON SPECIFIC PROCEDURE DROP_SCHEMA1 TO ROLE UTILS_DROP_SCHEMA_USER!
+GRANT EXECUTE ON SPECIFIC PROCEDURE DROP_SCHEMA1 TO ROLE UTILS_DROP_SCHEMA_ADMIN WITH GRANT OPTION!
 
 COMMENT ON SPECIFIC PROCEDURE DROP_SCHEMA1
     IS 'Drops ASCHEMA and all objects within it'!
