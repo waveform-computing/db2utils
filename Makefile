@@ -1,7 +1,7 @@
 DBNAME:=SAMPLE
 SCHEMANAME:=UTILS
 
-VERSION:=0.1
+VERSION:=0.2
 ALL_EXT:=$(wildcard pcre/*.c) $(wildcard pcre/*.h)
 ALL_TESTS:=$(wildcard tests/*.sql)
 ALL_SQL:=$(filter-out install.sql uninstall.sql,$(wildcard *.sql))
