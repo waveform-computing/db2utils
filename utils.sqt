@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
--- UTILS BASE
+-- AUTHORIZATION UTILITIES
 -------------------------------------------------------------------------------
--- Copyright (c) 2013 Dave Hughes <dave@waveform.org.uk>
+-- Copyright (c) 2005-2013 Dave Hughes <dave@waveform.org.uk>
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to
@@ -21,16 +21,12 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 -- IN THE SOFTWARE.
 -------------------------------------------------------------------------------
-
-
--- ROLES
--------------------------------------------------------------------------------
--- The following roles grant usage and administrative rights to the objects
--- created by this package.
+-- This module provides the package-wide roles that inherit all privileges from
+-- the module-specific roles defined by the other .sql files.
 -------------------------------------------------------------------------------
 
 CREATE ROLE UTILS_USER!
 CREATE ROLE UTILS_ADMIN!
 
-GRANT CREATEIN, ALTERIN, DROPIN ON SCHEMA UTILS TO ROLE UTILS_ADMIN WITH GRANT OPTION!
+GRANT CREATEIN, ALTERIN, DROPIN ON SCHEMA %SCHEMANAME% TO ROLE UTILS_ADMIN WITH GRANT OPTION!
 

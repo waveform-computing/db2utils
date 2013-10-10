@@ -23,6 +23,7 @@ clean: $(SUBDIRS)
 	$(MAKE) -C tests clean
 	rm -f foo
 	rm -f *.foo
+	rm -f utils.sql
 	rm -f install.sql
 	rm -f uninstall.sql
 	rm -fr build/ dist/
@@ -38,6 +39,9 @@ dist: $(ALL_SQL) $(ALL_EXT) $(ALL_TESTS) \
 		cp $$f build/db2utils/$$(dirname $$f)/ ; \
 	done
 	tar -cvzf dist/db2utils-$(VERSION).tar.gz -C build/ db2utils/
+
+utils.sql: utils.sqt Makefile
+	sed -e 's/%SCHEMANAME%/$(SCHEMANAME)/' $< > $@
 
 %.foo: %.sql
 	cat $< >> foo
