@@ -22,6 +22,23 @@
 -- IN THE SOFTWARE.
 -------------------------------------------------------------------------------
 
+
+-- ROLES
+-------------------------------------------------------------------------------
+-- The following roles grant usage and administrative rights to the objects
+-- created by this module.
+-------------------------------------------------------------------------------
+
+CREATE ROLE UTILS_LOG_READER!
+CREATE ROLE UTILS_LOG_WRITER!
+CREATE ROLE UTILS_LOG_ADMIN!
+
+GRANT ROLE UTILS_LOG_READER TO ROLE UTILS_USER!
+GRANT ROLE UTILS_LOG_WRITER TO ROLE UTILS_USER!
+GRANT ROLE UTILS_LOG_READER TO ROLE UTILS_LOG_ADMIN WITH ADMIN OPTION!
+GRANT ROLE UTILS_LOG_WRITER TO ROLE UTILS_LOG_ADMIN WITH ADMIN OPTION!
+GRANT ROLE UTILS_LOG_ADMIN TO ROLE UTILS_ADMIN WITH ADMIN OPTION!
+
 -- VARCHAR_EXPRESSION(EXPRESSION, TYPESCHEMA, TYPENAME)
 -- VARCHAR_EXPRESSION(EXPRESSION, TYPENAME)
 -------------------------------------------------------------------------------
@@ -88,6 +105,9 @@ CREATE FUNCTION VARCHAR_EXPRESSION(
 RETURN
     VARCHAR_EXPRESSION(EXPRESSION, 'SYSIBM', TYPENAME)!
 
+GRANT EXECUTE ON SPECIFIC FUNCTION VARCHAR_EXPRESSION1 TO ROLE UTILS_LOG_ADMIN WITH GRANT OPTION!
+GRANT EXECUTE ON SPECIFIC FUNCTION VARCHAR_EXPRESSION2 TO ROLE UTILS_LOG_ADMIN WITH GRANT OPTION!
+
 -- LOG
 -------------------------------------------------------------------------------
 -- The LOG table holds a list of administrative notifications.  The CREATED
@@ -122,10 +142,6 @@ RETURN
 -- LOG_ADMIN -- Has CONTROL of the table
 -------------------------------------------------------------------------------
 
-CREATE ROLE LOG_ADMIN!
-CREATE ROLE LOG_READER!
-CREATE ROLE LOG_WRITER!
-
 CREATE TABLE LOG (
     CREATED          TIMESTAMP DEFAULT CURRENT TIMESTAMP NOT NULL,
     SEVERITY         CHAR(1) DEFAULT 'I' NOT NULL,
@@ -158,8 +174,8 @@ ALTER TABLE LOG
         (SUBJECT_TYPE NOT IN ('D', 'S') AND SUBJECT_NAME IS NOT NULL)
     )!
 
-GRANT CONTROL ON LOG TO ROLE LOG_ADMIN!
-GRANT SELECT ON LOG TO ROLE LOG_READER!
-GRANT INSERT ON LOG TO ROLE LOG_WRITER!
+GRANT CONTROL ON TABLE LOG TO ROLE UTILS_LOG_ADMIN!
+GRANT SELECT ON TABLE LOG TO ROLE UTILS_LOG_READER!
+GRANT INSERT ON TABLE LOG TO ROLE UTILS_LOG_WRITER!
 
 -- vim: set et sw=4 sts=4:
