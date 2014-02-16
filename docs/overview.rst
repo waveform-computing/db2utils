@@ -1,116 +1,8 @@
-.. _documentation:
+.. _overview:
 
-=============
-Documentation
-=============
-
-db2utils is a collection of utility routines for DB2 for Linux/UNIX/Windows
-(DB2 for LUW) which I have  developed over several years as a DBA to make my
-duties a little easier. Some of the routines are obsolete on the latest
-versions of DB2 for LUW (e.g. the :ref:`DROP_SCHEMA` procedure) but I've
-included them nonetheless as they may be useful for those using older editions,
-or because I prefer their calling convention.
-
-The routines have been tested (sometimes extensively, sometimes less so!) on
-DB2 9.5, 9.7, 10.1, and 10.5 for Linux, which is the only platform I tend to
-use these days.  Patches are welcomed to extend compatibility to other
-platforms or versions.  See the :ref:`installation` topic for installation
-instructions.
-
-Reference
-=========
-
-Each procedure and function is documented below (or will be once I get the
-time!). Click on a routine name to view the documentation:
-
-.. toctree::
-   :maxdepth: 1
-
-   ASSERT_COLUMN_EXISTS
-   ASSERT_EQUALS
-   ASSERT_IS_NOT_NULL
-   ASSERT_IS_NULL
-   ASSERT_NOT_EQUALS
-   ASSERT_SIGNALS
-   ASSERT_TABLE_EXISTS
-   AUTH_DIFF
-   AUTH_TYPE
-   AUTHS_HELD
-   COPY_AUTH
-   CREATE_CORRECTION_TRIGGERS
-   CREATE_EXCEPTION_TABLE
-   CREATE_EXCEPTION_VIEW
-   CREATE_HISTORY_CHANGES
-   CREATE_HISTORY_SNAPSHOTS
-   CREATE_HISTORY_TABLE
-   CREATE_HISTORY_TRIGGERS
-   DATE
-   DATE_RANGE
-   DISABLE_TRIGGER
-   DISABLE_TRIGGERS
-   DROP_SCHEMA
-   ENABLE_TRIGGER
-   ENABLE_TRIGGERS
-   EXPORT_SCHEMA
-   EXPORT_TABLE
-   HOUR_END
-   HOUR_START
-   LOAD_SCHEMA
-   LOAD_TABLE
-   MINUTE_END
-   MINUTE_START
-   MONTH_END
-   MONTH_START
-   MONTH_WEEK
-   MONTH_WEEK_ISO
-   MOVE_AUTH
-   NEXT_DAY_OF_WEEK
-   PCRE_GROUPS
-   PCRE_SEARCH
-   PCRE_SPLIT
-   PCRE_SUB
-   PRIOR_DAY_OF_WEEK
-   QUARTER_END
-   QUARTER_START
-   QUARTER_WEEK
-   QUARTER_WEEK_ISO
-   QUOTE_IDENTIFIER
-   QUOTE_STRING
-   RECREATE_TRIGGER
-   RECREATE_TRIGGERS
-   RECREATE_VIEW
-   RECREATE_VIEWS
-   REMOVE_AUTH
-   RESTORE_AUTH
-   RESTORE_AUTHS
-   RESTORE_VIEW
-   RESTORE_VIEWS
-   SAVE_AUTH
-   SAVE_AUTHS
-   SAVE_VIEW
-   SAVE_VIEWS
-   SECOND_END
-   SECONDS
-   SECOND_START
-   TABLE_COLUMNS
-   TIME
-   TIMESTAMP
-   TS_FORMAT
-   WEEK_END
-   WEEK_END_ISO
-   WEEKS_IN_MONTH
-   WEEKS_IN_MONTH_ISO
-   WEEKS_IN_YEAR
-   WEEKS_IN_YEAR_ISO
-   WEEK_START
-   WEEK_START_ISO
-   WORKING_DAY
-   YEAR_ISO
-   YEAR_END
-   YEAR_START
-
-Modules
-=======
+================
+Modules Overview
+================
 
 The routines are divided into modules roughly by topic:
 
@@ -198,6 +90,7 @@ The routines are divided into modules roughly by topic:
 `toggle_triggers.sql`_
    Contains procedures for easily disabling and enabling triggers, including
    specific triggers or all triggers on a given table.
+
 
 .. _PCRE: http://www.pcre.org
 .. _drop_schema.sql: https://github.com/waveform80/db2utils/blob/master/drop_schema.sql

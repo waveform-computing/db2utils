@@ -10,10 +10,10 @@ instructions in the section for your platform below.
 Linux
 =====
 
-Log on as a user which has ``SYSADM`` authority for the DB2 instance you wish
-to install under (commonly this is ``db2inst1``), and ensure the ``db2profile``
+Log on as a user which has **SYSADM** authority for the DB2 instance you wish
+to install under (commonly this is *db2inst1*), and ensure the **db2profile**
 for the target DB2 instance has been sourced (this is the usually the case with
-the ``db2inst1`` user)::
+the *db2inst1* user)::
 
     $ su - db2inst1
     $ source ~db2inst1/sqllib/db2profile
@@ -23,7 +23,7 @@ Extract the archive you downloaded, and change to the directory it creates::
     $ tar -xzf db2utils-0.1.tar.gz
     $ cd db2utils
 
-Edit the two variables ``DBNAME`` and ``SCHEMANAME`` at the top of the
+Edit the two variables **DBNAME** and **SCHEMANAME** at the top of the
 `Makefile`_::
 
     $ ${EDITOR} Makefile
@@ -35,9 +35,9 @@ the "install" target::
     $ make install
 
 This will compile the external pcre UDFs library, install it in the instance
-identified by the ``DB2INSTANCE`` environment variable (which is set by
-``db2profile``), then connect to the database identified by ``DBNAME`` and
-install everything under the schema specified by ``SCHEMANAME``.
+identified by the **DB2INSTANCE** environment variable (which is set by
+**db2profile**), then connect to the database identified by **DBNAME** and
+install everything under the schema specified by **SCHEMANAME**.
 
 If you wish to see the SQL that would be executed without actually executing it
 (if, for example, you wish to edit it before hand) you can create it with the

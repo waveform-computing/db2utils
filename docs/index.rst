@@ -50,7 +50,8 @@ Contents:
    requirements
    installation
    first_steps
-   documentation
+   overview
+   reference
    license
 
 
