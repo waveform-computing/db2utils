@@ -17,7 +17,6 @@ Prototypes
 
     RETURNS DATE
 
-
 Description
 ===========
 

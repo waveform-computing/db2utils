@@ -7,6 +7,9 @@ Reference
 Each procedure and function is documented below (or will be once I get the
 time!). Click on a routine name to view the documentation:
 
+Functions
+=========
+
 .. toctree::
    :maxdepth: 1
 
@@ -20,21 +23,8 @@ time!). Click on a routine name to view the documentation:
    AUTH_DIFF
    AUTH_TYPE
    AUTHS_HELD
-   COPY_AUTH
-   CREATE_CORRECTION_TRIGGERS
-   CREATE_EXCEPTION_TABLE
-   CREATE_EXCEPTION_VIEW
-   CREATE_HISTORY_CHANGES
-   CREATE_HISTORY_SNAPSHOTS
-   CREATE_HISTORY_TABLE
-   CREATE_HISTORY_TRIGGERS
    DATE
    DATE_RANGE
-   DISABLE_TRIGGER
-   DISABLE_TRIGGERS
-   DROP_SCHEMA
-   ENABLE_TRIGGER
-   ENABLE_TRIGGERS
    EXPORT_SCHEMA
    EXPORT_TABLE
    HOUR_END
@@ -47,7 +37,6 @@ time!). Click on a routine name to view the documentation:
    MONTH_START
    MONTH_WEEK
    MONTH_WEEK_ISO
-   MOVE_AUTH
    NEXT_DAY_OF_WEEK
    PCRE_GROUPS
    PCRE_SEARCH
@@ -60,19 +49,6 @@ time!). Click on a routine name to view the documentation:
    QUARTER_WEEK_ISO
    QUOTE_IDENTIFIER
    QUOTE_STRING
-   RECREATE_TRIGGER
-   RECREATE_TRIGGERS
-   RECREATE_VIEW
-   RECREATE_VIEWS
-   REMOVE_AUTH
-   RESTORE_AUTH
-   RESTORE_AUTHS
-   RESTORE_VIEW
-   RESTORE_VIEWS
-   SAVE_AUTH
-   SAVE_AUTHS
-   SAVE_VIEW
-   SAVE_VIEWS
    SECOND_END
    SECONDS
    SECOND_START
@@ -93,3 +69,36 @@ time!). Click on a routine name to view the documentation:
    YEAR_END
    YEAR_START
 
+Procedures
+==========
+
+.. toctree::
+   :maxdepth: 1
+
+   COPY_AUTH
+   CREATE_CORRECTION_TRIGGERS
+   CREATE_EXCEPTION_TABLE
+   CREATE_EXCEPTION_VIEW
+   CREATE_HISTORY_CHANGES
+   CREATE_HISTORY_SNAPSHOTS
+   CREATE_HISTORY_TABLE
+   CREATE_HISTORY_TRIGGERS
+   DISABLE_TRIGGER
+   DISABLE_TRIGGERS
+   DROP_SCHEMA
+   ENABLE_TRIGGER
+   ENABLE_TRIGGERS
+   MOVE_AUTH
+   RECREATE_TRIGGER
+   RECREATE_TRIGGERS
+   RECREATE_VIEW
+   RECREATE_VIEWS
+   REMOVE_AUTH
+   RESTORE_AUTH
+   RESTORE_AUTHS
+   RESTORE_VIEW
+   RESTORE_VIEWS
+   SAVE_AUTH
+   SAVE_AUTHS
+   SAVE_VIEW
+   SAVE_VIEWS
