@@ -4,7 +4,8 @@
 WEEKSINMONTH_ISO scalar function
 ================================
 
-Returns the number of weeks within the month that ADATE exists within, or the number of weeks in AMONTH in AYEAR.
+Returns the number of weeks within the month that ADATE exists within, or the
+number of weeks in AMONTH in AYEAR.
 
 Prototypes
 ==========
@@ -22,19 +23,31 @@ Prototypes
 Description
 ===========
 
-Returns the number of weeks in AMONTH in AYEAR (weeks start on a Monday, and partial weeks are permitted at the start and end of the month), or the number of weeks in the month that ADATE exists within depending on the variant of the function that is called.
+Returns the number of weeks in AMONTH in AYEAR (weeks start on a Monday, and
+partial weeks are permitted at the start and end of the month), or the number
+of weeks in the month that ADATE exists within depending on the variant of the
+function that is called.
 
-**Note:** As far as I'm aware, ISO8601 doesn't say anything about weeks within a month, hence why this function differs from :ref:`WEEKS_IN_YEAR_ISO` which does *not* permit partial weeks at the start and end of a year. This function simply mirrors the functionality of :ref:`WEEKS_IN_MONTH` but with a definition of weeks that start on a Monday instead of Sunday.
+.. note::
+
+    As far as I'm aware, ISO8601 doesn't say anything about weeks within a
+    month, hence why this function differs from :ref:`WEEKS_IN_YEAR_ISO` which
+    does *not* permit partial weeks at the start and end of a year. This
+    function simply mirrors the functionality of :ref:`WEEKS_IN_MONTH` but with
+    a definition of weeks that start on a Monday instead of Sunday.
 
 Parameters
 ==========
 
 AYEAR
-    If provided, the year containing AMONTH for which to calculate the number of weeks.
+    If provided, the year containing AMONTH for which to calculate the number
+    of weeks.
 AMONTH
-    If provided, the month within AYEAR for which to calculate the number of weeks.
+    If provided, the month within AYEAR for which to calculate the number of
+    weeks.
 ADATE
-    If provided, the date within the month for which to calculate the number of weeks. Either AYEAR and AMONTH, or ADATE must be provided.
+    If provided, the date within the month for which to calculate the number of
+    weeks. Either AYEAR and AMONTH, or ADATE must be provided.
 
 Examples
 ========
@@ -44,7 +57,6 @@ Calculate the number of weeks in January 2010:
 .. code-block:: sql
 
     VALUES WEEKSINMONTH_ISO(2010, 1);
-
 
 ::
 
@@ -59,7 +71,6 @@ Calculate the number of weeks in the months of 2010:
 
     SELECT MONTH(D) AS MONTH, WEEKSINMONTH_ISO(D) AS WEEKS
     FROM TABLE(DATE_RANGE('2010-01-01', '2010-12-01', 100));
-
 
 ::
 

@@ -4,7 +4,8 @@
 WEEKSTART scalar function
 =========================
 
-Returns the first day (always a Sunday) of the week that ADATE exists within, or the first day of the week AWEEK in the year AYEAR.
+Returns the first day (always a Sunday) of the week that ADATE exists within,
+or the first day of the week AWEEK in the year AYEAR.
 
 Prototypes
 ==========
@@ -22,7 +23,9 @@ Prototypes
 Description
 ===========
 
-Returns a DATE representing the first day of AWEEK in AYEAR, or the first day of the week of ADATE (always a Sunday) depending on the variant of the function that is called.
+Returns a DATE representing the first day of AWEEK in AYEAR, or the first day
+of the week of ADATE (always a Sunday) depending on the variant of the function
+that is called.
 
 Parameters
 ==========
@@ -32,7 +35,8 @@ AYEAR
 AWEEK
     If provided, the week for which to return to the starting date.
 ADATE
-    If provided the date in the week for which to return the starting date. Either AYEAR and AWEEK, or ADATE must be specified.
+    If provided the date in the week for which to return the starting date.
+    Either AYEAR and AWEEK, or ADATE must be specified.
 
 Examples
 ========
@@ -42,7 +46,6 @@ Calculate the starting date of the first week in 2010:
 .. code-block:: sql
 
     VALUES WEEKSTART(2010, 1);
-
 
 ::
 
@@ -56,7 +59,6 @@ Calculate the start of the week for the 28th of January, 2009:
 .. code-block:: sql
 
     VALUES WEEKSTART('2009-01-28');
-
 
 ::
 

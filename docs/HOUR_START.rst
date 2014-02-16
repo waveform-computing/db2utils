@@ -4,7 +4,8 @@
 HOURSTART scalar function
 =========================
 
-Returns a TIMESTAMP at the start of AHOUR on the date AYEAR, AMONTH, ADAY, or at the start of the hour of ATIMESTAMP.
+Returns a TIMESTAMP at the start of AHOUR on the date AYEAR, AMONTH, ADAY, or
+at the start of the hour of ATIMESTAMP.
 
 Prototypes
 ==========
@@ -21,7 +22,9 @@ Prototypes
 Description
 ===========
 
-Returns a TIMESTAMP value representing the first microsecond of AHOUR in the date given by AYEAR, AMONTH, and ADAY, or of the timestamp given by ATIMESTAMP depending on the variant of the function that is called.
+Returns a TIMESTAMP value representing the first microsecond of AHOUR in the
+date given by AYEAR, AMONTH, and ADAY, or of the timestamp given by ATIMESTAMP
+depending on the variant of the function that is called.
 
 Parameters
 ==========
@@ -35,7 +38,8 @@ ADAY
 AHOUR
     If provided, the hour component of the resulting timestamp.
 ATIMESTAMP
-    If provided, the timestamp from which to derive the start of the hour. Either AYEAR, AMONTH, ADAY, and AHOUR, or ATIMESTAMP must be provided.
+    If provided, the timestamp from which to derive the start of the hour.
+    Either AYEAR, AMONTH, ADAY, and AHOUR, or ATIMESTAMP must be provided.
 
 Examples
 ========
@@ -45,7 +49,6 @@ Truncate the specified timestamp to the nearest hour:
 .. code-block:: sql
 
     VALUES HOURSTART('2010-01-23 04:56:00');
-
 
 ::
 
@@ -63,7 +66,6 @@ Calculate the start of the first working day in 2011:
         THEN NEXT_DAYOFWEEK(YEARSTART(2011), 2)
         ELSE YEARSTART(2011)
       END), 9);
-
 
 ::
 

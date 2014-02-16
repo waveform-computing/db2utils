@@ -4,7 +4,8 @@
 QUARTEREND scalar function
 ==========================
 
-Returns the last day of the quarter that ADATE exists within, or the last day of the quarter AQUARTER in the year AYEAR.
+Returns the last day of the quarter that ADATE exists within, or the last day
+of the quarter AQUARTER in the year AYEAR.
 
 Prototypes
 ==========
@@ -22,7 +23,9 @@ Prototypes
 Description
 ===========
 
-Returns a DATE representing the last day of AQUARTER in AYEAR, or the last day of the quarter of ADATE depending on the variant of the function that is called.
+Returns a DATE representing the last day of AQUARTER in AYEAR, or the last day
+of the quarter of ADATE depending on the variant of the function that is
+called.
 
 Parameters
 ==========
@@ -32,7 +35,8 @@ AYEAR
 AQUARTER
     If provided, the quarter for which to return to the ending date.
 ADATE
-    If provided the date in the quarter for which to return the ending date. Either AYEAR and AQUARTER, or ADATE must be specified.
+    If provided the date in the quarter for which to return the ending date.
+    Either AYEAR and AQUARTER, or ADATE must be specified.
 
 Examples
 ========
@@ -42,7 +46,6 @@ Calculate the ending date of the second quarter in 2010:
 .. code-block:: sql
 
     VALUES QUARTEREND(2010, 2);
-
 
 ::
 
@@ -56,7 +59,6 @@ Calculate the end date of the quarter containing the first of February, 2010:
 .. code-block:: sql
 
     VALUES QUARTEREND('2010-02-01');
-
 
 ::
 

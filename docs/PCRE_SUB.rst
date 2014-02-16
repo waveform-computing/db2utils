@@ -16,13 +16,20 @@ Prototypes
 
     RETURNS VARCHAR(4000)
 
-
 Description
 ===========
 
-PCRE substitution function. Given a regular expression in PATTERN, a substitution pattern in REPL, some text to match in TEXT, and an optional 1-based START position for the search, returns REPL with backslash prefixed group specifications replaced by the corresponding matched group, e.g. \0 refers to the group that matches the entire PATTERN, \1 refers to the first capturing group in PATTERN. To include a literal backslash in REPL double it, i.e. !\\. Returns NULL if the PATTERN does not match TEXT.
+PCRE substitution function. Given a regular expression in PATTERN, a
+substitution pattern in REPL, some text to match in TEXT, and an optional
+1-based START position for the search, returns REPL with backslash prefixed
+group specifications replaced by the corresponding matched group, e.g. \0
+refers to the group that matches the entire PATTERN, \1 refers to the first
+capturing group in PATTERN. To include a literal backslash in REPL double it,
+i.e. !\\. Returns NULL if the PATTERN does not match TEXT.
 
-Note that ordinary C-style backslash escapes are NOT interpreted by this function within REPL, i.e. \n will NOT be replaced by a newline character. Use ordinary SQL hex-strings for this.
+Note that ordinary C-style backslash escapes are NOT interpreted by this
+function within REPL, i.e. \n will NOT be replaced by a newline character. Use
+ordinary SQL hex-strings for this.
 
 Parameters
 ==========
@@ -30,16 +37,19 @@ Parameters
 PATTERN
     The Perl-Compatible Regular Expression (PCRE) to search for.
 REPL
-    The replacement pattern to return, after substitution of matched groups (indicated by back-slash prefixed numbers within this string).
+    The replacement pattern to return, after substitution of matched groups
+    (indicated by back-slash prefixed numbers within this string).
 TEXT
     The text to search within.
 START
-    The 1-based position from which to start the search. Defaults to 1 if omitted.
+    The 1-based position from which to start the search. Defaults to 1 if
+    omitted.
 
 Examples
 ========
 
-Simple searches demonstrating extraction of the matched portion of TEXT (if any):
+Simple searches demonstrating extraction of the matched portion of TEXT (if
+any):
 
 .. code-block:: sql
 
@@ -47,7 +57,6 @@ Simple searches demonstrating extraction of the matched portion of TEXT (if any)
       (PCRE_SUB('FOO', '\0', 'FOOBAR')),
       (PCRE_SUB('FOO(BAR)?', '\0', 'FOOBAR')),
       (PCRE_SUB('BAZ', '\0', 'FOOBAR'))
-
 
 ::
 
@@ -64,7 +73,6 @@ A substitution demonstrating the extraction of an IP address from some text:
 
     VALUES PCRE_SUB('\b(\d{1,3}(\.\d{1,3}){3})\b', '\1', 'IP address: 192.168.0.1')
 
-
 ::
 
     1
@@ -78,7 +86,6 @@ A substitution demonstrating the replacement of one HTML tag with another:
 
     VALUES PCRE_SUB('<([A-Z][A-Z0-9]*)[^>]*>(.*?)</\1>', '<I>\2</I>', '<B>BOLD!</B>')
 
-
 ::
 
     1
@@ -91,7 +98,6 @@ A substitution demonstrating that look-aheads do not form part of the match:
 .. code-block:: sql
 
     VALUES PCRE_SUB('Q(?!U)', '\0', 'QI')
-
 
 ::
 

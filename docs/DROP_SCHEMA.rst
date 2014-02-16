@@ -17,9 +17,17 @@ Prototypes
 Description
 ===========
 
-DROP_SCHEMA is a utility procedure which drops all objects (tables, views, triggers, sequences, aliases, etc.) in a schema and then drops the schema. It was originally intended to make destruction of user-owned schemas easier (in the event that a user no longer required access) but can also be used to make writing upgrade scripts easier.
+DROP_SCHEMA is a utility procedure which drops all objects (tables, views,
+triggers, sequences, aliases, etc.) in a schema and then drops the schema. It
+was originally intended to make destruction of user-owned schemas easier (in
+the event that a user no longer required access) but can also be used to make
+writing upgrade scripts easier.
 
-**Note:** This procedure is effectively redundant since DB2 9.5 which includes the built-in procedure `ADMIN_DROP_SCHEMA`_, albeit with a somewhat more complicated calling convention.
+.. note::
+
+    This procedure is effectively redundant since DB2 9.5 which includes
+    the built-in procedure `ADMIN_DROP_SCHEMA`_, albeit with a somewhat more
+    complicated calling convention.
 
 Parameters
 ==========

@@ -4,7 +4,8 @@
 WEEKEND scalar function
 =======================
 
-Returns the last day (always a Saturday) of the week that ADATE exists within, or the last day of the week AWEEK in the year AYEAR.
+Returns the last day (always a Saturday) of the week that ADATE exists within,
+or the last day of the week AWEEK in the year AYEAR.
 
 Prototypes
 ==========
@@ -22,7 +23,9 @@ Prototypes
 Description
 ===========
 
-Returns a DATE representing the last day of AWEEK in AYEAR, or the last day of the week of ADATE (always a Saturday) depending on the variant of the function that is called.
+Returns a DATE representing the last day of AWEEK in AYEAR, or the last day of
+the week of ADATE (always a Saturday) depending on the variant of the function
+that is called.
 
 Parameters
 ==========
@@ -32,7 +35,8 @@ AYEAR
 AWEEK
     If provided, the week for which to return to the ending date.
 ADATE
-    If provided the date in the week for which to return the ending date. Either AYEAR and AWEEK, or ADATE must be specified.
+    If provided the date in the week for which to return the ending date.
+    Either AYEAR and AWEEK, or ADATE must be specified.
 
 Examples
 ========
@@ -42,7 +46,6 @@ Calculate the ending date of the last week in 2010:
 .. code-block:: sql
 
     VALUES WEEKEND(2010, WEEKSINYEAR(2010));
-
 
 ::
 
@@ -56,7 +59,6 @@ Calculate the end of the week for the 28th of January, 2009:
 .. code-block:: sql
 
     VALUES WEEKEND('2009-01-28');
-
 
 ::
 

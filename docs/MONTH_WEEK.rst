@@ -4,7 +4,8 @@
 MONTHWEEK scalar function
 =========================
 
-Returns the week of the month that ADATE exists within (weeks start on a Sunday, result will be in the range 1-6).
+Returns the week of the month that ADATE exists within (weeks start on a
+Sunday, result will be in the range 1-6).
 
 Prototypes
 ==========
@@ -21,7 +22,10 @@ Prototypes
 Description
 ===========
 
-Returns the week of the month of ADATE, where weeks start on a Sunday. The result will be in the range 1-6 as partial weeks are permitted. For example, if the first day of a month is a Saturday, it will be counted as week 1, which lasts one day. The next day, Sunday, will start week 2.
+Returns the week of the month of ADATE, where weeks start on a Sunday. The
+result will be in the range 1-6 as partial weeks are permitted. For example, if
+the first day of a month is a Saturday, it will be counted as week 1, which
+lasts one day. The next day, Sunday, will start week 2.
 
 Parameters
 ==========
@@ -38,7 +42,6 @@ Calculate the week of the month for the 31st of January, 2010:
 
     VALUES MONTHWEEK(DATE(2010, 1, 31));
 
-
 ::
 
     1
@@ -53,7 +56,6 @@ Calculate the length of all weeks in January 2010:
     SELECT MONTHWEEK(D) AS WEEK_NUM, COUNT(*) AS WEEK_LENGTH
     FROM TABLE(DATE_RANGE(MONTHSTART(2010, 1), MONTHEND(2010, 1)))
     GROUP BY MONTHWEEK(D);
-
 
 ::
 

@@ -4,7 +4,8 @@
 PRIOR_DAYOFWEEK scalar function
 ===============================
 
-Returns the latest date earlier than ADATE, which is also a particular day of the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)
+Returns the latest date earlier than ADATE, which is also a particular day of
+the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)
 
 Prototypes
 ==========
@@ -22,15 +23,20 @@ Prototypes
 Description
 ===========
 
-Returns the specified day of the week prior to the given date. Days of the week are specified in the same fashion as the built-in DAYOFWEEK function (i.e. 1=Sunday, 2=Monday, ... 7=Saturday). If ADATE is omitted the current date is used.
+Returns the specified day of the week prior to the given date. Days of the week
+are specified in the same fashion as the built-in DAYOFWEEK function (i.e.
+1=Sunday, 2=Monday, ... 7=Saturday). If ADATE is omitted the current date is
+used.
 
 Parameters
 ==========
 
 ADATE
-    The date before which to return a specific day of the week. If this parameter is omitted the CURRENT DATE special register is used.
+    The date before which to return a specific day of the week. If this
+    parameter is omitted the CURRENT DATE special register is used.
 ADOW
-    The day of the week to find specified as an integer where 1 represents Sunday, 2 is Monday, and so on.
+    The day of the week to find specified as an integer where 1 represents
+    Sunday, 2 is Monday, and so on.
 
 Examples
 ========
@@ -40,7 +46,6 @@ Find the Monday before the start of 2010:
 .. code-block:: sql
 
     VALUES VARCHAR(PRIOR_DAYOFWEEK('2010-01-01', 2), ISO);
-
 
 ::
 
@@ -54,7 +59,6 @@ Find the last Friday in January, 2010:
 .. code-block:: sql
 
     VALUES VARCHAR(PRIOR_DAYOFWEEK(MONTHEND(2010, 1), 6), ISO);
-
 
 ::
 

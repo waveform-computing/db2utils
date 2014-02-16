@@ -4,7 +4,9 @@
 QUOTE_IDENTIFIER scalar function
 ================================
 
-If AIDENT is an identifier which requires quoting, returns AIDENT surrounded by double quotes with all contained double quotes doubled. Useful when constructing SQL for EXECUTE IMMEDIATE within a procedure.
+If AIDENT is an identifier which requires quoting, returns AIDENT surrounded by
+double quotes with all contained double quotes doubled. Useful when
+constructing SQL for EXECUTE IMMEDIATE within a procedure.
 
 Prototypes
 ==========
@@ -19,7 +21,12 @@ Prototypes
 Description
 ===========
 
-Returns AIDENT surrounded by double quotes if AIDENT contains any characters which cannot appear in an identifier, as defined by the DB2 SQL dialect. Specifically this function is intended for correctly quoting SQL identifiers in generated SQL. Hence if AIDENT contains any lower-case, whitespace or symbolic characters, or begins with a numeral or underscore, it is returned quoted. If AIDENT contains no such characters it is returned verbatim.
+Returns AIDENT surrounded by double quotes if AIDENT contains any characters
+which cannot appear in an identifier, as defined by the DB2 SQL dialect.
+Specifically this function is intended for correctly quoting SQL identifiers in
+generated SQL. Hence if AIDENT contains any lower-case, whitespace or symbolic
+characters, or begins with a numeral or underscore, it is returned quoted. If
+AIDENT contains no such characters it is returned verbatim.
 
 Parameters
 ==========
@@ -36,7 +43,6 @@ Quote a simple identifier:
 
     VALUES QUOTE_IDENTIFIER('MY_TABLE')
 
-
 ::
 
     1
@@ -49,7 +55,6 @@ Quote an identifier containing characters that require quoting:
 .. code-block:: sql
 
     VALUES QUOTE_IDENTIFIER('MyTable')
-
 
 ::
 

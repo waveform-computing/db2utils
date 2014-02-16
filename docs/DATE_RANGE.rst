@@ -4,7 +4,9 @@
 DATE_RANGE table function
 =========================
 
-Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP with each row (where STEP is an 8 digit duration formatted as YYYYMMDD, which defaults to 1 day).
+Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP
+with each row (where STEP is an 8 digit duration formatted as YYYYMMDD, which
+defaults to 1 day).
 
 Prototypes
 ==========
@@ -38,37 +40,50 @@ Prototypes
 Description
 ===========
 
-DATE_RANGE generates a range of dates from START to FINISH inclusive, advancing in increments given by the date duration STEP. Date durations are DECIMAL(8, 0) values structured as YYYYMMDD (in DB2 they are typically derived as the result of subtracting two DATE values). Hence, the following call would generate all dates from the 1st of January 2006 to the 31st of January 2006.
+DATE_RANGE generates a range of dates from START to FINISH inclusive, advancing
+in increments given by the date duration STEP. Date durations are DECIMAL(8, 0)
+values structured as YYYYMMDD (in DB2 they are typically derived as the result
+of subtracting two DATE values). Hence, the following call would generate all
+dates from the 1st of January 2006 to the 31st of January 2006.
 
 .. code-block:: sql
 
     DATE_RANGE('2006-01-01', '2006-01-31', 1)
 
 
-Alternatively, the following call can be used to generate the 1st day of each month in the year 2006:
+Alternatively, the following call can be used to generate the 1st day of each
+month in the year 2006:
 
 .. code-block:: sql
 
     DATE_RANGE('2006-01-01', '2006-12-01', 100)
 
-
-Note that 100 does *not* mean increment by 100 days each time, but by 1 month each time because the digit 1 falls in the MM part of YYYYMMDD. If STEP is omitted it defaults to 1 day.
+Note that 100 does *not* mean increment by 100 days each time, but by 1 month
+each time because the digit 1 falls in the MM part of YYYYMMDD. If STEP is
+omitted it defaults to 1 day.
 
 Parameters
 ==========
 
 START
-    The date (specified as a DATE, TIMESTAMP, or VARCHAR(26)) from which to start generating dates. START will always be part of the resulting table.
+    The date (specified as a DATE, TIMESTAMP, or VARCHAR(26)) from which to
+    start generating dates. START will always be part of the resulting table.
 FINISH
-    The date (specified as a DATE, TIMESTAMP, or VARCHAR(26)) on which to stop generating dates. FINISH may be part of the resulting table if iteration stops on FINISH. However, if the specified STEP causes iteration to overshoot FINISH, it will not be included.
+    The date (specified as a DATE, TIMESTAMP, or VARCHAR(26)) on which to stop
+    generating dates. FINISH may be part of the resulting table if iteration
+    stops on FINISH. However, if the specified STEP causes iteration to
+    overshoot FINISH, it will not be included.
 STEP
-    If provided, the duration by which to increment each row of the output. Specified as a date duration; a DECIMAL(8,0) value formatted as YYYYMMDD (numebr of years, number of months, number of days).
+    If provided, the duration by which to increment each row of the output.
+    Specified as a date duration; a DECIMAL(8,0) value formatted as YYYYMMDD
+    (numebr of years, number of months, number of days).
 
 Returns
 =======
 
 D
-    The function returns a table with a single column simply named "D" which contains the dates generated.
+    The function returns a table with a single column simply named "D" which
+    contains the dates generated.
 
 Examples
 ========
@@ -81,7 +96,6 @@ Generate all days in the first month of 2010:
     FROM TABLE(
       DATE_RANGE(MONTHSTART(2010, 1), MONTHEND(2010, 1))
     );
-
 
 ::
 
@@ -129,7 +143,6 @@ Generate the first day of each month in 2010:
       DATE_RANGE(YEARSTART(2010), YEAREND(2010), 100)
     );
 
-
 ::
 
     D
@@ -157,7 +170,6 @@ Generate the last day of each month in 2010:
       DATE_RANGE(YEARSTART(2010), YEAREND(2010), 100)
     );
 
-
 ::
 
     D
@@ -176,7 +188,9 @@ Generate the last day of each month in 2010:
     2010-12-31
 
 
-Calculate the number of days in each quarter of 2010 (this is a crude and inefficient method, but it serves to demonstrate the ability to aggregate result sets over date ranges):
+Calculate the number of days in each quarter of 2010 (this is a crude and
+inefficient method, but it serves to demonstrate the ability to aggregate
+result sets over date ranges):
 
 .. code-block:: sql
 
@@ -185,7 +199,6 @@ Calculate the number of days in each quarter of 2010 (this is a crude and ineffi
       DATE_RANGE(YEARSTART(2010), YEAREND(2010))
     )
     GROUP BY QUARTER(D);
-
 
 ::
 

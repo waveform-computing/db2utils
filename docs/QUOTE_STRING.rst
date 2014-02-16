@@ -4,7 +4,8 @@
 QUOTE_STRING scalar function
 ============================
 
-Returns ASTRING surrounded by single quotes with all necessary escaping. Useful when constructing SQL for EXECUTE IMMEDIATE within a procedure.
+Returns ASTRING surrounded by single quotes with all necessary escaping. Useful
+when constructing SQL for EXECUTE IMMEDIATE within a procedure.
 
 Prototypes
 ==========
@@ -19,7 +20,10 @@ Prototypes
 Description
 ===========
 
-Returns ASTRING surrounded by single quotes and performs any necessary escaping within the string to make it valid SQL. For example, single quotes within ASTRING are doubled, and control characters like CR or LF are returned as concatenated hex-strings.
+Returns ASTRING surrounded by single quotes and performs any necessary escaping
+within the string to make it valid SQL. For example, single quotes within
+ASTRING are doubled, and control characters like CR or LF are returned as
+concatenated hex-strings.
 
 Parameters
 ==========
@@ -36,7 +40,6 @@ Quote a simple string:
 
     VALUES QUOTE_STRING('A string')
 
-
 ::
 
     1
@@ -49,7 +52,6 @@ Quote a string containing an apostrophe (the delimiter for SQL strings):
 .. code-block:: sql
 
     VALUES QUOTE_STRING('Frank''s string')
-
 
 ::
 

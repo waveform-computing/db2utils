@@ -4,7 +4,8 @@
 MONTHSTART scalar function
 ==========================
 
-Returns the first day of the month that ADATE exists within, or the first day of the month AMONTH in the year AYEAR.
+Returns the first day of the month that ADATE exists within, or the first day
+of the month AMONTH in the year AYEAR.
 
 Prototypes
 ==========
@@ -22,7 +23,8 @@ Prototypes
 Description
 ===========
 
-Returns a DATE representing the first day of AMONTH in AYEAR, or the first day of the month of ADATE depending on the variant of the function that is called.
+Returns a DATE representing the first day of AMONTH in AYEAR, or the first day
+of the month of ADATE depending on the variant of the function that is called.
 
 Parameters
 ==========
@@ -32,7 +34,8 @@ AYEAR
 AMONTH
     If provided, the month for which to return to the starting date.
 ADATE
-    If provided the date in the month for which to return the starting date. Either AYEAR and AMONTH, or ADATE must be specified.
+    If provided the date in the month for which to return the starting date.
+    Either AYEAR and AMONTH, or ADATE must be specified.
 
 Examples
 ========
@@ -42,7 +45,6 @@ Calculate the starting date of the second month in 2010:
 .. code-block:: sql
 
     VALUES MONTHSTART(2010, 2);
-
 
 ::
 
@@ -56,7 +58,6 @@ Calculate the start of the month for the 28th of January, 2009:
 .. code-block:: sql
 
     VALUES MONTHSTART('2009-01-28');
-
 
 ::
 

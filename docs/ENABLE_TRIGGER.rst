@@ -18,13 +18,16 @@ Prototypes
 Description
 ===========
 
-Restores a previously disabled trigger by reading its definition from the DISABLED_TRIGGERS table and recreating it. The trigger must have been disabled with the :ref:`DISABLE_TRIGGER` or :ref:`DISABLE_TRIGGERS` procedures.
+Restores a previously disabled trigger by reading its definition from the
+DISABLED_TRIGGERS table and recreating it. The trigger must have been disabled
+with the :ref:`DISABLE_TRIGGER` or :ref:`DISABLE_TRIGGERS` procedures.
 
 Parameters
 ==========
 
 ASCHEMA
-    If provided, the schema containing the trigger to enable. If omitted, defaults to the value of the ``CURRENT SCHEMA`` special register.
+    If provided, the schema containing the trigger to enable. If omitted,
+    defaults to the value of the ``CURRENT SCHEMA`` special register.
 ATRIGGER
     The name of the trigger to enable.
 

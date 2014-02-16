@@ -4,7 +4,8 @@
 YEARSTART scalar function
 =========================
 
-Returns the first day of the year that ADATE exists within, or the first day of the year AYEAR.
+Returns the first day of the year that ADATE exists within, or the first day of
+the year AYEAR.
 
 Prototypes
 ==========
@@ -22,7 +23,8 @@ Prototypes
 Description
 ===========
 
-Returns a DATE representing the first day of AYEAR, or the first day of the year of ADATE depending on the variant of the function that is called.
+Returns a DATE representing the first day of AYEAR, or the first day of the
+year of ADATE depending on the variant of the function that is called.
 
 Parameters
 ==========
@@ -30,7 +32,8 @@ Parameters
 AYEAR
     If provided, the year for which to return the starting date.
 ADATE
-    If provided the date in the year for which to return the starting date. Either AYEAR or ADATE must be specified.
+    If provided the date in the year for which to return the starting date.
+    Either AYEAR or ADATE must be specified.
 
 Examples
 ========
@@ -40,7 +43,6 @@ Calculate the starting date of 2010:
 .. code-block:: sql
 
     VALUES YEARSTART(2010);
-
 
 ::
 
@@ -54,7 +56,6 @@ Calculate the starting date of the year for the 28th February, 2009:
 .. code-block:: sql
 
     VALUES YEARSTART('2009-02-28');
-
 
 ::
 

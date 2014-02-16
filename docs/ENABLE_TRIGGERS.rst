@@ -18,13 +18,19 @@ Prototypes
 Description
 ===========
 
-Enables all the disabled triggers associated with a particular table. Note that this does not affect inactive triggers which are still attached to the table, just those triggers that have been disabled with :ref:`DISABLE_TRIGGER` or :ref:`DISABLE_TRIGGERS`. To reactivate inactive triggers, see :ref:`RECREATE_TRIGGER` and :ref:`RECREATE_TRIGGERS`.
+Enables all the disabled triggers associated with a particular table. Note that
+this does not affect inactive triggers which are still attached to the table,
+just those triggers that have been disabled with :ref:`DISABLE_TRIGGER` or
+:ref:`DISABLE_TRIGGERS`. To reactivate inactive triggers, see
+:ref:`RECREATE_TRIGGER` and :ref:`RECREATE_TRIGGERS`.
 
 Parameters
 ==========
 
 ASCHEMA
-    If provided, the schema containing the table for which to enable triggers. If omitted, defaults to the value of the ``CURRENT SCHEMA`` special register.
+    If provided, the schema containing the table for which to enable triggers.
+    If omitted, defaults to the value of the ``CURRENT SCHEMA`` special
+    register.
 ATABLE
     The name of the table to enable all disabled triggers for.
 

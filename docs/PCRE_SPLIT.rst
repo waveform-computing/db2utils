@@ -4,7 +4,8 @@
 PCRE_SPLIT table function
 =========================
 
-Searches for all occurrences of regular expression PATTERN in TEXT, returning a table of all matches and the text between each match.
+Searches for all occurrences of regular expression PATTERN in TEXT, returning a
+table of all matches and the text between each match.
 
 Prototypes
 ==========
@@ -24,7 +25,11 @@ Prototypes
 Description
 ===========
 
-PCRE string splitting function. Given a regular expression in PATTERN, and some text in TEXT, the function searches for every occurence of PATTERN in TEXT and breaks TEXT into chunks based on those matches. Each chunk is returned as a row in the result table which details whether or not the chunk was a result of a match, or text between the match.
+PCRE string splitting function. Given a regular expression in PATTERN, and some
+text in TEXT, the function searches for every occurence of PATTERN in TEXT and
+breaks TEXT into chunks based on those matches. Each chunk is returned as a row
+in the result table which details whether or not the chunk was a result of a
+match, or text between the match.
 
 Parameters
 ==========
@@ -38,9 +43,13 @@ Returns
 =======
 
 ELEMENT
-    The 1-based index of the chunk. Note that there are usually two rows for each index, one where SEPARATOR is zero and another where SEPARATOR is one. Therefore, one could consider the key of the result table to be (ELEMENT, SEPARATOR)
+    The 1-based index of the chunk. Note that there are usually two rows for
+    each index, one where SEPARATOR is zero and another where SEPARATOR is one.
+    Therefore, one could consider the key of the result table to be (ELEMENT,
+    SEPARATOR)
 SEPARATOR
-    Contains 1 if the row represents a match for PATTERN, and 0 if the row represents text between matches.
+    Contains 1 if the row represents a match for PATTERN, and 0 if the row
+    represents text between matches.
 POSITION
     The 1-based position of CONTENT within the original TEXT parameter.
 CONTENT
@@ -49,7 +58,8 @@ CONTENT
 Examples
 ========
 
-An example demonstrating a simple split. Note that a row is still returned for the "missing" value, albeit with an empty CONTENT value:
+An example demonstrating a simple split. Note that a row is still returned for
+the "missing" value, albeit with an empty CONTENT value:
 
 .. code-block:: sql
 
@@ -62,7 +72,6 @@ An example demonstrating a simple split. Note that a row is still returned for t
         TABLE(
            PCRE_SPLIT(':', 'A:B:C::E')
         ) AS T
-
 
 ::
 
@@ -78,8 +87,9 @@ An example demonstrating a simple split. Note that a row is still returned for t
           4          1         7  :
           5          0         8  E
 
-
-An example demonstrating a very rudimentary CSV parser. Note that to keep things simple, we actually treat the separator pattern as the data here, filter out the interleaved commas and remove the quotes surrounding delimited values:
+An example demonstrating a very rudimentary CSV parser. Note that to keep
+things simple, we actually treat the separator pattern as the data here, filter
+out the interleaved commas and remove the quotes surrounding delimited values:
 
 .. code-block:: sql
 
@@ -95,7 +105,6 @@ An example demonstrating a very rudimentary CSV parser. Note that to keep things
         ) AS T
     WHERE
         T.SEPARATOR = 1
-
 
 ::
 

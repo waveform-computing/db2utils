@@ -22,7 +22,8 @@ Prototypes
 Description
 ===========
 
-Returns a DATE representing the last day of AYEAR, or the last day of the year of ADATE depending on the variant of the function that is called.
+Returns a DATE representing the last day of AYEAR, or the last day of the year
+of ADATE depending on the variant of the function that is called.
 
 Parameters
 ==========
@@ -30,7 +31,8 @@ Parameters
 AYEAR
     If provided, the year for which to return the ending date.
 ADATE
-    If provided the date in the year for which to return the ending date. Either AYEAR or ADATE must be specified.
+    If provided the date in the year for which to return the ending date.
+    Either AYEAR or ADATE must be specified.
 
 Examples
 ========
@@ -40,7 +42,6 @@ Calculate the ending date of 2010:
 .. code-block:: sql
 
     VALUES YEAREND(2010);
-
 
 ::
 
@@ -54,7 +55,6 @@ Calculate the ending date of the year for the 28th February, 2009:
 .. code-block:: sql
 
     VALUES YEAREND('2009-02-28');
-
 
 ::
 

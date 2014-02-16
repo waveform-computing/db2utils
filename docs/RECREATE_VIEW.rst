@@ -4,7 +4,8 @@
 RECREATE_VIEW procedure
 =======================
 
-Recreates the specified inoperative view from its definition in the system catalogue.
+Recreates the specified inoperative view from its definition in the system
+catalogue.
 
 Prototypes
 ==========
@@ -18,19 +19,35 @@ Prototypes
 Description
 ===========
 
-RECREATE_VIEW is a utility procedure which recreates the specified view using the SQL found in the system catalog tables. It is useful for quickly recreating views which have been marked inoperative after a change to one or more of the view's dependencies. If ASCHEMA is omitted it defaults to the current schema.
+RECREATE_VIEW is a utility procedure which recreates the specified view using
+the SQL found in the system catalog tables. It is useful for quickly recreating
+views which have been marked inoperative after a change to one or more of the
+view's dependencies. If ASCHEMA is omitted it defaults to the current schema.
 
-**Note:** This procedure is effectively redundant as of DB2 9.7 due to the new deferred revalidation functionality introduced in that version.
+.. note::
 
-**Note:** This procedure does *not* drop the view before recreating it. This guards against attempting to recreate an operative view (an inoperative view can be recreated without dropping it first). That said, it will not return an error in the case of attempting to recreate an operative view; the procedure will simply do nothing.
+    This procedure is effectively redundant as of DB2 9.7 due to the new
+    deferred revalidation functionality introduced in that version.
 
-**Note:** See the :ref:`SAVE_AUTH` procedure's description for warnings regarding the loss of authorization information with inoperative views.
+.. warning::
+
+    This procedure does *not* drop the view before recreating it. This guards
+    against attempting to recreate an operative view (an inoperative view can
+    be recreated without dropping it first). That said, it will not return an
+    error in the case of attempting to recreate an operative view; the
+    procedure will simply do nothing.
+
+.. warning::
+
+    See the :ref:`SAVE_AUTH` procedure's description for warnings
+    regarding the loss of authorization information with inoperative views.
 
 Parameters
 ==========
 
 ASCHEMA
-    If provided, specifies the schema containing the view to recreate. If omitted, defaults to the value of the ``CURRENT SCHEMA`` special register.
+    If provided, specifies the schema containing the view to recreate. If
+    omitted, defaults to the value of the ``CURRENT SCHEMA`` special register.
 AVIEW
     The name of the view to recreate.
 
@@ -42,7 +59,6 @@ Recreate the inoperative FOO.BAR view:
 .. code-block:: sql
 
     CALL RECREATE_VIEW('FOO', 'BAR');
-
 
 Recreate the BAZ view in the current schema:
 

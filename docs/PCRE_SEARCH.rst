@@ -20,7 +20,11 @@ Prototypes
 Description
 ===========
 
-PCRE searching function. Given a regular expression in PATTERN, and some text to search in TEXT, returns the 1-based position of the first match. START is an optional 1-based position from which to start the search (defaults to 1 if not specified). If no match is found, the function returns zero. If PATTERN, TEXT, or START is NULL, the result is NULL.
+PCRE searching function. Given a regular expression in PATTERN, and some text
+to search in TEXT, returns the 1-based position of the first match. START is an
+optional 1-based position from which to start the search (defaults to 1 if not
+specified). If no match is found, the function returns zero. If PATTERN, TEXT,
+or START is NULL, the result is NULL.
 
 Parameters
 ==========
@@ -30,12 +34,14 @@ PATTERN
 TEXT
     The text to search within
 START
-    The 1-based position from which to start the search. Defaults to 1 if omitted.
+    The 1-based position from which to start the search. Defaults to 1 if
+    omitted.
 
 Examples
 ========
 
-Simple searches showing the return value is a 1-based position or 0 in the case of failure:
+Simple searches showing the return value is a 1-based position or 0 in the case
+of failure:
 
 .. code-block:: sql
 
@@ -43,7 +49,6 @@ Simple searches showing the return value is a 1-based position or 0 in the case 
       (PCRE_SEARCH('FOO', 'FOOBAR')),
       (PCRE_SEARCH('BAR', 'FOOBAR')),
       (PCRE_SEARCH('BAZ', 'FOOBAR'))
-
 
 ::
 
@@ -54,12 +59,12 @@ Simple searches showing the return value is a 1-based position or 0 in the case 
              0
 
 
-A search to check whether a value looks vaguely like an IP address; note that the octets are not checked for 0-255 range:
+A search to check whether a value looks vaguely like an IP address; note that
+the octets are not checked for 0-255 range:
 
 .. code-block:: sql
 
     VALUES PCRE_SEARCH('^\d{1,3}(\.\d{1,3}){3}$', '192.168.0.1')
-
 
 ::
 
@@ -75,7 +80,6 @@ A search demonstrating use of back-references to check that a closing tag matche
 
     VALUES PCRE_SEARCH('<([A-Z][A-Z0-9]*)[^>]*>.*?</\1>', '<B>BOLD!</B>')
 
-
 ::
 
     1
@@ -90,7 +94,6 @@ Searches demonstrating negative look-aheads:
     VALUES
       (PCRE_SEARCH('Q(?!U)', 'QUACK')),
       (PCRE_SEARCH('Q(?!U)', 'QI'))
-
 
 ::
 

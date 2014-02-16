@@ -18,15 +18,26 @@ Prototypes
 Description
 ===========
 
-RESTORE_VIEW is a utility procedure which restores the specified view using the SQL found in the SAVED_VIEWS table, which is populated initially by a call to :ref:`SAVE_VIEW` or :ref:`SAVE_VIEWS`. It also implicitly calls :ref:`RESTORE_AUTH` to ensure that authorizations are not lost. This is the primary difference between using :ref:`SAVE_VIEW` and RESTORE_VIEW, and using DB2's inoperative view mechanism with the :ref:`RECREATE_VIEW` procedure. Another use of these procedures is in recreating views which need to be dropped surrounding the update of a UDF.
+RESTORE_VIEW is a utility procedure which restores the specified view using the
+SQL found in the SAVED_VIEWS table, which is populated initially by a call to
+:ref:`SAVE_VIEW` or :ref:`SAVE_VIEWS`. It also implicitly calls
+:ref:`RESTORE_AUTH` to ensure that authorizations are not lost. This is the
+primary difference between using :ref:`SAVE_VIEW` and RESTORE_VIEW, and using
+DB2's inoperative view mechanism with the :ref:`RECREATE_VIEW` procedure.
+Another use of these procedures is in recreating views which need to be dropped
+surrounding the update of a UDF.
 
-**Note:** This procedure is effectively redundant as of DB2 9.7 due to the new deferred revalidation functionality introduced in that version.
+.. note::
+
+    This procedure is effectively redundant as of DB2 9.7 due to the new
+    deferred revalidation functionality introduced in that version.
 
 Parameters
 ==========
 
 ASCHEMA
-    If provided, the schema containing the view to restore. If omitted, this parameter defaults to the value of the ``CURRENT SCHEMA`` special register.
+    If provided, the schema containing the view to restore. If omitted, this
+    parameter defaults to the value of the ``CURRENT SCHEMA`` special register.
 AVIEW
     The name of the view to restore.
 
@@ -38,7 +49,6 @@ Restore the definition of the FINANCE.LEDGER_CHANGES view:
 .. code-block:: sql
 
     CALL RESTORE_VIEW('FINANCE', 'LEDGER_CHANGES');
-
 
 Restore the definition of the EMPLOYEE_CHANGES view in the current schema:
 

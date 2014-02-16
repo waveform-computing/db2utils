@@ -4,7 +4,8 @@
 RESTORE_AUTHS procedure
 =======================
 
-Restores the authorizations of all relations in the specified schema that were previously saved with :ref:`SAVE_AUTHS`
+Restores the authorizations of all relations in the specified schema that were
+previously saved with :ref:`SAVE_AUTHS`
 
 Prototypes
 ==========
@@ -18,20 +19,35 @@ Prototypes
 Description
 ===========
 
-RESTORE_AUTHS is a utility procedure which restores the authorization settings (previously saved with :ref:`SAVE_AUTHS`) for all tables in the specified schema. If no schema is specified, the current schema is used.
+RESTORE_AUTHS is a utility procedure which restores the authorization settings
+(previously saved with :ref:`SAVE_AUTHS`) for all tables in the specified
+schema. If no schema is specified, the current schema is used.
 
-**Note:** The procedure only attempts to restore settings for those tables or views which currently exist, and for which settings were previously saved. If you use :ref:`SAVE_AUTHS` on a schema, drop several objects from the schema and then call :ref:`RESTORE_AUTHS` on that schema, the procedure will succeed with no error, although several authorization settings have not been restored. Furthermore, any settings associated with the specified schema that are not restored are removed from store used by :ref:`SAVE_AUTHS` (the SAVED_AUTH table in the schema containing the procedures).
+.. warning::
+
+    The procedure only attempts to restore settings for those tables or views
+    which currently exist, and for which settings were previously saved. If you
+    use :ref:`SAVE_AUTHS` on a schema, drop several objects from the schema and
+    then call :ref:`RESTORE_AUTHS` on that schema, the procedure will succeed
+    with no error, although several authorization settings have not been
+    restored.  Furthermore, any settings associated with the specified schema
+    that are not restored are removed from store used by :ref:`SAVE_AUTHS` (the
+    SAVED_AUTH table in the schema containing the procedures).
 
 Parameters
 ==========
 
 ASCHEMA
-    The name of the schema containing the tables for which to restore authorziation settings. If this parameter is omitted the value of the CURRENT SCHEMA special register will be used instead.
+    The name of the schema containing the tables for which to restore
+    authorziation settings. If this parameter is omitted the value of the
+    CURRENT SCHEMA special register will be used instead.
 
 Examples
 ========
 
-Save all the authorization information from the tables in the FINANCE_DEV schema, do something arbitrary to the schema and restore the authorizations again:
+Save all the authorization information from the tables in the FINANCE_DEV
+schema, do something arbitrary to the schema and restore the authorizations
+again:
 
 .. code-block:: sql
 
@@ -41,7 +57,10 @@ Save all the authorization information from the tables in the FINANCE_DEV schema
     CALL RESTORE_AUTHS();
 
 
-**Advanced usage:** Copy the authorizations from the FINANCE_DEV schema to the FINANCE schema by changing the content of the SAVED_AUTH table (this is the table in which :ref:`SAVE_AUTH` temporarily stores authorizations; it has exactly the same structure as SYSCAT.TABAUTH):
+**Advanced usage:** Copy the authorizations from the FINANCE_DEV schema to the
+FINANCE schema by changing the content of the SAVED_AUTH table (this is the
+table in which :ref:`SAVE_AUTH` temporarily stores authorizations; it has
+exactly the same structure as SYSCAT.TABAUTH):
 
 .. code-block:: sql
 

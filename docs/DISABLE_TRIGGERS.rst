@@ -4,7 +4,8 @@
 DISABLE_TRIGGERS procedure
 ==========================
 
-Disables all triggers associated with the specified table by saving their definitions to a table and dropping them
+Disables all triggers associated with the specified table by saving their
+definitions to a table and dropping them
 
 Prototypes
 ==========
@@ -18,13 +19,18 @@ Prototypes
 Description
 ===========
 
-Disables all the operative triggers associated with a particular table. If a trigger exists, but is marked inoperative, it is not touched by this procedure. You can recreate such triggers with :ref:`RECREATE_TRIGGER` before calling DISABLE_TRIGGERS.
+Disables all the operative triggers associated with a particular table. If a
+trigger exists, but is marked inoperative, it is not touched by this procedure.
+You can recreate such triggers with :ref:`RECREATE_TRIGGER` before calling
+DISABLE_TRIGGERS.
 
 Parameters
 ==========
 
 ASCHEMA
-    If provided, the schema containing the table for which to disable triggers. If omitted, defaults to the value of the ``CURRENT SCHEMA`` special register.
+    If provided, the schema containing the table for which to disable triggers.
+    If omitted, defaults to the value of the ``CURRENT SCHEMA`` special
+    register.
 ATABLE
     The name of the table to disable all active triggers for.
 

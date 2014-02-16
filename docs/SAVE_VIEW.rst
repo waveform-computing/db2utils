@@ -4,7 +4,8 @@
 SAVE_VIEW procedure
 ===================
 
-Saves the authorizations and definition of the specified view for later restoration with :ref:`RESTORE_VIEW`.
+Saves the authorizations and definition of the specified view for later
+restoration with :ref:`RESTORE_VIEW`.
 
 Prototypes
 ==========
@@ -18,15 +19,24 @@ Prototypes
 Description
 ===========
 
-SAVE_VIEW is a utility procedure which saves the definition of the specified view to the SAVED_VIEWS table. This saved definition can then be restored with the :ref:`RESTORE_VIEW` procedure. SAVE_VIEW and RESTORE_VIEW also implicitly call :ref:`SAVE_AUTH` and :ref:`RESTORE_AUTH`  to preserve the authorizations of the view. This is in contrast to inoperative views recreated with :ref:`RECREATE_VIEW` which lose authorization information.
+SAVE_VIEW is a utility procedure which saves the definition of the specified
+view to the SAVED_VIEWS table. This saved definition can then be restored with
+the :ref:`RESTORE_VIEW` procedure. SAVE_VIEW and RESTORE_VIEW also implicitly
+call :ref:`SAVE_AUTH` and :ref:`RESTORE_AUTH`  to preserve the authorizations
+of the view. This is in contrast to inoperative views recreated with
+:ref:`RECREATE_VIEW` which lose authorization information.
 
-**Note:** This procedure is effectively redundant as of DB2 9.7 due to the new deferred revalidation functionality introduced in that version.
+.. note::
+
+    This procedure is effectively redundant as of DB2 9.7 due to the new
+    deferred revalidation functionality introduced in that version.
 
 Parameters
 ==========
 
 ASCHEMA
-    If provided, the schema containing the view to save. If omitted, this parameter defaults to the value of the ``CURRENT SCHEMA`` special register.
+    If provided, the schema containing the view to save. If omitted, this
+    parameter defaults to the value of the ``CURRENT SCHEMA`` special register.
 AVIEW
     The name of the view to save.
 

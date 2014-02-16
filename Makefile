@@ -15,10 +15,14 @@ uninstall: uninstall.sql
 	db2 -td! +c +s -vf $< || true
 	$(MAKE) -C pcre uninstall
 
+doc:
+	$(MAKE) -C docs html
+
 test:
 	$(MAKE) -C tests test DBNAME=$(DBNAME) SCHEMANAME=$(SCHEMANAME)
 
 clean: $(SUBDIRS)
+	$(MAKE) -C docs clean
 	$(MAKE) -C pcre clean
 	$(MAKE) -C tests clean
 	rm -f foo

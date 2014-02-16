@@ -4,7 +4,8 @@
 RECREATE_VIEWS procedure
 ========================
 
-Recreates all inoperative views in the specified schema from their system catalogue definitions.
+Recreates all inoperative views in the specified schema from their system
+catalogue definitions.
 
 Prototypes
 ==========
@@ -18,19 +19,36 @@ Prototypes
 Description
 ===========
 
-RECREATE_VIEWS is a utility procedure which recreates all inoperative views in a specified schema, using the SQL found in the system catalogue tables. It is useful for quickly recreating views which have been marked inoperative after a change to one or more of the views' dependencies. If ASCHEMA is omitted it defaults to the current schema.
+RECREATE_VIEWS is a utility procedure which recreates all inoperative views in
+a specified schema, using the SQL found in the system catalogue tables. It is
+useful for quickly recreating views which have been marked inoperative after a
+change to one or more of the views' dependencies. If ASCHEMA is omitted it
+defaults to the current schema.
 
-**Note:** This procedure is effectively redundant as of DB2 9.7 due to the new deferred revalidation functionality introduced in that version.
+.. note::
 
-**Note:** This procedure does not take into account the dependencies of views when recreating them. It crudely attempts to correctly order recreations on the basis of the CREATE_TIME field in the system catalogue, but this is not necessarily accurate. However, multiple consecutive runs of the procedure can be sufficient to recreate all inoperative views.
+    This procedure is effectively redundant as of DB2 9.7 due to the new
+    deferred revalidation functionality introduced in that version.
 
-**Note:** See the :ref:`SAVE_AUTH` procedure's description for warnings regarding the loss of authorization information with inoperative views.
+.. warning::
+
+    This procedure does not take into account the dependencies of views when
+    recreating them. It crudely attempts to correctly order recreations on the
+    basis of the CREATE_TIME field in the system catalogue, but this is not
+    necessarily accurate. However, multiple consecutive runs of the procedure
+    can be sufficient to recreate all inoperative views.
+
+.. warning::
+
+    See the :ref:`SAVE_AUTH` procedure's description for warnings
+    regarding the loss of authorization information with inoperative views.
 
 Parameters
 ==========
 
 ASCHEMA
-    If provided, specifies the schema containing the views to recreate. If omitted, defaults to the value of the ``CURRENT SCHEMA`` special register.
+    If provided, specifies the schema containing the views to recreate. If
+    omitted, defaults to the value of the ``CURRENT SCHEMA`` special register.
 
 Examples
 ========

@@ -4,7 +4,8 @@
 RECREATE_TRIGGERS procedure
 ===========================
 
-Recreates all the inoperative triggers associated with the specified table from their definitions in the system catalogue.
+Recreates all the inoperative triggers associated with the specified table from
+their definitions in the system catalogue.
 
 Prototypes
 ==========
@@ -18,13 +19,19 @@ Prototypes
 Description
 ===========
 
-RECREATE_TRIGGER is a utility procedure which recreates all the inoperative triggers defined against the table specified by ASCHEMA and ATABLE, using the SQL found in the system catalogue tables. It is useful for quickly recreating triggers which have been marked inoperative after a change to one or more dependencies. If ASCHEMA is omitted it defaults to the current schema.
+RECREATE_TRIGGER is a utility procedure which recreates all the inoperative
+triggers defined against the table specified by ASCHEMA and ATABLE, using the
+SQL found in the system catalogue tables. It is useful for quickly recreating
+triggers which have been marked inoperative after a change to one or more
+dependencies. If ASCHEMA is omitted it defaults to the current schema.
 
 Parameters
 ==========
 
 ASCHEMA
-    If provided, the schema containing the table to recreate inoperative triggers for. If omitted, this parameter defaults to the value of the CURRENT SCHEMA special register.
+    If provided, the schema containing the table to recreate inoperative
+    triggers for. If omitted, this parameter defaults to the value of the
+    CURRENT SCHEMA special register.
 ATRIGGER
     The name of the table to recreate inoperative triggers for.
 
@@ -38,7 +45,8 @@ Recreate all inoperative triggers defined against the FINANCE.LEDGER table:
     CALL RECREATE_TRIGGERS('FINANCE', 'LEDGER');
 
 
-Recreate all inoperative triggers defined against the EMPLOYEE table in the current schema:
+Recreate all inoperative triggers defined against the EMPLOYEE table in the
+current schema:
 
 .. code-block:: sql
 

@@ -4,7 +4,8 @@
 MINUTEEND scalar function
 =========================
 
-Returns a TIMESTAMP at the end of AHOUR:AMINUTE on the date AYEAR, AMONTH, ADAY, or at the end of the minute of ATIMESTAMP.
+Returns a TIMESTAMP at the end of AHOUR:AMINUTE on the date AYEAR, AMONTH,
+ADAY, or at the end of the minute of ATIMESTAMP.
 
 Prototypes
 ==========
@@ -21,7 +22,9 @@ Prototypes
 Description
 ===========
 
-Returns a TIMESTAMP value representing the last microsecond of AMINUTE in AHOUR on the date given by AYEAR, AMONTH, and ADAY, or of the timestamp given by ATIMESTAMP depending on the variant of the function that is called.
+Returns a TIMESTAMP value representing the last microsecond of AMINUTE in AHOUR
+on the date given by AYEAR, AMONTH, and ADAY, or of the timestamp given by
+ATIMESTAMP depending on the variant of the function that is called.
 
 Parameters
 ==========
@@ -37,7 +40,9 @@ AHOUR
 AMINUTE
     If provided, the minute component of the resulting timestamp.
 ATIMESTAMP
-    If provided, the timestamp from which to derive the end of the minute. Either AYEAR, AMONTH, ADAY, AHOUR, and AMINUTE, or ATIMESTAMP must be provided.
+    If provided, the timestamp from which to derive the end of the minute.
+    Either AYEAR, AMONTH, ADAY, AHOUR, and AMINUTE, or ATIMESTAMP must be
+    provided.
 
 Examples
 ========
@@ -47,7 +52,6 @@ Round the specified timestamp up to one microsecond before the next minute:
 .. code-block:: sql
 
     VALUES MINUTEEND('2010-01-23 04:56:12');
-
 
 ::
 
@@ -61,7 +65,6 @@ Generate a timestamp at the end of a minute with the specified fields:
 .. code-block:: sql
 
     VALUES MINUTEEND(2010, 2, 14, 9, 30);
-
 
 ::
 

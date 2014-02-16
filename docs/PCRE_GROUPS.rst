@@ -4,7 +4,8 @@
 PCRE_GROUPS table function
 ==========================
 
-Searches for regular expression PATTERN in TEXT, returning a table detailing all matched groups.
+Searches for regular expression PATTERN in TEXT, returning a table detailing
+all matched groups.
 
 Prototypes
 ==========
@@ -23,7 +24,10 @@ Prototypes
 Description
 ===========
 
-PCRE groups table function. Given a regular expression in PATTERN, and some text to search in TEXT, the function performs a search for PATTERN in the text and returns the result as a table containing a row for each matching group (including group 0 which implicitly covers the entire search pattern).
+PCRE groups table function. Given a regular expression in PATTERN, and some
+text to search in TEXT, the function performs a search for PATTERN in the text
+and returns the result as a table containing a row for each matching group
+(including group 0 which implicitly covers the entire search pattern).
 
 Parameters
 ==========
@@ -37,7 +41,8 @@ Returns
 =======
 
 GROUP
-    The index of the capturing group; group 0 represents the portion of TEXT which matched the entire PATTERN.
+    The index of the capturing group; group 0 represents the portion of TEXT
+    which matched the entire PATTERN.
 POSITION
     The 1-based position of the group within TEXT.
 CONTENT
@@ -46,7 +51,8 @@ CONTENT
 Examples
 ========
 
-This example demonstrates how multiple groups are matched and returned by the function:
+This example demonstrates how multiple groups are matched and returned by the
+function:
 
 .. code-block:: sql
 
@@ -59,7 +65,6 @@ This example demonstrates how multiple groups are matched and returned by the fu
             PCRE_GROUPS('(<([A-Z][A-Z0-9]*)[^>]*>)(.*?)(</\2>)', '<B>BOLD!</B>')
         ) AS T
 
-
 ::
 
     GROUP  POSITION  CONTENT
@@ -71,7 +76,8 @@ This example demonstrates how multiple groups are matched and returned by the fu
         4         9  </B>
 
 
-Example demonstrating how unmatched groups are not returned, while groups matching the empty string are:
+Example demonstrating how unmatched groups are not returned, while groups
+matching the empty string are:
 
 .. code-block:: sql
 
@@ -83,7 +89,6 @@ Example demonstrating how unmatched groups are not returned, while groups matchi
         TABLE(
             PCRE_GROUPS('(FOO)?(\s?)(BAR)?(\s?)(BAZ)?', 'FOOBAR')
         ) AS T
-
 
 ::
 

@@ -4,7 +4,8 @@
 NEXT_DAYOFWEEK scalar function
 ==============================
 
-Returns the earliest date later than ADATE, which is also a particular day of the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)
+Returns the earliest date later than ADATE, which is also a particular day of
+the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)
 
 Prototypes
 ==========
@@ -22,15 +23,20 @@ Prototypes
 Description
 ===========
 
-Returns the specified day of the week following the given date. Days of the week are specified in the same fashion as the built-in DAYOFWEEK function (i.e. 1=Sunday, 2=Monday, ... 7=Saturday). If ADATE is omitted the current date is used.
+Returns the specified day of the week following the given date. Days of the
+week are specified in the same fashion as the built-in DAYOFWEEK function (i.e.
+1=Sunday, 2=Monday, ... 7=Saturday). If ADATE is omitted the current date is
+used.
 
 Parameters
 ==========
 
 ADATE
-    The date after which to return a specific day of the week. If this parameter is omitted the CURRENT DATE special register is used.
+    The date after which to return a specific day of the week. If this
+    parameter is omitted the CURRENT DATE special register is used.
 ADOW
-    The day of the week to find specified as an integer where 1 represents Sunday, 2 is Monday, and so on.
+    The day of the week to find specified as an integer where 1 represents
+    Sunday, 2 is Monday, and so on.
 
 Examples
 ========
@@ -41,7 +47,6 @@ Find the next Monday after the start of 2010:
 
     VALUES VARCHAR(NEXT_DAYOFWEEK(YEARSTART(2010), 2), ISO);
 
-
 ::
 
     1
@@ -49,7 +54,9 @@ Find the next Monday after the start of 2010:
     2010-01-04
 
 
-Find the third Thursday in February 2010 (note, the CASE expression is necessary in case February starts on a Thursday, in which case NEXT_DAYOFWEEK will be returning the date of the second Thursday in the month, not the first):
+Find the third Thursday in February 2010 (note, the CASE expression is
+necessary in case February starts on a Thursday, in which case NEXT_DAYOFWEEK
+will be returning the date of the second Thursday in the month, not the first):
 
 .. code-block:: sql
 
@@ -58,7 +65,6 @@ Find the third Thursday in February 2010 (note, the CASE expression is necessary
         WHEN 5 THEN 7
         ELSE 14
       END DAYS, ISO);
-
 
 ::
 

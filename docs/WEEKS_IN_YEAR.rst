@@ -4,7 +4,8 @@
 WEEKSINYEAR scalar function
 ===========================
 
-Returns the number of weeks within the year that ADATE exists within, or the number of weeks in AYEAR.
+Returns the number of weeks within the year that ADATE exists within, or the
+number of weeks in AYEAR.
 
 Prototypes
 ==========
@@ -22,7 +23,10 @@ Prototypes
 Description
 ===========
 
-Returns the number of weeks in AYEAR (weeks start on a Sunday, and partial weeks are permitted at the start and end of the year), or the number of weeks in the year that ADATE exists within depending on the variant of the function that is called.
+Returns the number of weeks in AYEAR (weeks start on a Sunday, and partial
+weeks are permitted at the start and end of the year), or the number of weeks
+in the year that ADATE exists within depending on the variant of the function
+that is called.
 
 Parameters
 ==========
@@ -30,7 +34,8 @@ Parameters
 AYEAR
     If provided, the year for which to calculate the number of weeks.
 ADATE
-    If provided, the date in the year for which to calculate the number of weeks. Either AYEAR or ADATE must be specified.
+    If provided, the date in the year for which to calculate the number of
+    weeks. Either AYEAR or ADATE must be specified.
 
 Examples
 ========
@@ -40,7 +45,6 @@ Calculate the number of weeks in the year 2010:
 .. code-block:: sql
 
     VALUES WEEKSINYEAR(2010);
-
 
 ::
 
@@ -55,7 +59,6 @@ Calculate the number of weeks in the first 10 years of the 21st century:
 
     SELECT YEAR(D) AS YEAR, WEEKSINYEAR(D) AS WEEKS
     FROM TABLE(DATE_RANGE('2000-01-01', '2010-01-01', 10000));
-
 
 ::
 

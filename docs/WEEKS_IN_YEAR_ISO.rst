@@ -4,7 +4,8 @@
 WEEKSINYEAR_ISO scalar function
 ===============================
 
-Returns the number of weeks within the year that ADATE exists within, or the number of weeks in AYEAR according to the ISO8601 standard.
+Returns the number of weeks within the year that ADATE exists within, or the
+number of weeks in AYEAR according to the ISO8601 standard.
 
 Prototypes
 ==========
@@ -22,7 +23,10 @@ Prototypes
 Description
 ===========
 
-Returns the number of weeks in AYEAR according to the ISO8601 standard (weeks start on a Monday, and overlap calendar year ends to ensure all weeks are "whole"), or the number of weeks in the year that ADATE exists within depending on the variant of the function that is called.
+Returns the number of weeks in AYEAR according to the ISO8601 standard (weeks
+start on a Monday, and overlap calendar year ends to ensure all weeks are
+"whole"), or the number of weeks in the year that ADATE exists within depending
+on the variant of the function that is called.
 
 Parameters
 ==========
@@ -30,7 +34,8 @@ Parameters
 AYEAR
     If provided, the year for which to calculate the number of weeks.
 ADATE
-    If provided, the date in the year for which to calculate the number of weeks. Either AYEAR or ADATE must be specified.
+    If provided, the date in the year for which to calculate the number of
+    weeks. Either AYEAR or ADATE must be specified.
 
 Examples
 ========
@@ -41,7 +46,6 @@ Calculate the number of weeks in the year 2010 according to ISO8601:
 
     VALUES WEEKSINYEAR_ISO(2010);
 
-
 ::
 
     1
@@ -49,13 +53,13 @@ Calculate the number of weeks in the year 2010 according to ISO8601:
         52
 
 
-Calculate the number of weeks in the first 10 years of the 21st century according to ISO8601:
+Calculate the number of weeks in the first 10 years of the 21st century
+according to ISO8601:
 
 .. code-block:: sql
 
     SELECT YEAR(D) AS YEAR, WEEKSINYEAR_ISO(D) AS WEEKS
     FROM TABLE(DATE_RANGE('2000-01-01', '2010-01-01', 10000));
-
 
 ::
 

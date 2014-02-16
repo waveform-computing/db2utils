@@ -4,7 +4,8 @@
 YEAR_ISO scalar function
 ========================
 
-Returns the year of ADATE, unless the ISO week of ADATE exists in the prior year in which case that year is returned.
+Returns the year of ADATE, unless the ISO week of ADATE exists in the prior
+year in which case that year is returned.
 
 Prototypes
 ==========
@@ -21,7 +22,9 @@ Prototypes
 Description
 ===========
 
-Returns the year of ADATE, unless the ISO week number (see the built-in function `WEEK_ISO`_) of ADATE belongs to the prior year, in which case the prior year is returned.
+Returns the year of ADATE, unless the ISO week number (see the built-in
+function `WEEK_ISO`_) of ADATE belongs to the prior year, in which case the
+prior year is returned.
 
 Parameters
 ==========
@@ -38,7 +41,6 @@ Calculate the ISO-week based year number of the 1st of January, 2010:
 
     VALUES YEAR_ISO(DATE(2010, 1, 1));
 
-
 ::
 
     1
@@ -46,12 +48,13 @@ Calculate the ISO-week based year number of the 1st of January, 2010:
       2009
 
 
-Calculate the ISO-week based year number of the 4th of January, 2010 (dates beyond the 4th of January will always be in the year of the date given the definition of ISO weeks):
+Calculate the ISO-week based year number of the 4th of January, 2010 (dates
+beyond the 4th of January will always be in the year of the date given the
+definition of ISO weeks):
 
 .. code-block:: sql
 
     VALUES YEAR_ISO(DATE(2010, 1, 4)));
-
 
 ::
 

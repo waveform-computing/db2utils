@@ -4,7 +4,8 @@
 QUARTERWEEK_ISO scalar function
 ===============================
 
-Returns the week of the quarter that ADATE exists within (weeks start on a Monday, result will be in the range 1-6).
+Returns the week of the quarter that ADATE exists within (weeks start on a
+Monday, result will be in the range 1-6).
 
 Prototypes
 ==========
@@ -21,7 +22,10 @@ Prototypes
 Description
 ===========
 
-Returns the week of the quarter of ADATE, where weeks start on a Monday. The result will be in the range 1-14 as partial weeks are permitted. For example, if the first day of a month is a Sunday, it will be counted as week 1, which lasts one day. The next day, Monday, will start week 2.
+Returns the week of the quarter of ADATE, where weeks start on a Monday. The
+result will be in the range 1-14 as partial weeks are permitted. For example,
+if the first day of a month is a Sunday, it will be counted as week 1, which
+lasts one day. The next day, Monday, will start week 2.
 
 Parameters
 ==========
@@ -38,7 +42,6 @@ Calculate the week of the quarter for 31st of January, 2010:
 
     VALUES QUARTERWEEK_ISO(DATE(2010, 1, 31));
 
-
 ::
 
     1
@@ -52,7 +55,6 @@ Show the number of weeks in all quarters in the years 2007-2010:
 
     SELECT YEAR(D) AS YEAR, QUARTER(D) AS QUARTER, QUARTERWEEK_ISO(QUARTEREND(D)) AS WEEKS
     FROM TABLE(DATE_RANGE('2007-01-01', '2010-12-31', '300'));
-
 
 ::
 

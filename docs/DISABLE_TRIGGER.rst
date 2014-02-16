@@ -4,7 +4,8 @@
 DISABLE_TRIGGER procedure
 =========================
 
-Disables the specified trigger by saving its definition to a table and dropping it.
+Disables the specified trigger by saving its definition to a table and dropping
+it.
 
 Prototypes
 ==========
@@ -18,13 +19,17 @@ Prototypes
 Description
 ===========
 
-Drops a trigger after storing its definition in the DISABLED_TRIGGERS table for later "revival" with :ref:`ENABLE_TRIGGER`. The trigger must be operative (if it is not, recreate it with the :ref:`RECREATE_TRIGGER` procedure above before calling DISABLE_TRIGGER.
+Drops a trigger after storing its definition in the DISABLED_TRIGGERS table for
+later "revival" with :ref:`ENABLE_TRIGGER`. The trigger must be operative (if
+it is not, recreate it with the :ref:`RECREATE_TRIGGER` procedure above before
+calling DISABLE_TRIGGER.
 
 Parameters
 ==========
 
 ASCHEMA
-    If provided, the schema containing the trigger to disable. If omitted, defaults to the value of the ``CURRENT SCHEMA`` special register.
+    If provided, the schema containing the trigger to disable. If omitted,
+    defaults to the value of the ``CURRENT SCHEMA`` special register.
 ATRIGGER
     The name of the trigger to disable.
 

@@ -4,7 +4,8 @@
 SAVE_AUTHS procedure
 ====================
 
-Saves the authorizations of all relations in the specified schema for later restoration with the :ref:`RESTORE_AUTHS` procedure.
+Saves the authorizations of all relations in the specified schema for later
+restoration with the :ref:`RESTORE_AUTHS` procedure.
 
 Prototypes
 ==========
@@ -18,18 +19,25 @@ Prototypes
 Description
 ===========
 
-SAVE_AUTHS is a utility procedure which copies the authorization settings for all tables in the specified schema. If no schema is specified the current schema is used. Essentially this is equivalent to running :ref:`SAVE_AUTH` for every table in a schema.
+SAVE_AUTHS is a utility procedure which copies the authorization settings for
+all tables in the specified schema. If no schema is specified the current
+schema is used. Essentially this is equivalent to running :ref:`SAVE_AUTH` for
+every table in a schema.
 
 Parameters
 ==========
 
 ASCHEMA
-    The name of the schema containing the tables for which to save authorziation settings. If this parameter is omitted the value of the CURRENT SCHEMA special register will be used instead.
+    The name of the schema containing the tables for which to save
+    authorziation settings. If this parameter is omitted the value of the
+    CURRENT SCHEMA special register will be used instead.
 
 Examples
 ========
 
-Save all the authorization information from the tables in the FINANCE_DEV schema, do something arbitrary to the schema and restore the authorizations again:
+Save all the authorization information from the tables in the FINANCE_DEV
+schema, do something arbitrary to the schema and restore the authorizations
+again:
 
 .. code-block:: sql
 
@@ -39,7 +47,10 @@ Save all the authorization information from the tables in the FINANCE_DEV schema
     CALL RESTORE_AUTHS();
 
 
-**Advanced usage:** Copy the authorizations from the FINANCE_DEV schema to the FINANCE schema by changing the content of the SAVED_AUTH table (this is the table in which :ref:`SAVE_AUTH` temporarily stores authorizations; it has exactly the same structure as SYSCAT.TABAUTH):
+**Advanced usage:** Copy the authorizations from the FINANCE_DEV schema to the
+FINANCE schema by changing the content of the SAVED_AUTH table (this is the
+table in which :ref:`SAVE_AUTH` temporarily stores authorizations; it has
+exactly the same structure as SYSCAT.TABAUTH):
 
 .. code-block:: sql
 
