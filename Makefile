@@ -81,6 +81,8 @@ auth.foo: utils.foo sql.foo
 
 drop_schema.foo: utils.foo sql.foo
 
+merge.foo: utils.foo assert.foo sql.foo
+
 history.foo: utils.foo sql.foo auth.foo date_time.foo assert.foo
 
 corrections.foo: utils.foo sql.foo log.foo
