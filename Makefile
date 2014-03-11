@@ -32,18 +32,6 @@ clean: $(SUBDIRS)
 	rm -f uninstall.sql
 	rm -fr build/ dist/
 
-dist: $(ALL_SQL) $(ALL_EXT) $(ALL_TESTS) \
-		INSTALL LICENSE \
-		Makefile pcre/Makefile tests/Makefile \
-		uninstall.awk
-	mkdir -p build/db2utils/
-	mkdir -p dist/
-	for f in $^; do \
-		mkdir -p build/db2utils/$$(dirname $$f)/ ; \
-		cp $$f build/db2utils/$$(dirname $$f)/ ; \
-	done
-	tar -cvzf dist/db2utils-$(VERSION).tar.gz -C build/ db2utils/
-
 utils.sql: utils.sqt Makefile
 	sed -e 's/%SCHEMANAME%/$(SCHEMANAME)/' $< > $@
 
@@ -91,4 +79,4 @@ toggle_triggers.foo: utils.foo sql.foo assert.foo
 
 sql.foo: utils.foo
 
-.PHONY: install uninstall clean test
+.PHONY: install uninstall doc clean test

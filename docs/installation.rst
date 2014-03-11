@@ -20,8 +20,8 @@ the *db2inst1* user)::
 
 Extract the archive you downloaded, and change to the directory it creates::
 
-    $ tar -xzf db2utils-0.1.tar.gz
-    $ cd db2utils
+    $ tar -xzf db2utils-release-0.1.tar.gz
+    $ cd db2utils-release-0.1
 
 Edit the two variables **DBNAME** and **SCHEMANAME** at the top of the
 `Makefile`_::

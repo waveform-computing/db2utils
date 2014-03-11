@@ -1,4 +1,4 @@
-.. _overview:
+.. _modules:
 
 ================
 Modules Overview
@@ -77,6 +77,11 @@ The routines are divided into modules roughly by topic:
    information. This module isn't complete yet; plenty of functionality I'd
    like to implement when I get the time...
 
+`merge.sql`_
+   Defines a set of procedures for automatically generating ``INSERT``,
+   ``DELETE``, and ``MERGE`` statements with the intention of bulk-transferring
+   data between similarly structured tables.
+
 `pcre.sql`_
    Defines a set of functions providing `PCRE`_ (Perl Compatible Regular
    Expression) search, split and substitution functionality. The functions are
@@ -105,6 +110,7 @@ The routines are divided into modules roughly by topic:
 .. _toggle_triggers.sql: https://github.com/waveform80/db2utils/blob/master/toggle_triggers.sql
 .. _history.sql: https://github.com/waveform80/db2utils/blob/master/history.sql
 .. _log.sql: https://github.com/waveform80/db2utils/blob/master/log.sql
+.. _merge.sql: https://github.com/waveform80/db2utils/blob/master/merge.sql
 .. _sql.sql: https://github.com/waveform80/db2utils/blob/master/sql.sql
 .. _assert.sql: https://github.com/waveform80/db2utils/blob/master/assert.sql
 .. _corrections.sql: https://github.com/waveform80/db2utils/blob/master/corrections.sql
