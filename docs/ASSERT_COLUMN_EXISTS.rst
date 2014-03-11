@@ -28,8 +28,10 @@ Parameters
 ASCHEMA
     Specifies the schema containing the table to check. If omitted, defaults to
     the value of the *CURRENT SCHEMA* special register.
+
 ATABLE
     Specifies the name of the table to check.
+
 ACOLNAME
     Specifies the name of the column to test for existence.
 
@@ -60,6 +62,8 @@ See Also
 
 * `Source code`_
 * :ref:`ASSERT_TABLE_EXISTS`
+* :ref:`ASSERT_TRIGGER_EXISTS`
+* :ref:`ASSERT_ROUTINE_EXISTS`
 * :ref:`ASSERT_FAILED_STATE`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/assert.sql#L165
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/assert.sql#L164

@@ -1,8 +1,8 @@
 .. _ASSERT_EQUALS:
 
-====================================
+=============================
 ASSERT_EQUALS scalar function
-====================================
+=============================
 
 Signals :ref:`ASSERT_FAILED_STATE` if A does not equal B.
 
@@ -70,6 +70,8 @@ See Also
 
 * `Source code`_
 * :ref:`ASSERT_NOT_EQUALS`
+* :ref:`ASSERT_IS_NULL`
+* :ref:`ASSERT_IS_NOT_NULL`
 * :ref:`ASSERT_FAILED_STATE`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/assert.sql#L508
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/assert.sql#L502
