@@ -1,8 +1,8 @@
 .. _ASSERT_COLUMN_EXISTS:
 
-====================================
-ASSERT_COLUMN_EXISTS scalar function
-====================================
+==============================
+ASSERT_COLUMN_EXISTS procedure
+==============================
 
 Raises an assertion error if the specified column doesn't exist.
 
@@ -14,15 +14,13 @@ Prototypes
     ASSERT_COLUMN_EXISTS(ASCHEMA VARCHAR(128), ATABLE VARCHAR(128), ACOLNAME VARCHAR(128))
     ASSERT_COLUMN_EXISTS(ATABLE VARCHAR(128), ACOLNAME VARCHAR(128))
 
-    RETURNS INTEGER
-
 Description
 ===========
 
 Raises the :ref:`ASSERT_FAILED_STATE` state if **ACOLNAME** does not exist in
 the table specified by **ASCHEMA** and **ATABLE**. If not specified,
-**ASCHEMA** defaults to the value of the *CURRENT SCHEMA* special register. The
-return value in the case that the column does exist is arbitrary.
+**ASCHEMA** defaults to the value of the *CURRENT SCHEMA* special register.
+
 
 Parameters
 ==========
@@ -42,25 +40,17 @@ Test the TABNAME column exists in the SYSCAT.TABLES view:
 
 .. code-block:: sql
 
-    VALUES ASSERT_COLUMN_EXISTS('SYSCAT', 'TABLES', 'TABNAME');
-
-::
-
-    1
-    -----------
-              0
+    CALL ASSERT_COLUMN_EXISTS('SYSCAT', 'TABLES', 'TABNAME');
 
 
 Test the existence of a made-up column in the SYSCAT.TABLES view:
 
 .. code-block:: sql
 
-    VALUES ASSERT_COLUMN_EXISTS('SYSCAT', 'TABLES', 'FOO');
+    CALL ASSERT_COLUMN_EXISTS('SYSCAT', 'TABLES', 'FOO');
 
 ::
 
-    1
-    -----------
     SQL0438N  Application raised error or warning with diagnostic text: "FOO
     does not exist in SYSCAT.TABLES                 ".  SQLSTATE=90001
 
