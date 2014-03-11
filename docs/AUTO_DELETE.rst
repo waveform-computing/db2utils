@@ -34,6 +34,9 @@ of the destination table.
 If **SOURCE_SCHEMA** and **DEST_SCHEMA** are not specified they default to the
 current schema.
 
+The destination table must have at least one unique key (or a primary key), and
+the executing user must have DELETE privileges on the destination table.
+
 Parameters
 ==========
 
@@ -84,5 +87,6 @@ See Also
 
 * `Source code`_
 * :ref:`AUTO_MERGE`
+* :ref:`AUTO_INSERT`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/merge.sql#L378
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/merge.sql#L491

@@ -68,18 +68,21 @@ Examples
 ========
 
 Merge new content from EMP_SOURCE into the EMPLOYEES table, matching rows via
-the primary key of EMPLOYEES:
+the primary key of EMPLOYEES, then delete rows in EMPLOYEES that no longer
+exist in EMP_SOURCE:
+
 
 .. code-block:: sql
 
     CALL AUTO_MERGE('EMP_SOURCE', 'EMPLOYEES');
+    CALL AUTO_DELETE('EMP_SOURCE', 'EMPLOYEES');
 
 Merge new content from STAGING.CONTRACTS into IW.CONTRACTS, using a specific
 unique key for matching rows:
 
 .. code-block:: sql
 
-    CALL AUTO_MERGE('STAGING', 'CONTRACTS', 'IW', 'CONTRACTS', 'CONTRACTS_UQ');
+    CALL AUTO_MERGE('STAGING', 'CONTRACTS', 'IW', 'CONTRACTS', 'CONTRACTS_KEY');
 
 See Also
 ========
@@ -87,4 +90,4 @@ See Also
 * `Source code`_
 * :ref:`AUTO_DELETE`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/merge.sql#L269
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/merge.sql#L382

@@ -26,7 +26,8 @@
 -- MERGE, at least for us, is to update a table from an equivalently structured
 -- source. This module contains utility routines which automatically construct
 -- the MERGE statements required to do this from information in the system
--- catalog tables.
+-- catalog tables. Additional routines are included for automatically
+-- generating INSERT and DELETE statements commonly used in similar scenarios.
 -------------------------------------------------------------------------------
 
 
@@ -69,13 +70,56 @@ COMMENT ON VARIABLE MERGE_PARTIAL_KEY_STATE
 COMMENT ON VARIABLE MERGE_SAME_TABLE_STATE
     IS 'The SQLSTATE raised when AUTO_MERGE is run with the same table as source and target'!
 
+-- X_BUILD_INSERT(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE)
 -- X_BUILD_MERGE(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE, DEST_KEY)
 -- X_BUILD_DELETE(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE, DEST_KEY)
+-- X_MERGE_CHECKS(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE, DEST_KEY)
 -------------------------------------------------------------------------------
 -- These functions are effectively private utility subroutines for the
 -- procedures defined below. They simply generate snippets of SQL given a set
 -- of input parameters.
 -------------------------------------------------------------------------------
+
+CREATE FUNCTION X_BUILD_INSERT(
+    SOURCE_SCHEMA VARCHAR(128),
+    SOURCE_TABLE VARCHAR(128),
+    DEST_SCHEMA VARCHAR(128),
+    DEST_TABLE VARCHAR(128)
+)
+    RETURNS CLOB(64K)
+    SPECIFIC X_BUILD_INSERT
+    LANGUAGE SQL
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+    READS SQL DATA
+BEGIN ATOMIC
+    DECLARE COLS CLOB(64K) DEFAULT '';
+
+    FOR D AS
+        SELECT
+            T.COLNAME AS NAME
+        FROM
+            SYSCAT.COLUMNS S
+            INNER JOIN SYSCAT.COLUMNS T
+                ON S.COLNAME = T.COLNAME
+        WHERE
+            S.TABSCHEMA = SOURCE_SCHEMA
+            AND S.TABNAME = SOURCE_TABLE
+            AND T.TABSCHEMA = DEST_SCHEMA
+            AND T.TABNAME = DEST_TABLE
+    DO
+        IF COLS <> '' THEN
+            SET COLS = COLS || ',';
+        END IF;
+        SET COLS = COLS || QUOTE_IDENTIFIER(NAME);
+    END FOR;
+
+    RETURN
+        'INSERT INTO ' || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_TABLE) || ' '
+        || '(' || COLS || ') '
+        || 'SELECT ' || COLS || ' '
+        || 'FROM ' || QUOTE_IDENTIFIER(SOURCE_SCHEMA) || '.' || QUOTE_IDENTIFIER(SOURCE_TABLE);
+END!
 
 CREATE FUNCTION X_BUILD_MERGE(
     SOURCE_SCHEMA VARCHAR(128),
@@ -215,6 +259,30 @@ BEGIN ATOMIC
         || ')';
 END!
 
+CREATE PROCEDURE X_INSERT_CHECKS(
+    SOURCE_SCHEMA VARCHAR(128),
+    SOURCE_TABLE VARCHAR(128),
+    DEST_SCHEMA VARCHAR(128),
+    DEST_TABLE VARCHAR(128)
+)
+    SPECIFIC X_INSERT_CHECKS
+    MODIFIES SQL DATA
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+    LANGUAGE SQL
+BEGIN ATOMIC
+    CALL ASSERT_TABLE_EXISTS(SOURCE_SCHEMA, SOURCE_TABLE);
+    CALL ASSERT_TABLE_EXISTS(DEST_SCHEMA, DEST_TABLE);
+
+    -- Check source and target are distinct
+    IF SOURCE_SCHEMA = DEST_SCHEMA THEN
+        IF SOURCE_TABLE = DEST_TABLE THEN
+            CALL SIGNAL_STATE(MERGE_SAME_TABLE_STATE,
+                'Source and destination tables cannot be the same');
+        END IF;
+    END IF;
+END!
+
 CREATE PROCEDURE X_MERGE_CHECKS(
     SOURCE_SCHEMA VARCHAR(128),
     SOURCE_TABLE VARCHAR(128),
@@ -228,8 +296,7 @@ CREATE PROCEDURE X_MERGE_CHECKS(
     NO EXTERNAL ACTION
     LANGUAGE SQL
 BEGIN ATOMIC
-    CALL ASSERT_TABLE_EXISTS(SOURCE_SCHEMA, SOURCE_TABLE);
-    CALL ASSERT_TABLE_EXISTS(DEST_SCHEMA, DEST_TABLE);
+    CALL X_INSERT_CHECKS(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE);
 
     -- Check all columns of the destination key are present in the source table
     IF (
@@ -257,14 +324,60 @@ BEGIN ATOMIC
             ' must exist in the source and the target tables');
     END IF;
 
-    -- Check source and target are distinct
-    IF SOURCE_SCHEMA = DEST_SCHEMA THEN
-        IF SOURCE_TABLE = DEST_TABLE THEN
-            CALL SIGNAL_STATE(MERGE_SAME_TABLE_STATE,
-                'Source and destination tables cannot be the same');
-        END IF;
-    END IF;
 END!
+
+-- AUTO_INSERT(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE)
+-- AUTO_INSERT(SOURCE_TABLE, DEST_TABLE)
+-------------------------------------------------------------------------------
+-- The AUTO_INSERT procedure inserts all data from SOURCE_TABLE into DEST_TABLE
+-- by means of an automatically generated INSERT statement covering all columns
+-- common to both tables.
+--
+-- If SOURCE_SCHEMA and DEST_SCHEMA are not specified they default to the
+-- current schema.
+-------------------------------------------------------------------------------
+
+CREATE PROCEDURE AUTO_INSERT(
+    SOURCE_SCHEMA VARCHAR(128),
+    SOURCE_TABLE VARCHAR(128),
+    DEST_SCHEMA VARCHAR(128),
+    DEST_TABLE VARCHAR(128)
+)
+    SPECIFIC AUTO_INSERT1
+    MODIFIES SQL DATA
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+    LANGUAGE SQL
+BEGIN ATOMIC
+    DECLARE DML CLOB(64K) DEFAULT '';
+
+    CALL X_INSERT_CHECKS(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE);
+    SET DML = X_BUILD_INSERT(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE);
+    EXECUTE IMMEDIATE DML;
+END!
+
+CREATE PROCEDURE AUTO_INSERT(
+    SOURCE_TABLE VARCHAR(128),
+    DEST_TABLE VARCHAR(128)
+)
+    SPECIFIC AUTO_INSERT2
+    MODIFIES SQL DATA
+    NOT DETERMINISTIC
+    NO EXTERNAL ACTION
+    LANGUAGE SQL
+BEGIN ATOMIC
+    CALL AUTO_INSERT(CURRENT SCHEMA, SOURCE_TABLE, CURRENT SCHEMA, DEST_TABLE);
+END!
+
+GRANT EXECUTE ON SPECIFIC PROCEDURE AUTO_INSERT1 TO ROLE UTILS_MERGE_USER!
+GRANT EXECUTE ON SPECIFIC PROCEDURE AUTO_INSERT2 TO ROLE UTILS_MERGE_USER!
+GRANT EXECUTE ON SPECIFIC PROCEDURE AUTO_INSERT1 TO ROLE UTILS_MERGE_ADMIN WITH GRANT OPTION!
+GRANT EXECUTE ON SPECIFIC PROCEDURE AUTO_INSERT2 TO ROLE UTILS_MERGE_ADMIN WITH GRANT OPTION!
+
+COMMENT ON SPECIFIC PROCEDURE AUTO_INSERT1
+    IS 'Automatically inserts data from SOURCE_TABLE into DEST_TABLE'!
+COMMENT ON SPECIFIC PROCEDURE AUTO_INSERT2
+    IS 'Automatically inserts data from SOURCE_TABLE into DEST_TABLE'!
 
 -- AUTO_MERGE(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE, DEST_KEY)
 -- AUTO_MERGE(SOURCE_SCHEMA, SOURCE_TABLE, DEST_SCHEMA, DEST_TABLE)
@@ -484,3 +597,4 @@ COMMENT ON SPECIFIC PROCEDURE AUTO_DELETE3
 COMMENT ON SPECIFIC PROCEDURE AUTO_DELETE4
     IS 'Automatically removes data from DEST_TABLE that doesn''t exist in SOURCE_TABLE, based on DEST_KEY'!
 
+-- vim: set et sw=4 sts=4:
