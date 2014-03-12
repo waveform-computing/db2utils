@@ -4,8 +4,8 @@
 HOURSTART scalar function
 =========================
 
-Returns a TIMESTAMP at the start of AHOUR on the date AYEAR, AMONTH, ADAY, or
-at the start of the hour of ATIMESTAMP.
+Returns a TIMESTAMP at the start of **AHOUR** on the date **AYEAR**, **AMONTH**, **ADAY**, or
+at the start of the hour of **ATIMESTAMP**.
 
 Prototypes
 ==========
@@ -22,24 +22,30 @@ Prototypes
 Description
 ===========
 
-Returns a TIMESTAMP value representing the first microsecond of AHOUR in the
-date given by AYEAR, AMONTH, and ADAY, or of the timestamp given by ATIMESTAMP
-depending on the variant of the function that is called.
+Returns a TIMESTAMP value representing the first microsecond of **AHOUR** in
+the date given by **AYEAR**, **AMONTH**, and **ADAY**, or of the timestamp
+given by **ATIMESTAMP** depending on the variant of the function that is
+called.
 
 Parameters
 ==========
 
 AYEAR
     If provided, the year component of the resulting timestamp.
+
 AMONTH
     If provided, the month component of the resulting timestamp.
+
 ADAY
     If provided, the day component of the resulting timestamp.
+
 AHOUR
     If provided, the hour component of the resulting timestamp.
+
 ATIMESTAMP
     If provided, the timestamp from which to derive the start of the hour.
-    Either AYEAR, AMONTH, ADAY, and AHOUR, or ATIMESTAMP must be provided.
+    Either **AYEAR**, **AMONTH**, **ADAY**, and **AHOUR**, or **ATIMESTAMP**
+    must be provided.
 
 Examples
 ========
@@ -81,5 +87,5 @@ See Also
 * :ref:`HOUR_END`
 * `HOUR`_ (built-in function)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1340
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1568
 .. _HOUR: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000812.html

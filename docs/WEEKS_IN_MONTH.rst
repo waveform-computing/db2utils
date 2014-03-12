@@ -4,8 +4,8 @@
 WEEKSINMONTH scalar function
 ============================
 
-Returns the number of weeks within the month that ADATE exists within, or the
-number of weeks in AMONTH in AYEAR.
+Returns the number of weeks within the month that **ADATE** exists within, or
+the number of weeks in **AMONTH** in **AYEAR**.
 
 Prototypes
 ==========
@@ -23,23 +23,25 @@ Prototypes
 Description
 ===========
 
-Returns the number of weeks in AMONTH in AYEAR (weeks start on a Sunday, and
-partial weeks are permitted at the start and end of the month), or the number
-of weeks in the month that ADATE exists within depending on the variant of the
-function that is called.
+Returns the number of weeks in **AMONTH** in **AYEAR** (weeks start on a
+Sunday, and partial weeks are permitted at the start and end of the month), or
+the number of weeks in the month that **ADATE** exists within depending on the
+variant of the function that is called.
 
 Parameters
 ==========
 
 AYEAR
-    If provided, the year containing AMONTH for which to calculate the number
-    of weeks.
+    If provided, the year containing **AMONTH** for which to calculate the
+    number of weeks.
+
 AMONTH
-    If provided, the month within AYEAR for which to calculate the number of
-    weeks.
+    If provided, the month within **AYEAR** for which to calculate the number
+    of weeks.
+
 ADATE
     If provided, the date within the month for which to calculate the number of
-    weeks. Either AYEAR and AMONTH, or ADATE must be provided.
+    weeks. Either **AYEAR** and **AMONTH**, or **ADATE** must be provided.
 
 Examples
 ========
@@ -91,5 +93,5 @@ See Also
 * `WEEK`_ (built-in function)
 
 .. _WEEK: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000871.html
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1230
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1440
 .. _MONTH: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000830.html

@@ -4,9 +4,9 @@
 TS_FORMAT scalar function
 =========================
 
-A version of C's strftime() for DB2. Formats ATIMESTAMP according to the
-AFORMAT string, containing %-prefixed templates which will be replaced with
-elements of ATIMESTAMP.
+A version of C's strftime() for DB2. Formats **ATIMESTAMP** according to the
+**AFORMAT** string, containing %-prefixed templates which will be replaced with
+elements of **ATIMESTAMP**.
 
 Prototypes
 ==========
@@ -127,11 +127,12 @@ Parameters
 
 AFORMAT
     A string containing the templates to substitute with the fields of
-    ATIMESTAMP.
+    **ATIMESTAMP**.
+
 ATIMESTAMP
     A TIMESTAMP, DATE, TIME, or VARCHAR(26) value (containing a string
     representation of a timestamp) which will be used to calculate the
-    substitutions for the templates in AFORMAT.
+    substitutions for the templates in **AFORMAT**.
 
 Examples
 ========
@@ -168,5 +169,5 @@ See Also
 * `Source code`_
 * `TIMESTAMP_FORMAT`_ (built-in function)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1868
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L2178
 .. _TIMESTAMP_FORMAT: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0007107.html

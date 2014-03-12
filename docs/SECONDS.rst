@@ -23,10 +23,10 @@ Description
 ===========
 
 Returns an integer representation of a TIMESTAMP. This function is a
-combination of the built-in DAYS and MIDNIGHT_SECONDS functions. The result is
-a BIGINT (64-bit integer value) representing the number of seconds since one
+combination of the built-in *DAYS* and *MIDNIGHT_SECONDS* functions. The result
+is a BIGINT (64-bit integer value) representing the number of seconds since one
 day before 0001-01-01 at 00:00:00. The one day offset is due to the operation
-of the DAYS function.
+of the *DAYS* function.
 
 Parameters
 ==========
@@ -73,4 +73,4 @@ See Also
 * `DAYS <http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000789.html>`__ (built-in function)
 * `MIDNIGHT_SECONDS <http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000827.html>`__ (built-in function)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L143
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L186

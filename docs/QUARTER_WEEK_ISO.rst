@@ -4,7 +4,7 @@
 QUARTERWEEK_ISO scalar function
 ===============================
 
-Returns the week of the quarter that ADATE exists within (weeks start on a
+Returns the week of the quarter that **ADATE** exists within (weeks start on a
 Monday, result will be in the range 1-6).
 
 Prototypes
@@ -22,10 +22,10 @@ Prototypes
 Description
 ===========
 
-Returns the week of the quarter of ADATE, where weeks start on a Monday. The
-result will be in the range 1-14 as partial weeks are permitted. For example,
-if the first day of a month is a Sunday, it will be counted as week 1, which
-lasts one day. The next day, Monday, will start week 2.
+Returns the week of the quarter of **ADATE**, where weeks start on a Monday.
+The result will be in the range 1-14 as partial weeks are permitted. For
+example, if the first day of a month is a Sunday, it will be counted as week 1,
+which lasts one day. The next day, Monday, will start week 2.
 
 Parameters
 ==========
@@ -84,4 +84,4 @@ See Also
 * `Source code`_
 * :ref:`QUARTER_WEEK`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L740
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L871

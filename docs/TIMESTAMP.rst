@@ -5,7 +5,7 @@ TIMESTAMP scalar function
 =========================
 
 Constructs a TIMESTAMP from the specified seconds after the epoch. This is the
-inverse function of :ref:`SECONDS`.
+inverse of :ref:`SECONDS`.
 
 Prototypes
 ==========
@@ -21,11 +21,11 @@ Prototypes
 Description
 ===========
 
-The first version of this function returns a TIMESTAMP ASECONDS seconds after
-0000-12-31 00:00:00. This function is essentially the reverse of the SECONDS
-function. The ASECONDS value MUST be greater than 86400 (it must include a
-"date" portion) otherwise the returned value has an invalid year of 0000 and an
-error will occur.
+The first version of this function returns a TIMESTAMP **ASECONDS** seconds
+after 0000-12-31 00:00:00. This function is essentially the reverse of
+:ref:`SECONDS`. The **ASECONDS** value MUST be greater than ``86400`` (it must
+include a "date" portion) otherwise the returned value has an invalid year of
+0000 and an error will occur.
 
 The second version of this function simply constructs a timestamp from the
 given integer fields.
@@ -36,18 +36,25 @@ Parameters
 ASECONDS
     The number of seconds after the epoch (0000-12-31 00:00:00) which the
     resulting TIMESTAMP will represent.
+
 AYEAR
     The year for the resulting timestamp.
+
 AMONTH
     The month for the resulting timestamp (1-12).
+
 ADAY
     The day for the resulting timestamp (1-31).
+
 AHOUR
     The hours for the resulting timestamp (0-23).
+
 AMINUTE
     The minutes for the resulting timestamp (0-59).
+
 ASECOND
     The seconds for the resulting timestamp (0-59).
+
 AMICROSECOND
     The microseconds for the resulting timestamp (0-999999).
 
@@ -55,7 +62,7 @@ Examples
 ========
 
 Construct a TIMESTAMP representing the epoch (note that 0 cannot be used due to
-the offset mentioned in the :ref:`SECONDS` documentation:
+the offset mentioned in :ref:`SECONDS`:
 
 .. code-block:: sql
 
@@ -104,4 +111,4 @@ See Also
 * :ref:`SECONDS`
 * `TIMESTAMP <http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000859.html>`__ (built-in function)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L285
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L347

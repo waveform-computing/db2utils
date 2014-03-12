@@ -4,9 +4,9 @@
 WEEKEND_ISO scalar function
 ===========================
 
-Returns the last day (always a Sunday) of the week that ADATE exists within, or
-the last day of the week AWEEK in the year AYEAR according to the ISO8601
-standard.
+Returns the last day (always a Sunday) of the week that **ADATE** exists
+within, or the last day of the week **AWEEK** in the year **AYEAR** according
+to the ISO8601 standard.
 
 Prototypes
 ==========
@@ -24,20 +24,22 @@ Prototypes
 Description
 ===========
 
-Returns a DATE representing the last day of AWEEK in AYEAR according to the
-ISO8601 standard, or the last day of the week of ADATE (always a Sunday)
-depending on the variant of the function that is called.
+Returns a DATE representing the last day of **AWEEK** in **AYEAR** according to
+the ISO8601 standard, or the last day of the week of **ADATE** (always a
+Sunday) depending on the variant of the function that is called.
 
 Parameters
 ==========
 
 AYEAR
-    If provided, the year of AWEEK for which to return the ending date.
+    If provided, the year of **AWEEK** for which to return the ending date.
+
 AWEEK
     If provided, the week for which to return to the ending date.
+
 ADATE
     If provided the date in the week for which to return the ending date.
-    Either AYEAR and AWEEK, or ADATE must be specified.
+    Either **AYEAR** and **AWEEK**, or **ADATE** must be specified.
 
 Examples
 ========
@@ -76,5 +78,5 @@ See Also
 * :ref:`WEEK_END`
 * `WEEK_ISO`_ (built-in function)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1064
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1247
 .. _WEEK_ISO: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0005481.html

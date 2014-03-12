@@ -26,6 +26,7 @@ Table of Contents
    first_steps
    modules
    reference
+   changelog
    license
 
 

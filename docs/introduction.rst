@@ -37,8 +37,13 @@ The utilities cover a range of topics including:
 
 All functions and procedures are reasonably well documented in these pages, in
 comments in the source files, and with COMMENT ON statements within the
-database. A simple installation procedure is provided for Linux/UNIX users, but
+database. Per-module and suite-wide roles are also defined to permit easy
+management of which users have access to which routines.
+
+A simple installation procedure is provided for Linux/UNIX users, but
 Windows support is on an "if you can get it working" basis: I don't have any
 DB2 for Windows installations to play with and I've no idea how one compiles
 external C-based UDFs on Windows.
+
+.. _IBM DB2 for Linux/UNIX/Windows: http://www-01.ibm.com/software/data/db2/linux-unix-windows/
 

@@ -33,32 +33,33 @@ Requesting the working day of a Saturday or a Sunday will return the working
 day value of the prior Friday; it is not an error to query the working day of a
 weekend day, you should instead check for this in the calling code.
 
-If the RELATIVE_TO parameter is omitted it will default to the start of the
-month of the ADATE parameter. In other words, by default this function
+If the **RELATIVE_TO** parameter is omitted it will default to the start of the
+month of the **ADATE** parameter. In other words, by default this function
 calculates the working day of the month of a given date.
 
 If you wish to take into account more than merely weekend days when calculating
-working days, insert values into the associated VACATIONS table. If a vacation
-date occurs between the starting date and the target date (inclusive), it will
-count as another weekend date resulting in a working day one less than would
-otherwise be calculated. Note that the VACATIONS table will only be used when
-you specify a value for the optional ALOCATION parameter. This parameter is
-used to filter the content of the VACATIONS table under the assumption that
-different locations, most likely countries, will have different public
-holidays.
+working days, insert values into :ref:`VACATIONS`. If a vacation date occurs
+between the starting date and the target date (inclusive), it will count as
+another weekend date resulting in a working day one less than would otherwise
+be calculated. Note that the VACATIONS table will only be used when you specify
+a value for the optional **ALOCATION** parameter. This parameter is used to
+filter the content of the VACATIONS table under the assumption that different
+locations, most likely countries, will have different public holidays.
 
 Parameters
 ==========
 
 ADATE
     The date to calculate the working day from.
+
 RELATIVE_TO
     If specified, the date to calculate the working day relative to, i.e. the
-    function counts the number of working days between RELATIVE_TO and ADATE.
-    If omitted, defaults to the start of the month of ADATE.
+    function counts the number of working days between **RELATIVE_TO** and
+    **ADATE**.  If omitted, defaults to the start of the month of **ADATE**.
+
 ALOCATION
     If specified, causes the function to take into account additional vacation
-    days defined in the VACATIONS table with the specified LOCATION.
+    days defined in :ref:`VACATIONS` with the specified *LOCATION*.
 
 Examples
 ========
@@ -121,4 +122,4 @@ See Also
 
 * `Source code`_
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L2155
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L2483

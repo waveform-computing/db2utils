@@ -4,8 +4,8 @@
 QUOTE_STRING scalar function
 ============================
 
-Returns ASTRING surrounded by single quotes with all necessary escaping. Useful
-when constructing SQL for EXECUTE IMMEDIATE within a procedure.
+Returns **ASTRING** surrounded by single quotes with all necessary escaping.
+Useful when constructing SQL for EXECUTE IMMEDIATE within a procedure.
 
 Prototypes
 ==========
@@ -20,10 +20,10 @@ Prototypes
 Description
 ===========
 
-Returns ASTRING surrounded by single quotes and performs any necessary escaping
-within the string to make it valid SQL. For example, single quotes within
-ASTRING are doubled, and control characters like CR or LF are returned as
-concatenated hex-strings.
+Returns **ASTRING** surrounded by single quotes and performs any necessary
+escaping within the string to make it valid SQL. For example, single quotes
+within **ASTRING** are doubled, and control characters like CR or LF are
+returned as concatenated hex-strings.
 
 Parameters
 ==========
@@ -80,4 +80,4 @@ See Also
 * `Source code`_
 * :ref:`QUOTE_IDENTIFIER`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/sql.sql#L28
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/sql.sql#L42

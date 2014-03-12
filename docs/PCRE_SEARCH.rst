@@ -4,7 +4,8 @@
 PCRE_SEARCH scalar function
 ===========================
 
-Searches for regular expression PATTERN within TEXT starting at 1-based START.
+Searches for regular expression **PATTERN** within **TEXT** starting at 1-based
+**START**.
 
 Prototypes
 ==========
@@ -20,21 +21,24 @@ Prototypes
 Description
 ===========
 
-PCRE searching function. Given a regular expression in PATTERN, and some text
-to search in TEXT, returns the 1-based position of the first match. START is an
-optional 1-based position from which to start the search (defaults to 1 if not
-specified). If no match is found, the function returns zero. If PATTERN, TEXT,
-or START is NULL, the result is NULL.
+PCRE searching function. Given a regular expression in **PATTERN**, and some
+text to search in **TEXT**, returns the 1-based position of the first match.
+**START** is an optional 1-based position from which to start the search
+(defaults to ``1`` if not specified). If no match is found, the function
+returns zero. If **PATTERN**, **TEXT**, or **START** is NULL, the result is
+NULL.
 
 Parameters
 ==========
 
 PATTERN
     The Perl-compatible Regular Expression (PCRE) to search for
+
 TEXT
     The text to search within
+
 START
-    The 1-based position from which to start the search. Defaults to 1 if
+    The 1-based position from which to start the search. Defaults to ``1`` if
     omitted.
 
 Examples
@@ -74,7 +78,8 @@ the octets are not checked for 0-255 range:
 
 
 
-A search demonstrating use of back-references to check that a closing tag matches the opening tag:
+A search demonstrating use of back-references to check that a closing tag
+matches the opening tag:
 
 .. code-block:: sql
 
@@ -115,6 +120,6 @@ See Also
 * `Wikipedia PCRE article`_
 
 .. _C source code: https://github.com/waveform80/db2utils/blob/master/pcre/pcre_udfs.c#L225
-.. _SQL source code: https://github.com/waveform80/db2utils/blob/master/pcre.sql#L45
+.. _SQL source code: https://github.com/waveform80/db2utils/blob/master/pcre.sql#L58
 .. _PCRE library homepage: http://www.pcre.org/
 .. _Wikipedia PCRE article: http://en.wikipedia.org/wiki/PCRE

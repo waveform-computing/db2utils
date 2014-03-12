@@ -4,8 +4,8 @@
 WEEKSTART scalar function
 =========================
 
-Returns the first day (always a Sunday) of the week that ADATE exists within,
-or the first day of the week AWEEK in the year AYEAR.
+Returns the first day (always a Sunday) of the week that **ADATE** exists
+within, or the first day of the week **AWEEK** in the year **AYEAR**.
 
 Prototypes
 ==========
@@ -23,20 +23,22 @@ Prototypes
 Description
 ===========
 
-Returns a DATE representing the first day of AWEEK in AYEAR, or the first day
-of the week of ADATE (always a Sunday) depending on the variant of the function
-that is called.
+Returns a DATE representing the first day of **AWEEK** in **AYEAR**, or the
+first day of the week of **ADATE** (always a Sunday) depending on the variant
+of the function that is called.
 
 Parameters
 ==========
 
 AYEAR
-    If provided, the year of AWEEK for which to return the starting date.
+    If provided, the year of **AWEEK** for which to return the starting date.
+
 AWEEK
     If provided, the week for which to return to the starting date.
+
 ADATE
     If provided the date in the week for which to return the starting date.
-    Either AYEAR and AWEEK, or ADATE must be specified.
+    Either **AYEAR** and **AWEEK**, or **ADATE** must be specified.
 
 Examples
 ========
@@ -76,4 +78,4 @@ See Also
 * `WEEK`_ (built-in function)
 
 .. _WEEK: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000871.html
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L892
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1048

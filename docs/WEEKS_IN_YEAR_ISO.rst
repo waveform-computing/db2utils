@@ -4,8 +4,8 @@
 WEEKSINYEAR_ISO scalar function
 ===============================
 
-Returns the number of weeks within the year that ADATE exists within, or the
-number of weeks in AYEAR according to the ISO8601 standard.
+Returns the number of weeks within the year that **ADATE** exists within, or
+the number of weeks in **AYEAR** according to the ISO8601 standard.
 
 Prototypes
 ==========
@@ -23,19 +23,20 @@ Prototypes
 Description
 ===========
 
-Returns the number of weeks in AYEAR according to the ISO8601 standard (weeks
-start on a Monday, and overlap calendar year ends to ensure all weeks are
-"whole"), or the number of weeks in the year that ADATE exists within depending
-on the variant of the function that is called.
+Returns the number of weeks in **AYEAR** according to the ISO8601 standard
+(weeks start on a Monday, and overlap calendar year ends to ensure all weeks
+are "whole"), or the number of weeks in the year that **ADATE** exists within
+depending on the variant of the function that is called.
 
 Parameters
 ==========
 
 AYEAR
     If provided, the year for which to calculate the number of weeks.
+
 ADATE
     If provided, the date in the year for which to calculate the number of
-    weeks. Either AYEAR or ADATE must be specified.
+    weeks. Either **AYEAR** or **ADATE** must be specified.
 
 Examples
 ========
@@ -85,5 +86,5 @@ See Also
 * :ref:`WEEKS_IN_YEAR`
 * `WEEK_ISO`_ (built-in function)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1175
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1376
 .. _WEEK_ISO: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0005481.html

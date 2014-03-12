@@ -4,8 +4,8 @@
 PCRE_GROUPS table function
 ==========================
 
-Searches for regular expression PATTERN in TEXT, returning a table detailing
-all matched groups.
+Searches for regular expression **PATTERN** in **TEXT**, returning a table
+detailing all matched groups.
 
 Prototypes
 ==========
@@ -24,16 +24,17 @@ Prototypes
 Description
 ===========
 
-PCRE groups table function. Given a regular expression in PATTERN, and some
-text to search in TEXT, the function performs a search for PATTERN in the text
-and returns the result as a table containing a row for each matching group
-(including group 0 which implicitly covers the entire search pattern).
+PCRE groups table function. Given a regular expression in **PATTERN**, and some
+text to search in **TEXT**, the function performs a search for **PATTERN** in
+the text and returns the result as a table containing a row for each matching
+group (including group 0 which implicitly covers the entire search pattern).
 
 Parameters
 ==========
 
 PATTERN
     The Perl-compatible Regular Expression (PCRE) to search for.
+
 TEXT
     The text to search within.
 
@@ -41,10 +42,12 @@ Returns
 =======
 
 GROUP
-    The index of the capturing group; group 0 represents the portion of TEXT
-    which matched the entire PATTERN.
+    The index of the capturing group; group 0 represents the portion of
+    **TEXT** which matched the entire **PATTERN**.
+
 POSITION
-    The 1-based position of the group within TEXT.
+    The 1-based position of the group within **TEXT**.
+
 CONTENT
     The content of the matched group.
 
@@ -113,6 +116,6 @@ See Also
 * `Wikipedia PCRE article`_
 
 .. _C source code: https://github.com/waveform80/db2utils/blob/master/pcre/pcre_udfs.c#L411
-.. _SQL source code: https://github.com/waveform80/db2utils/blob/master/pcre.sql#L183
+.. _SQL source code: https://github.com/waveform80/db2utils/blob/master/pcre.sql#L206
 .. _PCRE library homepage: http://www.pcre.org/
 .. _Wikipedia PCRE article: http://en.wikipedia.org/wiki/PCRE

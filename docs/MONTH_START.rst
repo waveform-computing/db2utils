@@ -4,8 +4,8 @@
 MONTHSTART scalar function
 ==========================
 
-Returns the first day of the month that ADATE exists within, or the first day
-of the month AMONTH in the year AYEAR.
+Returns the first day of the month that **ADATE** exists within, or the first
+day of the month **AMONTH** in the year **AYEAR**.
 
 Prototypes
 ==========
@@ -23,19 +23,22 @@ Prototypes
 Description
 ===========
 
-Returns a DATE representing the first day of AMONTH in AYEAR, or the first day
-of the month of ADATE depending on the variant of the function that is called.
+Returns a DATE representing the first day of **AMONTH** in **AYEAR**, or the
+first day of the month of **ADATE** depending on the variant of the function
+that is called.
 
 Parameters
 ==========
 
 AYEAR
-    If provided, the year of AMONTH for which to return the starting date.
+    If provided, the year of **AMONTH** for which to return the starting date.
+
 AMONTH
     If provided, the month for which to return to the starting date.
+
 ADATE
     If provided the date in the month for which to return the starting date.
-    Either AYEAR and AMONTH, or ADATE must be specified.
+    Either **AYEAR** and **AMONTH**, or **ADATE** must be specified.
 
 Examples
 ========
@@ -73,5 +76,5 @@ See Also
 * :ref:`MONTH_END`
 * `MONTH`_ (built-in function)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L380
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L454
 .. _MONTH: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000830.html

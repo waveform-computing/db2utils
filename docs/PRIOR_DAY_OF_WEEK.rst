@@ -4,8 +4,8 @@
 PRIOR_DAYOFWEEK scalar function
 ===============================
 
-Returns the latest date earlier than ADATE, which is also a particular day of
-the week, ADOW (1=Sunday, 2=Monday, 6=Saturday, etc.)
+Returns the latest date earlier than **ADATE**, which is also a particular day
+of the week, **ADOW** (1=Sunday, 2=Monday, 6=Saturday, etc.)
 
 Prototypes
 ==========
@@ -24,16 +24,17 @@ Description
 ===========
 
 Returns the specified day of the week prior to the given date. Days of the week
-are specified in the same fashion as the built-in DAYOFWEEK function (i.e.
-1=Sunday, 2=Monday, ... 7=Saturday). If ADATE is omitted the current date is
-used.
+are specified in the same fashion as the built-in *DAYOFWEEK* function (i.e.
+1=Sunday, 2=Monday, ... 7=Saturday). If **ADATE** is omitted the current date
+is used.
 
 Parameters
 ==========
 
 ADATE
     The date before which to return a specific day of the week. If this
-    parameter is omitted the CURRENT DATE special register is used.
+    parameter is omitted the *CURRENT DATE* special register is used.
+
 ADOW
     The day of the week to find specified as an integer where 1 represents
     Sunday, 2 is Monday, and so on.
@@ -73,4 +74,4 @@ See Also
 * `Source code`_
 * :ref:`NEXT_DAY_OF_WEEK`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L28
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L53

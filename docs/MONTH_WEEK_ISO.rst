@@ -4,7 +4,7 @@
 MONTHWEEK_ISO scalar function
 =============================
 
-Returns the week of the month that ADATE exists within (weeks start on a
+Returns the week of the month that **ADATE** exists within (weeks start on a
 Monday, result will be in the range 1-6).
 
 Prototypes
@@ -22,7 +22,7 @@ Prototypes
 Description
 ===========
 
-Returns the week of the month of ADATE, where weeks start on a Monday. The
+Returns the week of the month of **ADATE**, where weeks start on a Monday. The
 result will be in the range 1-6 as partial weeks are permitted. For example, if
 the first day of a month is a Sunday, it will be counted as week 1, which lasts
 one day. The next day, Monday, will start week 2.
@@ -74,4 +74,4 @@ See Also
 * `Source code`_
 * :ref:`MONTH_WEEK`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L539
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L638

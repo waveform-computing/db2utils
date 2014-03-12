@@ -4,8 +4,8 @@
 WEEKSINYEAR scalar function
 ===========================
 
-Returns the number of weeks within the year that ADATE exists within, or the
-number of weeks in AYEAR.
+Returns the number of weeks within the year that **ADATE** exists within, or
+the number of weeks in **AYEAR**.
 
 Prototypes
 ==========
@@ -23,19 +23,20 @@ Prototypes
 Description
 ===========
 
-Returns the number of weeks in AYEAR (weeks start on a Sunday, and partial
+Returns the number of weeks in **AYEAR** (weeks start on a Sunday, and partial
 weeks are permitted at the start and end of the year), or the number of weeks
-in the year that ADATE exists within depending on the variant of the function
-that is called.
+in the year that **ADATE** exists within depending on the variant of the
+function that is called.
 
 Parameters
 ==========
 
 AYEAR
     If provided, the year for which to calculate the number of weeks.
+
 ADATE
     If provided, the date in the year for which to calculate the number of
-    weeks. Either AYEAR or ADATE must be specified.
+    weeks. Either **AYEAR** or **ADATE** must be specified.
 
 Examples
 ========
@@ -85,4 +86,4 @@ See Also
 * `WEEK`_ (built-in function)
 
 .. _WEEK: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000871.html
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1120
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1312

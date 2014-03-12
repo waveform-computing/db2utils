@@ -4,8 +4,8 @@
 YEAR_ISO scalar function
 ========================
 
-Returns the year of ADATE, unless the ISO week of ADATE exists in the prior
-year in which case that year is returned.
+Returns the year of **ADATE**, unless the ISO week of **ADATE** exists in the
+prior year in which case that year is returned.
 
 Prototypes
 ==========
@@ -22,8 +22,8 @@ Prototypes
 Description
 ===========
 
-Returns the year of ADATE, unless the ISO week number (see the built-in
-function `WEEK_ISO`_) of ADATE belongs to the prior year, in which case the
+Returns the year of **ADATE**, unless the ISO week number (see the built-in
+function `WEEK_ISO`_) of **ADATE** belongs to the prior year, in which case the
 prior year is returned.
 
 Parameters
@@ -70,6 +70,6 @@ See Also
 * `YEAR`_ (built-in function)
 * `WEEK_ISO`_ (built-in function)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L334
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L401
 .. _WEEK_ISO: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0005481.html
 .. _YEAR: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000872.html
