@@ -22,7 +22,8 @@ Description
 RECREATE_VIEW is a utility procedure which recreates the specified view using
 the SQL found in the system catalog tables. It is useful for quickly recreating
 views which have been marked inoperative after a change to one or more of the
-view's dependencies. If ASCHEMA is omitted it defaults to the current schema.
+view's dependencies. If **ASCHEMA** is omitted it defaults to the current
+schema.
 
 .. note::
 
@@ -39,28 +40,29 @@ view's dependencies. If ASCHEMA is omitted it defaults to the current schema.
 
 .. warning::
 
-    See the :ref:`SAVE_AUTH` procedure's description for warnings
-    regarding the loss of authorization information with inoperative views.
+    See :ref:`SAVE_AUTH` for warnings regarding the loss of authorization
+    information with inoperative views.
 
 Parameters
 ==========
 
 ASCHEMA
     If provided, specifies the schema containing the view to recreate. If
-    omitted, defaults to the value of the ``CURRENT SCHEMA`` special register.
+    omitted, defaults to the value of the *CURRENT SCHEMA* special register.
+
 AVIEW
     The name of the view to recreate.
 
 Examples
 ========
 
-Recreate the inoperative FOO.BAR view:
+Recreate the inoperative *FOO.BAR* view:
 
 .. code-block:: sql
 
     CALL RECREATE_VIEW('FOO', 'BAR');
 
-Recreate the BAZ view in the current schema:
+Recreate the *BAZ* view in the current schema:
 
 .. code-block:: sql
 
@@ -77,5 +79,5 @@ See Also
 * :ref:`RESTORE_VIEW`
 * `SYSCAT.VIEWS`_ (built-in catalog view)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/evolve.sql#L32
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/evolve.sql#L46
 .. _SYSCAT.VIEWS: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001068.html

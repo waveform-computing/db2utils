@@ -21,9 +21,8 @@ Description
 ===========
 
 The AUTO_DELETE procedure deletes rows from **DEST_TABLE** that do not exist in
-**SOURCE_TABLE**. This procedure is intended to be used after the
-:ref:`AUTO_MERGE` procedure has been used to upsert from the source to the
-destination.
+**SOURCE_TABLE**. This procedure is intended to be used after :ref:`AUTO_MERGE`
+has been used to upsert from the source to the destination.
 
 The **DEST_KEY** parameter specifies the name of the unique key to use for
 identifying rows in the destination table. If specified, it must be the name of
@@ -42,7 +41,7 @@ Parameters
 
 SOURCE_SCHEMA
   If provided, specifies the schema containing **SOURCE_TABLE**. If omitted,
-  defaults to the value of the ``CURRENT SCHEMA`` special register.
+  defaults to the value of the *CURRENT SCHEMA* special register.
 
 SOURCE_TABLE
   Specifies the name of the table within **SOURCE_SCHEMA** to read for the list
@@ -50,7 +49,7 @@ SOURCE_TABLE
 
 DEST_SCHEMA
   If provided, specifies the schema containing **DEST_TABLE**. If omitted,
-  defaults to the value of the ``CURRENT SCHEMA`` special register.
+  defaults to the value of the *CURRENT SCHEMA* special register.
 
 DEST_TABLE
   Specifies the name of the table within **DEST_SCHEMA** from which data will
@@ -66,17 +65,17 @@ DEST_KEY
 Examples
 ========
 
-Merge new content from EMP_SOURCE into the EMPLOYEES table, matching rows via
-the primary key of EMPLOYEES, then delete rows in EMPLOYEES that no longer
-exist in EMP_SOURCE:
+Merge new content from *EMP_SOURCE* into the *EMPLOYEES* table, matching rows
+via the primary key of *EMPLOYEES*, then delete rows in *EMPLOYEES* that no
+longer exist in *EMP_SOURCE:*
 
 .. code-block:: sql
 
     CALL AUTO_MERGE('EMP_SOURCE', 'EMPLOYEES');
     CALL AUTO_DELETE('EMP_SOURCE', 'EMPLOYEES');
 
-Delete content from IW.CONTRACTS that no longer exists in STAGING.CONTRACTS,
-using a specific unique key for matching rows:
+Delete content from *IW.CONTRACTS* that no longer exists in
+*STAGING.CONTRACTS*, using a specific unique key for matching rows:
 
 .. code-block:: sql
 

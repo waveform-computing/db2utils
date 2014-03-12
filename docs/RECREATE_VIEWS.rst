@@ -22,7 +22,7 @@ Description
 RECREATE_VIEWS is a utility procedure which recreates all inoperative views in
 a specified schema, using the SQL found in the system catalogue tables. It is
 useful for quickly recreating views which have been marked inoperative after a
-change to one or more of the views' dependencies. If ASCHEMA is omitted it
+change to one or more of the views' dependencies. If **ASCHEMA** is omitted it
 defaults to the current schema.
 
 .. note::
@@ -40,20 +40,20 @@ defaults to the current schema.
 
 .. warning::
 
-    See the :ref:`SAVE_AUTH` procedure's description for warnings
-    regarding the loss of authorization information with inoperative views.
+    See :ref:`SAVE_AUTH` for warnings regarding the loss of authorization
+    information with inoperative views.
 
 Parameters
 ==========
 
 ASCHEMA
     If provided, specifies the schema containing the views to recreate. If
-    omitted, defaults to the value of the ``CURRENT SCHEMA`` special register.
+    omitted, defaults to the value of the *CURRENT SCHEMA* special register.
 
 Examples
 ========
 
-Recreate all inoperative views in the FOO schema:
+Recreate all inoperative views in the *FOO* schema:
 
 .. code-block:: sql
 
@@ -77,5 +77,5 @@ See Also
 * :ref:`RESTORE_VIEW`
 * `SYSCAT.VIEWS`_ (built-in catalog view)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/evolve.sql#L99
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/evolve.sql#L118
 .. _SYSCAT.VIEWS: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001068.html

@@ -4,7 +4,7 @@
 DROP_SCHEMA procedure
 =====================
 
-Drops ASCHEMA and all objects within it.
+Drops **ASCHEMA** and all objects within it.
 
 Prototypes
 ==========
@@ -38,14 +38,14 @@ ASCHEMA
 Examples
 ========
 
-Drop the FRED schema and all objects within it:
+Drop the *FRED* schema and all objects within it:
 
 .. code-block:: sql
 
     CALL DROP_SCHEMA('FRED');
 
 
-Drop all schemas which start with the characters TEST:
+Drop all schemas which start with the characters *TEST:*
 
 .. code-block:: sql
 
@@ -57,7 +57,7 @@ Drop all schemas which start with the characters TEST:
       DO
         CALL DROP_SCHEMA(T.SCHEMANAME);
       END FOR;
-    END@
+    END!
 
 
 See Also
@@ -66,5 +66,5 @@ See Also
 * `Source code`_
 * `ADMIN_DROP_SCHEMA`_ (built-in procedure)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/drop_schema.sql#L23
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/drop_schema.sql#L39
 .. _ADMIN_DROP_SCHEMA: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.rtn.doc/doc/r0022036.html

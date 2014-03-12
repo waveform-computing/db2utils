@@ -31,8 +31,8 @@ schema. If no schema is specified, the current schema is used.
     then call :ref:`RESTORE_AUTHS` on that schema, the procedure will succeed
     with no error, although several authorization settings have not been
     restored.  Furthermore, any settings associated with the specified schema
-    that are not restored are removed from store used by :ref:`SAVE_AUTHS` (the
-    SAVED_AUTH table in the schema containing the procedures).
+    that are not restored are removed from store used by :ref:`SAVE_AUTHS`
+    (:ref:`SAVED_AUTH` in the schema containing the procedures).
 
 Parameters
 ==========
@@ -40,12 +40,12 @@ Parameters
 ASCHEMA
     The name of the schema containing the tables for which to restore
     authorziation settings. If this parameter is omitted the value of the
-    CURRENT SCHEMA special register will be used instead.
+    *CURRENT SCHEMA* special register will be used instead.
 
 Examples
 ========
 
-Save all the authorization information from the tables in the FINANCE_DEV
+Save all the authorization information from the tables in the *FINANCE_DEV*
 schema, do something arbitrary to the schema and restore the authorizations
 again:
 
@@ -57,10 +57,10 @@ again:
     CALL RESTORE_AUTHS();
 
 
-**Advanced usage:** Copy the authorizations from the FINANCE_DEV schema to the
-FINANCE schema by changing the content of the SAVED_AUTH table (this is the
+*Advanced usage:* Copy the authorizations from the *FINANCE_DEV* schema to the
+*FINANCE* schema by changing the content of :ref:`SAVED_AUTH` (this is the
 table in which :ref:`SAVE_AUTH` temporarily stores authorizations; it has
-exactly the same structure as SYSCAT.TABAUTH):
+exactly the same structure as *SYSCAT.TABAUTH*):
 
 .. code-block:: sql
 
@@ -80,5 +80,5 @@ See Also
 * :ref:`RESTORE_AUTH`
 * `SYSCAT.TABAUTH`_ (built-in catalogue view)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/auth.sql#L1258
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/auth.sql#L1499
 .. _SYSCAT.TABAUTH: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001061.html

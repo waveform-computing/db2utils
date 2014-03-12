@@ -35,7 +35,7 @@ current schema.
 
 Only columns common to both the destination table and the source table will be
 included in the generated statement. Destination columns must be updateable
-(they cannot be defined as ``GENERATED ALWAYS``), and the executing user must
+(they cannot be defined as GENERATED ALWAYS), and the executing user must
 have INSERT and UPDATE privileges on the destination table.
 
 Parameters
@@ -43,7 +43,7 @@ Parameters
 
 SOURCE_SCHEMA
   If provided, specifies the schema containing **SOURCE_TABLE**. If omitted,
-  defaults to the value of the ``CURRENT SCHEMA`` special register.
+  defaults to the value of the *CURRENT SCHEMA* special register.
 
 SOURCE_TABLE
   Specifies the name of the table within **SOURCE_SCHEMA** from which data will
@@ -51,7 +51,7 @@ SOURCE_TABLE
 
 DEST_SCHEMA
   If provided, specifies the schema containing **DEST_TABLE**. If omitted,
-  defaults to the value of the ``CURRENT SCHEMA`` special register.
+  defaults to the value of the *CURRENT SCHEMA* special register.
 
 DEST_TABLE
   Specifies the name of the table within **DEST_SCHEMA** into which data will
@@ -67,9 +67,9 @@ DEST_KEY
 Examples
 ========
 
-Merge new content from EMP_SOURCE into the EMPLOYEES table, matching rows via
-the primary key of EMPLOYEES, then delete rows in EMPLOYEES that no longer
-exist in EMP_SOURCE:
+Merge new content from *EMP_SOURCE* into the *EMPLOYEES* table, matching rows
+via the primary key of *EMPLOYEES*, then delete rows in *EMPLOYEES* that no
+longer exist in *EMP_SOURCE*:
 
 
 .. code-block:: sql
@@ -77,8 +77,8 @@ exist in EMP_SOURCE:
     CALL AUTO_MERGE('EMP_SOURCE', 'EMPLOYEES');
     CALL AUTO_DELETE('EMP_SOURCE', 'EMPLOYEES');
 
-Merge new content from STAGING.CONTRACTS into IW.CONTRACTS, using a specific
-unique key for matching rows:
+Merge new content from *STAGING.CONTRACTS* into *IW.CONTRACTS*, using a
+specific unique key for matching rows:
 
 .. code-block:: sql
 

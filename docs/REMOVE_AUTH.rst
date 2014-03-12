@@ -20,10 +20,9 @@ Description
 ===========
 
 REMOVE_AUTH is a procedure which removes all authorizations from the entity
-specified by AUTH_NAME, and optionally AUTH_TYPE. If AUTH_TYPE is omitted the
-:ref:`AUTH_TYPE` function above will be used to determine it. Otherwise, it
-must be ``'U'``, ``'G'``, or ``'R'``, standing for user, group or role
-respectively.
+specified by **AUTH_NAME**, and optionally **AUTH_TYPE**. If **AUTH_TYPE** is
+omitted :ref:`AUTH_TYPE` will be used to determine it. Otherwise, it must
+be ``'U'``, ``'G'``, or ``'R'``, standing for user, group or role respectively.
 
 .. warning::
 
@@ -37,12 +36,14 @@ Parameters
 
 AUTH_NAME
     The name of the user, group, or role to remove all authorizations from.
+
 AUTH_TYPE
-    The letter ``'U'``, ``'G'``, or ``'R'`` indicating whether AUTH_NAME refers
-    to a user, group, or role respectively. If omitted, the :ref:`AUTH_TYPE`
-    function will be used to determine the type of AUTH_NAME.
+    The letter ``'U'``, ``'G'``, or ``'R'`` indicating whether **AUTH_NAME**
+    refers to a user, group, or role respectively. If omitted, :ref:`AUTH_TYPE`
+    will be used to determine the type of **AUTH_NAME**.
+
 INCLUDE_PERSONAL
-    If this parameter is ``'Y'`` and AUTH_NAME refers to a user, then all
+    If this parameter is ``'Y'`` and **AUTH_NAME** refers to a user, then all
     authorizations associated with the user's personal schema will be included.
     Defaults to ``'N'`` if omitted, meaning the user will still have access to
     all objects within their personal schema by default.
@@ -50,7 +51,7 @@ INCLUDE_PERSONAL
 Examples
 ========
 
-Remove all authorizations from the user FRED, but leave personal schema
+Remove all authorizations from the user *FRED*, but leave personal schema
 authorizations intact.
 
 .. code-block:: sql
@@ -58,8 +59,8 @@ authorizations intact.
     CALL REMOVE_AUTH('FRED');
 
 
-Remove all authorizations from the FINANCE group (the INCLUDE_PERSONAL
-parameter is redundant here as AUTH_NAME is not a user).
+Remove all authorizations from the *FINANCE* group (the **INCLUDE_PERSONAL**
+parameter is redundant here as **AUTH_NAME** is not a user).
 
 .. code-block:: sql
 
@@ -76,4 +77,4 @@ See Also
 * :ref:`COPY_AUTH`
 * :ref:`MOVE_AUTH`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/auth.sql#L863
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/auth.sql#L924

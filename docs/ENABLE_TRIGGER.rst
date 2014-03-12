@@ -18,30 +18,31 @@ Prototypes
 Description
 ===========
 
-Restores a previously disabled trigger by reading its definition from the
-DISABLED_TRIGGERS table and recreating it. The trigger must have been disabled
-with the :ref:`DISABLE_TRIGGER` or :ref:`DISABLE_TRIGGERS` procedures.
+Restores a previously disabled trigger by reading its definition from
+:ref:`DISABLED_TRIGGERS` and recreating it. The trigger must have been disabled
+with :ref:`DISABLE_TRIGGER` or :ref:`DISABLE_TRIGGERS`.
 
 Parameters
 ==========
 
 ASCHEMA
     If provided, the schema containing the trigger to enable. If omitted,
-    defaults to the value of the ``CURRENT SCHEMA`` special register.
+    defaults to the value of the *CURRENT SCHEMA* special register.
+
 ATRIGGER
     The name of the trigger to enable.
 
 Examples
 ========
 
-Enable the FINANCE.LEDGER_INSERT trigger:
+Enable the *FINANCE.LEDGER_INSERT* trigger:
 
 .. code-block:: sql
 
     CALL ENABLE_TRIGGER('FINANCE', 'LEDGER_INSERT');
 
 
-Enable the EMPLOYEE_UPDATE trigger in the current schema:
+Enable the *EMPLOYEE_UPDATE* trigger in the current schema:
 
 .. code-block:: sql
 
@@ -56,5 +57,5 @@ See Also
 * :ref:`ENABLE_TRIGGERS`
 * `SYSCAT.TRIGGERS`_ (built-in catalogue table)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/toggle_triggers.sql#L193
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/toggle_triggers.sql#L239
 .. _SYSCAT.TRIGGERS: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001066.html

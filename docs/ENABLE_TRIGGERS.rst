@@ -29,22 +29,23 @@ Parameters
 
 ASCHEMA
     If provided, the schema containing the table for which to enable triggers.
-    If omitted, defaults to the value of the ``CURRENT SCHEMA`` special
+    If omitted, defaults to the value of the *CURRENT SCHEMA* special
     register.
+
 ATABLE
     The name of the table to enable all disabled triggers for.
 
 Examples
 ========
 
-Enable all disabled triggers on the FINANCE.LEDGER table:
+Enable all disabled triggers on the *FINANCE.LEDGER* table:
 
 .. code-block:: sql
 
     CALL ENABLE_TRIGGERS('FINANCE', 'LEDGER');
 
 
-Enable the disabled triggers for the EMPLOYEE table in the current schema:
+Enable the disabled triggers for the *EMPLOYEE* table in the current schema:
 
 .. code-block:: sql
 
@@ -60,5 +61,5 @@ See Also
 * :ref:`ENABLE_TRIGGER`
 * `SYSCAT.TRIGGERS`_ (built-in catalogue table)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/toggle_triggers.sql#L258
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/toggle_triggers.sql#L308
 .. _SYSCAT.TRIGGERS: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001066.html

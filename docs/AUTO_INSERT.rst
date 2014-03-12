@@ -34,7 +34,7 @@ Parameters
 
 SOURCE_SCHEMA
   If provided, specifies the schema containing **SOURCE_TABLE**. If omitted,
-  defaults to the value of the ``CURRENT SCHEMA`` special register.
+  defaults to the value of the *CURRENT SCHEMA* special register.
 
 SOURCE_TABLE
   Specifies the name of the table within **SOURCE_SCHEMA** from which to read
@@ -42,7 +42,7 @@ SOURCE_TABLE
 
 DEST_SCHEMA
   If provided, specifies the schema containing **DEST_TABLE**. If omitted,
-  defaults to the value of the ``CURRENT SCHEMA`` special register.
+  defaults to the value of the *CURRENT SCHEMA* special register.
 
 DEST_TABLE
   Specifies the name of the table within **DEST_SCHEMA** into which data will
@@ -51,13 +51,13 @@ DEST_TABLE
 Examples
 ========
 
-Insert all content from NEW_EMP into EMPLOYEES:
+Insert all content from *NEW_EMP* into *EMPLOYEES*:
 
 .. code-block:: sql
 
     CALL AUTO_INSERT('NEW_EMP', 'EMPLOYEES');
 
-Replace all content in IW.CONTRACTS with content from STAGING.CONTRACTS:
+Replace all content in *IW.CONTRACTS* with content from *STAGING.CONTRACTS*:
 
 .. code-block:: sql
 

@@ -22,23 +22,21 @@ Description
 ===========
 
 The CREATE_EXCEPTION_TABLE procedure creates, from a template table (specified
-by SOURCE_SCHEMA and SOURCE_TABLE), another table (named by DEST_SCHEMA and
-DEST_TABLE) designed to hold `LOAD`_ and `SET INTEGRITY`_ exceptions from the
+by **SOURCE_SCHEMA** and **SOURCE_TABLE**), another table (named by **DEST_SCHEMA** and
+**DEST_TABLE**) designed to hold `LOAD`_ and `SET INTEGRITY`_ exceptions from the
 template table. The new table is identical to the template table, but contains
-two extra fields: EXCEPT_MSG (which stores information about the exception that
-occurred when loading or setting the integrity of the table), and EXCEPT_TS, a
+two extra fields: *EXCEPT_MSG* (which stores information about the exception that
+occurred when loading or setting the integrity of the table), and *EXCEPT_TS*, a
 TIMESTAMP field indicating when the exception the occurred.
 
-The DEST_TBSPACE parameter identifies the tablespace used to store the new
-table's data. As exceptions data is not typically considered performance
-critical, and is generally not expected to be large, an SMS tablespace is a
-typical choice for the new table. If DEST_TBSPACE is omitted it defaults to the
-tablespace of the template table.
+The **DEST_TBSPACE** parameter identifies the tablespace used to store the new
+table's data. If **DEST_TBSPACE** is omitted it defaults to the tablespace of
+the template table.
 
-Of the other parameters, only SOURCE_TABLE is mandatory. If DEST_TABLE is not
-specified it defaults to the value of SOURCE_TABLE with a suffix of
-``'_EXCEPTIONS'``. If SOURCE_SCHEMA and DEST_SCHEMA are not specified they
-default to the value of the ``CURRENT SCHEMA`` special register.
+Of the other parameters, only **SOURCE_TABLE** is mandatory. If **DEST_TABLE**
+is not specified it defaults to the value of **SOURCE_TABLE** with a suffix of
+``'_EXCEPTIONS'``. If **SOURCE_SCHEMA** and **DEST_SCHEMA** are not specified
+they default to the value of the *CURRENT SCHEMA* special register.
 
 .. warning::
 
@@ -57,28 +55,32 @@ Parameters
 SOURCE_SCHEMA
     If provided, specifies the schema containing the template table on which to
     base the design of the new exceptions table. If omitted, defaults to the
-    value of the ``CURRENT SCHEMA`` special register.
+    value of the *CURRENT SCHEMA* special register.
+
 SOURCE_TABLE
-    Specifies the name of the template table within SOURCE_SCHEMA.
+    Specifies the name of the template table within **SOURCE_SCHEMA**.
+
 DEST_SCHEMA
     If provided, specifies the schema in which the new exceptions table will be
-    created. If omitted, defaults to the value of the ``CURRENT SCHEMA``
+    created. If omitted, defaults to the value of the *CURRENT SCHEMA*
     special register.
+
 DEST_TABLE
     If provided, specifies the name of the new exceptions table. If omitted,
-    defaults to the value of SOURCE_TABLE with ``'_EXCEPTIONS'`` appended to
-    it.
+    defaults to the value of **SOURCE_TABLE** with ``'_EXCEPTIONS'`` appended
+    to it.
+
 DEST_TBSPACE
     If provided, specifies the tablespace in which to store the physical data
     of the new exceptions table. Defaults to the tablespace containing the
-    table specified by SOURCE_SCHEMA and SOURCE_TABLE.
+    table specified by **SOURCE_SCHEMA** and **SOURCE_TABLE**.
 
 Examples
 ========
 
-Create a new exceptions table based on the design of the FINANCE.LEDGER table,
-called EXCEPTIONS.LEDGER in the EXCEPTSPACE tablespace, then load data into the
-source table, diverting exceptions to the new exceptions table:
+Create a new exceptions table based on the design of the *FINANCE.LEDGER*
+table, called *EXCEPTIONS.LEDGER* in the *EXCEPTSPACE* tablespace, then load
+data into the source table, diverting exceptions to the new exceptions table:
 
 .. code-block:: sql
 
@@ -87,10 +89,10 @@ source table, diverting exceptions to the new exceptions table:
       FOR EXCEPTION EXCEPTIONS.LEDGER;
 
 
-Create a new exceptions table based on the EMPLOYEE table in the current schema
-called EMPLOYEE_EXCEPTIONS, in the same tablespace as the source, then LOAD the
-source table, and finally run a SET INTEGRITY from the source to the new
-exceptions table:
+Create a new exceptions table based on the *EMPLOYEE* table in the current
+schema called *EMPLOYEE_EXCEPTIONS*, in the same tablespace as the source, then
+LOAD the source table, and finally run a SET INTEGRITY from the source to the
+new exceptions table:
 
 .. code-block:: sql
 
@@ -112,4 +114,4 @@ See Also
 .. _LOAD: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.admin.cmd.doc/doc/r0008305.html
 .. _SET INTEGRITY: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000998.html
 .. _Exception tables: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001111.html
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/exceptions.sql#L29
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/exceptions.sql#L43
