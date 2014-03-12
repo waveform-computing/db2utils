@@ -32,7 +32,7 @@ This is a utility function used by the :ref:`COPY_AUTH` procedure, and other
 associated procedures, below. Given an authorization name and type, and a
 couple of flags, this table function returns the details of all the
 authorizations held by that name. The information returned is sufficient for
-comparison of authorizations and generation of ``GRANT``/``REVOKE`` statements.
+comparison of authorizations and generation of GRANT/REVOKE statements.
 
 Parameters
 ==========
@@ -40,19 +40,20 @@ Parameters
 AUTH_NAME
     The authorization name to query authorizations for.
 AUTH_TYPE
-    The type of the authorization name. Use ``U`` for users, ``G`` for groups,
-    or ``R`` for roles. If this parameter is omitted the type will be
+    The type of the authorization name. Use ``'U'`` for users, ``'G'`` for
+    groups, or ``'R'`` for roles. If this parameter is omitted the type will be
     determined by calling the :ref:`AUTH_TYPE` function.
 INCLUDE_COLUMNS
-    If this is ``Y`` then include column-level authorizations for relations
-    (tables, views, etc). This is useful when generating ``REVOKE`` statements
-    from the result (as column level authorizations cannot be revoked directly
-    in DB2).
+    If this is ``'Y'`` then include column-level authorizations for relations
+    (tables, views, etc). This is useful when generating REVOKE statements from
+    the result (as column level authorizations cannot be revoked directly in
+    DB2).
 INCLUDE_PERSONAL
-    This parameter controls whether, in the case where AUTH_NAME refers to a
-    user (as opposed to a group or role), authorizations associated with the
-    user's personal schema are included in the result. If set to ``Y``,
-    personal schema authorizations are included. Defaults to ``N`` if omitted.
+    This parameter controls whether, in the case where **AUTH_NAME** refers to
+    a user (as opposed to a group or role), authorizations associated with the
+    user's personal schema are included in the result. If set to ``'Y'``,
+    personal schema authorizations are included. Defaults to ``'N'`` if
+    omitted.
 
 Returns
 =======
@@ -62,23 +63,26 @@ the specified authorization name. Each row contains the following columns:
 
 OBJECT_TYPE
     This column typically contains a string indicating the type of object
-    identified by the OBJECT_ID column. However, given that this routine's
+    identified by the *OBJECT_ID* column. However, given that this routine's
     primary purpose is to aid in the generation of GRANT and REVOKE statements,
     and given the inconsistencies in the numerous GRANT and REVOKE syntaxes
     employed by DB2, this column is blank for certain object types (roles and
     security labels), and misleading for others (e.g. ``'TABLE'`` is returned
     for all relation types including views).
+
 OBJECT_ID
     The identifier of the object the authorization was granted upon. This will
     be the schema-qualified name for those objects that reside in a schema, and
     will be properly quoted (if required) for inclusion in generated SQL.
+
 AUTH
-    The name of the authority granted upon the OBJECT_ID. For example, if
-    OBJECT_TYPE is ``'DATABASE'`` this might be ``'BINDADD'`` or
-    ``'IMPLICIT_SCHEMA'``. Alternatively, if OBJECT_TYPE is ``'TABLE'`` this
+    The name of the authority granted upon the *OBJECT_ID*. For example, if
+    *OBJECT_TYPE* is ``'DATABASE'`` this might be ``'BINDADD'`` or
+    ``'IMPLICIT_SCHEMA'``. Alternatively, if *OBJECT_TYPE* is ``'TABLE'`` this
     could be ``'SELECT'`` or ``'ALTER'``. As the function's purpose is to aid
     in generating GRANT and REVOKE statements, the name of the authority is
     always modelled after what would be used in the syntax of these statements.
+
 SUFFIX
     Several authorizations can be granted with additional permissions. For
     example in the case of tables, SELECT authority can be granted with or
@@ -87,6 +91,7 @@ SUFFIX
     OPTION (the ability for the grantee to grant the role to others). If such a
     suffix is associated with the authority, this column will contain the
     syntax required to grant that option.
+
 LEVEL
     This is a numeric indicator of the "level" of a grant. As discussed in the
     description of the SUFFIX column above, authorities can sometimes be
@@ -100,7 +105,8 @@ LEVEL
 Examples
 ========
 
-Show the authorizations held by the PUBLIC group, limiting the results to 10 authorizations per object type (otherwise the results are huge!).
+Show the authorizations held by the *PUBLIC* group, limiting the results to 10
+authorizations per object type (otherwise the results are huge!).
 
 .. code-block:: sql
 
@@ -196,4 +202,4 @@ See Also
 * :ref:`MOVE_AUTH`
 * :ref:`REMOVE_AUTH`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/auth.sql#L77
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/auth.sql#L108

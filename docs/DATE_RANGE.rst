@@ -4,9 +4,9 @@
 DATE_RANGE table function
 =========================
 
-Returns a table of DATEs from START to FINISH (inclusive), incrementing by STEP
-with each row (where STEP is an 8 digit duration formatted as YYYYMMDD, which
-defaults to 1 day).
+Returns a table of DATEs from **START** to **FINISH** (inclusive), incrementing
+by **STEP** with each row (where **STEP** is an 8 digit duration formatted as
+YYYYMMDD, which defaults to 1 day).
 
 Prototypes
 ==========
@@ -40,11 +40,11 @@ Prototypes
 Description
 ===========
 
-DATE_RANGE generates a range of dates from START to FINISH inclusive, advancing
-in increments given by the date duration STEP. Date durations are DECIMAL(8, 0)
-values structured as YYYYMMDD (in DB2 they are typically derived as the result
-of subtracting two DATE values). Hence, the following call would generate all
-dates from the 1st of January 2006 to the 31st of January 2006.
+DATE_RANGE generates a range of dates from **START** to **FINISH** inclusive,
+advancing in increments given by the date duration **STEP**. Date durations are
+DECIMAL(8,0) values structured as YYYYMMDD (in DB2 they are typically derived
+as the result of subtracting two DATE values). Hence, the following call would
+generate all dates from the 1st of January 2006 to the 31st of January 2006.
 
 .. code-block:: sql
 
@@ -59,7 +59,7 @@ month in the year 2006:
     DATE_RANGE('2006-01-01', '2006-12-01', 100)
 
 Note that 100 does *not* mean increment by 100 days each time, but by 1 month
-each time because the digit 1 falls in the MM part of YYYYMMDD. If STEP is
+each time because the digit 1 falls in the MM part of YYYYMMDD. If **STEP** is
 omitted it defaults to 1 day.
 
 Parameters
@@ -67,12 +67,14 @@ Parameters
 
 START
     The date (specified as a DATE, TIMESTAMP, or VARCHAR(26)) from which to
-    start generating dates. START will always be part of the resulting table.
+    start generating dates. **START** will always be part of the resulting table.
+
 FINISH
     The date (specified as a DATE, TIMESTAMP, or VARCHAR(26)) on which to stop
-    generating dates. FINISH may be part of the resulting table if iteration
-    stops on FINISH. However, if the specified STEP causes iteration to
-    overshoot FINISH, it will not be included.
+    generating dates. **FINISH** may be part of the resulting table if
+    iteration stops on **FINISH**. However, if the specified **STEP** causes
+    iteration to overshoot **FINISH**, it will not be included.
+
 STEP
     If provided, the duration by which to increment each row of the output.
     Specified as a date duration; a DECIMAL(8,0) value formatted as YYYYMMDD
@@ -82,7 +84,7 @@ Returns
 =======
 
 D
-    The function returns a table with a single column simply named "D" which
+    The function returns a table with a single column simply named *D* which
     contains the dates generated.
 
 Examples
@@ -218,6 +220,6 @@ See Also
 * `DATE`_ (built-in function)
 * `DAYS`_ (built-in function)
 
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1880
 .. _DATE: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000784.html
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1610
 .. _DAYS: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000789.html

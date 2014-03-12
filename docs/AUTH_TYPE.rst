@@ -20,10 +20,10 @@ Description
 
 This is a utility function used by the :ref:`COPY_AUTH` procedure, and other
 associated procedures. Given an authorization name, this scalar function
-returns ``'U'``, ``'G'``, or ``'R'`` to indicate that the name is a user,
+returns ``'U'``, ``'G'``, or ``'R'`` to indicate that **AUTH_NAME** is a user,
 group, or role respectively (based on the content of the system catalog
 tables). If the name is undefined, ``'U'`` is returned, unless the name is
-``'PUBLIC'`` in which case ``'G'`` is returned (for consistency with the
+*PUBLIC* in which case ``'G'`` is returned (for consistency with the
 catalog tables). If the name represents multiple authorization types, SQLSTATE
 21000 is raised.
 
@@ -36,7 +36,7 @@ AUTH_NAME
 Examples
 ========
 
-Show the type of the PUBLIC authorization name.
+Show the type of the *PUBLIC* authorization name.
 
 .. code-block:: sql
 
@@ -71,4 +71,4 @@ See Also
 * :ref:`MOVE_AUTH`
 * :ref:`REMOVE_AUTH`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/auth.sql#L36
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/auth.sql#L64

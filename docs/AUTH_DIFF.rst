@@ -31,9 +31,9 @@ Description
 This utility function determines the difference in authorizations held by two
 different entities (as determined by :ref:`AUTHS_HELD`). Essentially it takes
 the authorizations of the SOURCE entity and "subtracts" the authorizations of
-the DEST entity, the result being the authorizations that need to be granted to
-DEST to give it the same level of access as SOURCE. This is used in the
-definition of the :ref:`COPY_AUTH` routine.
+the **DEST** entity, the result being the authorizations that need to be
+granted to **DEST** to give it the same level of access as **SOURCE**. This is
+used in the definition of the :ref:`COPY_AUTH` routine.
 
 Parameters
 ==========
@@ -41,18 +41,19 @@ Parameters
 SOURCE
     The name to check for existing authorizations.
 SOURCE_TYPE
-    The type of the SOURCE parameter. Specify ``'U'``, ``'G'``, or ``'R'`` for
-    User, Group or Role respectively. If this parameter is omitted, the type
-    will be determined by the :ref:`AUTH_TYPE` function.
+    The type of the **SOURCE** parameter. Specify ``'U'``, ``'G'``, or ``'R'``
+    for User, Group or Role respectively. If this parameter is omitted, the
+    type will be determined by the :ref:`AUTH_TYPE` function.
 DEST
-    The intended destination for the authorizations held by SOURCE.
+    The intended destination for the authorizations held by **SOURCE**.
 DEST_TYPE
-    The type of the DEST parameter. Takes the same values as SOURCE_TYPE. If
-    omitted, the type will be determined by the :ref:`AUTH_TYPE` function.
+    The type of the **DEST** parameter. Takes the same values as
+    **SOURCE_TYPE**. If omitted, the type will be determined by the
+    :ref:`AUTH_TYPE` function.
 INCLUDE_COLUMNS
     If this parameter is ``'Y'``, column level authorizations will be included.
 INCLUDE_PERSONAL
-    If this parameter is ``'Y'``, and SOURCE identifies a user, then
+    If this parameter is ``'Y'``, and **SOURCE** identifies a user, then
     authorizations for the source user's personal schema will be included in
     the result. This parameter defaults to ``'N'`` when omitted.
 
@@ -66,7 +67,7 @@ calls hence the output structure is identical).
 Examples
 ========
 
-Show the authorizations directly granted to the DB2INST1 user which the
+Show the authorizations directly granted to the *DB2INST1* user which the
 currently logged on user does not possess.
 
 .. code-block:: sql

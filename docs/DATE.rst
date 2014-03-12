@@ -20,19 +20,22 @@ Prototypes
 Description
 ===========
 
-Returns the DATE value with the components specified by AYEAR, AMONTH and ADAY,
-or alternatively AYEAR and ADOY the latter of which is the day of year to
-construct a DATE for.
+Returns the DATE value with the components specified by **AYEAR**, **AMONTH**
+and **ADAY**, or alternatively **AYEAR** and **ADOY** the latter of which is
+the day of year to construct a DATE for.
 
 Parameters
 ==========
 
 AYEAR
     Specifies the year component of the resulting date.
+
 AMONTH
     If provided, specifies the month component of the resulting date.
+
 ADAY
     If provided, specifies the day (of month) component of the resulting date.
+
 ADOY
     If provided, specifies the day of year from which the month and day
     components of the resulting date will be calculated (the first day of a
@@ -73,4 +76,4 @@ See Also
 * :ref:`TIME`
 * `DATE <http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000784.html>`__ (built-in function)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L189
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L239
