@@ -162,7 +162,7 @@ See Also
 * `Time Travel Queries in DB2 v10.1`_
 
 .. _CREATE VIEW: http://pic.dhe.ibm.com/infocenter/db2luw/v10r1/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000935.html
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/history.sql#L1000
+.. _Source code: https://github.com/waveform80/db2utils/blob/master/history.sql#L1002
 .. _History design usenet post: http://groups.google.com/group/comp.databases.ibm-db2/msg/e84aeb1f6ac87e6c
 .. _CREATE TABLE: http://pic.dhe.ibm.com/infocenter/db2luw/v10r1/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000927.html
 .. _Time Travel Queries in DB2 v10.1: http://pic.dhe.ibm.com/infocenter/db2luw/v10r1/topic/com.ibm.db2.luw.admin.dbobj.doc/doc/c0058476.html
