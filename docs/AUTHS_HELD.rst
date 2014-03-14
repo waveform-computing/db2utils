@@ -28,26 +28,29 @@ Prototypes
 Description
 ===========
 
-This is a utility function used by the :ref:`COPY_AUTH` procedure, and other
-associated procedures, below. Given an authorization name and type, and a
-couple of flags, this table function returns the details of all the
-authorizations held by that name. The information returned is sufficient for
-comparison of authorizations and generation of GRANT/REVOKE statements.
+This is a utility function used by :ref:`COPY_AUTH`, and other associated
+procedures, below. Given an authorization name and type, and a couple of flags,
+this table function returns the details of all the authorizations held by that
+name. The information returned is sufficient for comparison of authorizations
+and generation of GRANT/REVOKE statements.
 
 Parameters
 ==========
 
 AUTH_NAME
     The authorization name to query authorizations for.
+
 AUTH_TYPE
     The type of the authorization name. Use ``'U'`` for users, ``'G'`` for
     groups, or ``'R'`` for roles. If this parameter is omitted the type will be
     determined by calling the :ref:`AUTH_TYPE` function.
+
 INCLUDE_COLUMNS
     If this is ``'Y'`` then include column-level authorizations for relations
     (tables, views, etc). This is useful when generating REVOKE statements from
     the result (as column level authorizations cannot be revoked directly in
     DB2).
+
 INCLUDE_PERSONAL
     This parameter controls whether, in the case where **AUTH_NAME** refers to
     a user (as opposed to a group or role), authorizations associated with the
