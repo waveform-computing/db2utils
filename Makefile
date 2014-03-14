@@ -9,10 +9,12 @@ ALL_FOO:=$(ALL_SQL:%.sql=%.foo)
 
 install: install.sql
 	$(MAKE) -C pcre install
+	printf "CONNECT TO $(DBNAME);\nCREATE SCHEMA $(SCHEMANAME);\nCOMMIT;\n" | db2 +c +p -t || true
 	db2 -td! +c -s -vf $< || [ $$? -lt 4 ] && true
 
 uninstall: uninstall.sql
 	db2 -td! +c +s -vf $< || true
+	printf "CONNECT TO $(DBNAME);\nDROP SCHEMA $(SCHEMANAME) RESTRICT;\nCOMMIT;\n" | db2 +c +p -t || true
 	$(MAKE) -C pcre uninstall
 
 doc:
