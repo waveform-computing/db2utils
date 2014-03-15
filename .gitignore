@@ -12,4 +12,5 @@ utils.sql
 # Packages
 dist
 build
+docs/_build
 
