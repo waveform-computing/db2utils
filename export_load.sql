@@ -218,7 +218,7 @@ COMMENT ON SPECIFIC FUNCTION EXPORT_TABLE3
 -- The generated EXPORT commands will target an IXF file named after the table,
 -- e.g. if ASCHEMA is DATAMART, and the table is COUNTRIES the file would be
 -- named "DATAMART.COUNTRIES.IXF". The export command will explicitly name all
--- columns in the table. Likewise, the LOAD_SCHEMA function generates a LOAD
+-- columns in the table. Likewise, the LOAD_SCHEMA function generates LOAD
 -- commands with explicitly named columns.  This is to ensure that if the
 -- target database's tables are not declared in exactly the same order as the
 -- source database, the transfer will still work if, for example, columns have

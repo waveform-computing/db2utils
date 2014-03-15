@@ -56,9 +56,7 @@ GRANT ROLE UTILS_EXCEPTIONS_ADMIN TO ROLE UTILS_ADMIN WITH ADMIN OPTION!
 -- the exception the occurred.
 --
 -- The DEST_TBSPACE parameter identifies the tablespace used to store the new
--- table's data. As exceptions data is not typically considered performance
--- critical, and is generally not expected to be large, an SMS tablespace
--- should be utilized for the new table.
+-- table's data.
 --
 -- Only the SOURCE_TABLE parameter is mandatory. All other parameters are
 -- optional.  If DEST_TBSPACE is not specified, it defaults to the tablespace
