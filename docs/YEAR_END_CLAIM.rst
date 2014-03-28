@@ -24,7 +24,7 @@ Description
 ===========
 
 Returns a DATE representing the last day of **AYEAR**, or the last day of the
-year of **ADATE** depending on the variant of the function that is calle,
+year of **ADATE** depending on the variant of the function that is called,
 according to the CLAIM calendar.
 
 Parameters
