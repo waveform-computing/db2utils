@@ -1,0 +1,217 @@
+#!/usr/bin/env python
+
+# This is a utility script intended for generating scripts to upgrade from one
+# release of db2utils to another in the most non-destructive way possible (by
+# utilizing CREATE OR REPLACE wherever possible, and only removing entities
+# which no longer exist in the newer release).
+#
+# The script relies on the DB2 for LUW parser present in the dbsuite package
+# which is assumed to be installed in the Python sys.path. It expects to be
+# passed the old and new script filenames on the command line, and dumps the
+# resulting code to stdout (which is assumed to be redirected). Errors and
+# warnings are output to stderr. An example session is shown below:
+#
+#   git checkout release-0.1
+#   make install.sql
+#   mv install.sql /tmp/install-0.1.sql
+#   git checkout master
+#   make install.sql
+#   mv install.sql /tmp/install-0.2.sql
+#   cd upgrade
+#   ./generate_update /tmp/install-0.1.sql /tmp/install-0.2.sql > 0.1_to_0.2.sql
+#
+# Be aware that certain statements are not handled automatically and require
+# manual post-processing; this script is not intended to be a "complete"
+# solution, merely something to aid (considerably!) in the construction of
+# upgrade scripts. Currently this applies to any ALTER TABLE calls.
+
+import sys
+import io
+import re
+import dbsuite.plugins
+from dbsuite.tokenizer import TT, Token
+from dbsuite.parser import dump
+
+plugin = dbsuite.plugins.load_plugin('db2.luw')()
+
+
+def main(args=None):
+    if args is None:
+        args = sys.argv[1:]
+    old_script, new_script = args
+
+    old_tokens = parse(old_script)
+    new_tokens = parse(new_script)
+
+    # Output the prologue
+    for statement in statements(new_tokens):
+        if statement[0].value in ('CONNECT', 'SET'):
+            sys.stdout.write(''.join(t.source for t in statement) + '!\n')
+
+    # Convert the old and new scripts into sets of subjects
+    sys.stderr.write('Parsing %s\n' % old_script)
+    old_entities = {
+        key: (stripped, statement)
+        for (key, stripped, statement) in subjects(statements(old_tokens))
+        }
+
+    sys.stderr.write('Parsing %s\n' % new_script)
+    new_entities = {
+        key: (stripped, statement)
+        for (key, stripped, statement) in subjects(statements(new_tokens))
+        }
+
+    # Figure out which subjects have been added, changed, or removed
+    added_entities = sorted((
+        (key, statement)
+        for (key, (stripped, statement)) in new_entities.items()
+        if not key in old_entities
+        ), key=lambda (key, statement): (statement[0].line, statement[0].column))
+
+    changed_entities = sorted((
+        (key, statement)
+        for (key, (stripped, statement)) in new_entities.items()
+        if key in old_entities and stripped != old_entities[key][0]
+        ), key=lambda (key, statement): (statement[0].line, statement[0].column))
+
+    removed_entities = sorted((
+        (key, statement)
+        for (key, (stripped, statement)) in old_entities.items()
+        if not key in new_entities
+        ), key=lambda (key, statement): (statement[0].line, statement[0].column))
+
+    # Convert the sets into code
+    for statement in create_statements(added_entities):
+        sys.stdout.write(statement)
+
+    for statement in replace_statements(changed_entities):
+        sys.stdout.write(statement)
+
+    for statement in drop_statements(removed_entities):
+        sys.stdout.write(statement)
+
+    sys.stdout.write('COMMIT!\n')
+
+
+def statements(tokens):
+    start = 0
+    in_statement = False
+    for index, token in enumerate(tokens):
+        if not in_statement and token.type not in (TT.COMMENT, TT.WHITESPACE):
+            in_statement = True
+            start = index
+        elif in_statement and token.type == TT.STATEMENT:
+            in_statement = False
+            yield tokens[start:index]
+
+def subjects(statements):
+    for statement in statements:
+        stripped = [
+                t.value for t in statement
+                if t.type not in (TT.WHITESPACE, TT.COMMENT)
+                ]
+        if stripped[0] == 'CREATE':
+            if stripped[1] in ('TABLE', 'INDEX', 'ROLE', 'VARIABLE', 'TRIGGER'):
+                key = (stripped[1], stripped[2])
+            elif stripped[1] == 'UNIQUE':
+                key = ('INDEX', stripped[3])
+            elif stripped[1] in ('FUNCTION', 'PROCEDURE'):
+                key = None
+                for index, token in enumerate(stripped):
+                    if token == 'SPECIFIC':
+                        key = (stripped[1], stripped[index + 1])
+                        break
+                if not key:
+                    raise ValueError(
+                            'Missing SPECIFIC clause in definition at line '
+                            '%d' % statement[0].line)
+            else:
+                raise ValueError(
+                        'Unrecognized CREATE statement at line '
+                        '%d' % statement[0].line)
+        elif stripped[0] == 'COMMENT':
+            if stripped[2] == 'SPECIFIC':
+                key = ('COMMENT', stripped[3], stripped[4])
+            else:
+                key = ('COMMENT', stripped[2], stripped[3])
+        elif stripped[0] == 'GRANT':
+            key = None
+            for index, token in enumerate(stripped):
+                if token == 'ON':
+                    if stripped[index + 1] in ('TABLE', 'PROCEDURE', 'FUNCTION', 'VARIABLE'):
+                        key = ('GRANT', stripped[index + 1], stripped[index + 2])
+                    else:
+                        key = ('GRANT', 'TABLE', stripped[index + 1])
+                elif token == 'ROLE':
+                    key = ('GRANT', 'ROLE', stripped[index + 1])
+                elif token == 'TO':
+                    if not key:
+                        raise ValueError(
+                                'Failed to parse GRANT at line '
+                                '%d' % statement[0].line)
+                    if stripped[index + 1] in ('ROLE', 'GROUP', 'USER'):
+                        key = (key[0], key[1], key[2], stripped[index + 2])
+                    else:
+                        key = (key[0], key[1], key[2], stripped[index + 1])
+                    break
+            if not key:
+                raise ValueError(
+                        'Unrecognized GRANT statement at line '
+                        '%d' % statement[0].line)
+        elif stripped[0] == 'ALTER':
+            sys.stderr.write(
+                "Process ALTER on line %d manually\n" % statement[0].line)
+            continue
+        elif stripped[0] == 'CONNECT':
+            continue
+        elif stripped[0] == 'SET' and stripped[1] in ('SCHEMA', 'PATH'):
+            continue
+        elif stripped[0] == 'COMMIT':
+            continue
+        else:
+            raise ValueError(
+                    'Unrecognized statement "%s" at line %d' % (
+                        stripped[0], statement[0].line))
+        yield (key, stripped, statement)
+
+def parse(filename):
+    tokenizer = plugin.tokenizer()
+    parser = plugin.parser(for_scripts=True)
+    parser.reformat = set()
+    parser.statement = '!'
+    with open(filename, 'rb') as f:
+        tokens = tokenizer.parse(f.read(), terminator='!')
+        return parser.parse(tokens)
+
+def create_statements(entities):
+    for key, statement in entities:
+        yield ''.join(t.source for t in statement) + '!\n'
+
+def replace_statements(entities):
+    for key, statement in entities:
+        yield ''.join(
+            'CREATE OR REPLACE'
+            if index == 0 and token.value == 'CREATE' else
+            token.source
+            for (index, token) in enumerate(statement)
+            ) + '!\n'
+
+def drop_statements(entities):
+    for key, statement in entities:
+        if key[0] == 'GRANT':
+            yield re.sub(r' *WITH +(GRANT|ADMIN) +OPTION +', '', ''.join(
+                'REVOKE' if t.value == 'GRANT' else
+                'FROM' if t.value == 'TO' else
+                t.source
+                for t in statement
+                )) + '!\n'
+        elif key[0] in ('PROCEDURE', 'FUNCTION'):
+            yield 'DROP SPECIFIC %s %s!\n' % (key[0], key[1])
+        elif key[0] == 'COMMENT':
+            continue
+        else:
+            yield 'DROP %s %s!\n' % (key[0], key[1])
+
+
+if __name__ == '__main__':
+    main()
