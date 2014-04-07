@@ -74,11 +74,11 @@ def main(args=None):
         if key in old_entities and stripped != old_entities[key][0]
         ), key=lambda (key, statement): (statement[0].line, statement[0].column))
 
-    removed_entities = sorted((
+    removed_entities = reversed(sorted((
         (key, statement)
         for (key, (stripped, statement)) in old_entities.items()
         if not key in new_entities
-        ), key=lambda (key, statement): (statement[0].line, statement[0].column))
+        ), key=lambda (key, statement): (statement[0].line, statement[0].column)))
 
     # Convert the sets into code
     for statement in create_statements(added_entities):
