@@ -1,7 +1,7 @@
 VALUES ASSERT_EQUALS(AUTH_TYPE(CURRENT USER), 'U')!
 VALUES ASSERT_EQUALS(AUTH_TYPE('PUBLIC'), 'G')!
 -- Cross-dependency: LOG_READER is defined by the log.sql module
-VALUES ASSERT_EQUALS(AUTH_TYPE('LOG_READER'), 'R')!
+VALUES ASSERT_EQUALS(AUTH_TYPE('UTILS_LOG_READER'), 'R')!
 
 -- Check that AUTHS_HELD and AUTH_DIFF work for a simple SELECT authority on a
 -- table
