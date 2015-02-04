@@ -96,17 +96,24 @@ The routines are divided into modules roughly by topic:
    Contains procedures for easily disabling and enabling triggers, including
    specific triggers or all triggers on a given table.
 
+`unicode.sql`_
+   Defines functions for cleaning up Unicode strings, in particular those using
+   the common UTF-8 encoding scheme. The functions are implemented in a C
+   library the source for which is in the `unicode/`_ sub-directory.
+
 
 .. _PCRE: http://www.pcre.org
 .. _drop_schema.sql: https://github.com/waveform80/db2utils/blob/master/drop_schema.sql
 .. _evolve.sql: https://github.com/waveform80/db2utils/blob/master/evolve.sql
 .. _pcre/: https://github.com/waveform80/db2utils/blob/master/pcre/
+.. _unicode/: https://github.com/waveform80/db2utils/blob/master/unicode/
 .. _date_time.sql: https://github.com/waveform80/db2utils/blob/master/date_time.sql
 .. _exceptions.sql: https://github.com/waveform80/db2utils/blob/master/exceptions.sql
 .. _export_load.sql: https://github.com/waveform80/db2utils/blob/master/export_load.sql
 .. _auth.sql: https://github.com/waveform80/db2utils/blob/master/auth.sql
 .. _ADMIN_DROP_SCHEMA: http://publib.boulder.ibm.com/infocenter/db2luw/v9r5/topic/com.ibm.db2.luw.sql.rtn.doc/doc/r0022036.html
 .. _pcre.sql: https://github.com/waveform80/db2utils/blob/master/pcre.sql
+.. _unicode.sql: https://github.com/waveform80/db2utils/blob/master/unicode.sql
 .. _toggle_triggers.sql: https://github.com/waveform80/db2utils/blob/master/toggle_triggers.sql
 .. _history.sql: https://github.com/waveform80/db2utils/blob/master/history.sql
 .. _log.sql: https://github.com/waveform80/db2utils/blob/master/log.sql
