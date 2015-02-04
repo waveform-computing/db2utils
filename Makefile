@@ -9,12 +9,14 @@ ALL_FOO:=$(ALL_SQL:%.sql=%.foo)
 
 install: install.sql
 	$(MAKE) -C pcre install
+	$(MAKE) -C unicode install
 	printf "CONNECT TO $(DBNAME);\nCREATE SCHEMA $(SCHEMANAME);\nCOMMIT;\n" | db2 +c +p -t || true
 	db2 -td! +c -s -vf $< || [ $$? -lt 4 ] && true
 
 uninstall: uninstall.sql
 	db2 -td! +c +s -vf $< || true
 	printf "CONNECT TO $(DBNAME);\nDROP SCHEMA $(SCHEMANAME) RESTRICT;\nCOMMIT;\n" | db2 +c +p -t || true
+	$(MAKE) -C unicode uninstall
 	$(MAKE) -C pcre uninstall
 
 doc:
@@ -26,6 +28,7 @@ test:
 clean: $(SUBDIRS)
 	$(MAKE) -C docs clean
 	$(MAKE) -C pcre clean
+	$(MAKE) -C unicode clean
 	$(MAKE) -C tests clean
 	rm -f foo
 	rm -f *.foo
