@@ -1216,7 +1216,7 @@ BEGIN ATOMIC
     FOR C AS
         SELECT
             VARCHAR('COMMENT ON COLUMN '
-                || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_VIEW) || '.' || QUOTE_IDENTIFIER('OLD_' || COLNAME)
+                || QUOTE_IDENTIFIER(DEST_SCHEMA) || '.' || QUOTE_IDENTIFIER(DEST_VIEW) || '.' || QUOTE_IDENTIFIER(COLNAME)
                 || ' IS ' || QUOTE_STRING('Value of @' || SOURCE_SCHEMA || '.' || SOURCE_TABLE || '.' || COLNAME || ' at the time of the snapshot')) AS COMMENT_STMT
         FROM SYSCAT.COLUMNS
         WHERE TABSCHEMA = SOURCE_SCHEMA
