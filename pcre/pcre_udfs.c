@@ -113,8 +113,7 @@ int pcre_udf_init_generic(
             // matches the last one we compiled. If it's changed, then free the
             // current copy of the pattern, and fall through to the first call
             // case to compile the new pattern
-            if (strcmp(sp->pattern, pattern) == 0)
-                break;
+            if (strcmp(sp->pattern, pattern) == 0) break;
             free(sp->pattern);
             sp->pattern = NULL;
         case SQLUDF_FIRST_CALL:
@@ -137,8 +136,7 @@ int pcre_udf_init_generic(
             }
             else {
                 sp->extra = pcre_study(sp->re, 0, &sp->error);
-                if (sp->error == NULL)
-                    break;
+                if (sp->error == NULL) break;
                 snprintf(SQLUDF_MSGTX, SQLUDF_MSGTX_LEN, PCRE_MSGTX_STUDY_ERROR, sp->error);
                 strcpy(SQLUDF_STATE, PCRE_SQLSTATE_PREFIX PCRE_SQLSTATE_STUDY_ERROR);
             }
@@ -247,8 +245,7 @@ pcre_udf_search(
     *result_ind = 0;
 
     // Compile the pattern (if necessary)
-    if (pcre_udf_init_generic(pattern, SQLUDF_TRAIL_ARGS_ALL_PASSTHRU))
-        return;
+    if (pcre_udf_init_generic(pattern, SQLUDF_TRAIL_ARGS_ALL_PASSTHRU)) return;
 
     // Search the search text. In the case of a successful search, return the
     // (1-based) position of the match in the search text. This is actually a
@@ -267,12 +264,15 @@ pcre_udf_search(
             return;
         }
         rc = pcre_exec(sp->re, sp->extra, text, strlen(text), *start - 1, 0, groups, group_count * 3);
-        if (rc >= 0)
+        if (rc >= 0) {
             *result = groups[0] + 1;
-        else if (rc == PCRE_ERROR_NOMATCH)
+        }
+        else if (rc == PCRE_ERROR_NOMATCH) {
             *result = 0;
-        else
+        }
+        else {
             pcre_udf_error(rc, "search", 0, SQLUDF_TRAIL_ARGS_ALL_PASSTHRU);
+        }
         (*pcre_free)(groups);
     }
 }
@@ -307,8 +307,7 @@ pcre_udf_sub(
     sp = (struct generic_scratch_pad*)SQLUDF_SCRAT->data;
 
     // Compile the pattern (if necessary)
-    if (pcre_udf_init_generic(pattern, SQLUDF_TRAIL_ARGS_ALL_PASSTHRU))
-        return;
+    if (pcre_udf_init_generic(pattern, SQLUDF_TRAIL_ARGS_ALL_PASSTHRU)) return;
 
     // Execute the search. In the case of a successful search, parse the repl
     // string and build the substituted result. In the case of an unsuccessful
@@ -336,14 +335,13 @@ pcre_udf_sub(
             // Find the next backslash character (or the end of the template
             // string if none remain)
             repl_scan = strchr(repl, '\\');
-            if (!repl_scan)
-                repl_scan = repl_end;
+            if (!repl_scan) repl_scan = repl_end;
             // Copy all characters from the current position up to the
             // backslash to the result
             if (repl_scan > repl) {
                 if (result + (repl_scan - repl) > result_end) {
                     pcre_udf_error(PCRE_ERROR_NOMEMORY, "sub", 0, SQLUDF_TRAIL_ARGS_ALL_PASSTHRU);
-                    goto snafu;
+                    goto error;
                 }
                 memcpy(result, repl, repl_scan - repl);
                 result += repl_scan - repl;
@@ -365,30 +363,25 @@ pcre_udf_sub(
                     if (*repl == '\0') {
                         snprintf(SQLUDF_MSGTX, SQLUDF_MSGTX_LEN, "sub error: " PCRE_MSGTX_INCOMPLETE_TEMPLATE, repl - repl_start);
                         strcpy(SQLUDF_STATE, PCRE_SQLSTATE_PREFIX PCRE_SQLSTATE_INVALID_TEMPLATE);
-                        goto snafu;
+                        goto error;
                     }
                     else if ((*repl < '0') || (*repl > '9')) {
                         snprintf(SQLUDF_MSGTX, SQLUDF_MSGTX_LEN, "sub error: " PCRE_MSGTX_INVALID_TEMPLATE, *repl, repl - repl_start);
                         strcpy(SQLUDF_STATE, PCRE_SQLSTATE_PREFIX PCRE_SQLSTATE_INVALID_TEMPLATE);
-                        goto snafu;
+                        goto error;
                     }
                     errno = 0;
                     group = strtol(repl, &repl_scan, 10);
-                    // XXX This appears broken on Linux (at least when I tested
-                    // the pattern \9999999999999, strtol() quite happily
-                    // converted it to LONG_MAX but didn't set errno). Still,
-                    // LONG_MAX is guaranteed to cause pcre_copy_substring() to
-                    // barf, so never mind
                     if (errno != 0 || group >= group_count) {
                         snprintf(SQLUDF_MSGTX, SQLUDF_MSGTX_LEN, "sub error: " PCRE_MSGTX_INVALID_GROUP, repl - repl_start);
                         strcpy(SQLUDF_STATE, PCRE_SQLSTATE_PREFIX PCRE_SQLSTATE_INVALID_GROUP);
-                        goto snafu;
+                        goto error;
                     }
                     if (group < exec_rc) {
                         copy_rc = pcre_copy_substring(text, groups, exec_rc, group, result, result_end - result);
                         if (copy_rc < 0) {
                             pcre_udf_error(copy_rc, "sub", group, SQLUDF_TRAIL_ARGS_ALL_PASSTHRU);
-                            goto snafu;
+                            goto error;
                         }
                         result += copy_rc;
                     }
@@ -396,14 +389,18 @@ pcre_udf_sub(
                 }
             }
         }
-    } else if (exec_rc == 0) {
+    }
+    else if (exec_rc == 0) {
         snprintf(SQLUDF_MSGTX, SQLUDF_MSGTX_LEN, "sub error: " PCRE_MSGTX_TOO_MANY_GROUPS);
         strcpy(SQLUDF_STATE, PCRE_SQLSTATE_PREFIX PCRE_SQLSTATE_TOO_MANY_GROUPS);
-    } else if (exec_rc == PCRE_ERROR_NOMATCH)
+    }
+    else if (exec_rc == PCRE_ERROR_NOMATCH) {
         *result_ind = -1;
-    else
+    }
+    else {
         pcre_udf_error(exec_rc, "sub", 0, SQLUDF_TRAIL_ARGS_ALL_PASSTHRU);
-snafu:
+    }
+error:
     (*pcre_free)(groups);
     return;
 }
@@ -446,8 +443,9 @@ pcre_udf_groups(
                 }
                 else {
                     rc = pcre_fullinfo(sp->re, sp->extra, PCRE_INFO_CAPTURECOUNT, &sp->group_count);
-                    if (rc != 0)
+                    if (rc != 0) {
                         pcre_udf_error(rc, "groups", 0, SQLUDF_TRAIL_ARGS_ALL_PASSTHRU);
+                    }
                     else {
                         sp->group_count++; // for group 0
                         sp->groups = (int*)(*pcre_malloc)(sizeof(int) * sp->group_count * 3);
@@ -466,8 +464,9 @@ pcre_udf_groups(
                                 sp->group_count = 0;
                                 break;
                             }
-                            else
+                            else {
                                 pcre_udf_error(rc, "groups", 0, SQLUDF_TRAIL_ARGS_ALL_PASSTHRU);
+                            }
                         }
                     }
                 }
@@ -486,8 +485,9 @@ pcre_udf_groups(
         case SQLUDF_TF_FETCH:
             // In the fetch case simply find the next non-empty matched group
             // and return it's index, position, and content
-            while (sp->group < sp->group_count && sp->groups[sp->group * 2] < 0)
+            while (sp->group < sp->group_count && sp->groups[sp->group * 2] < 0) {
                 sp->group++;
+            }
             if (sp->group >= sp->group_count) {
                 strcpy(SQLUDF_STATE, SQL_NODATA_EXCEPTION);
                 break;
@@ -545,13 +545,15 @@ pcre_udf_split(
             *separator = sp->separator;
             if (sp->separator) {
                 sp->separator = 0;
-                if (sp->start >= strlen(text))
+                if (sp->start >= strlen(text)) {
                     strcpy(SQLUDF_STATE, SQL_NODATA_EXCEPTION);
+                }
                 else {
                     *position = sp->groups[0] + 1;
                     rc = pcre_copy_substring(text, sp->groups, sp->group_count, 0, content, PCRE_MAX_STR_LEN);
-                    if (rc < 0)
+                    if (rc < 0) {
                         pcre_udf_error(rc, "split", 0, SQLUDF_TRAIL_ARGS_ALL_PASSTHRU);
+                    }
                     else {
                         sp->start = sp->groups[1];
                         sp->element++;
@@ -564,8 +566,9 @@ pcre_udf_split(
                 sp->separator = 1;
                 *position = sp->start + 1;
                 rc = pcre_fullinfo(sp->re, sp->extra, PCRE_INFO_CAPTURECOUNT, &sp->group_count);
-                if (rc != 0)
+                if (rc != 0) {
                     pcre_udf_error(rc, "split", 0, SQLUDF_TRAIL_ARGS_ALL_PASSTHRU);
+                }
                 else {
                     sp->group_count++; // for group 0
                     sp->groups = (int*)(*pcre_malloc)(sizeof(int) * sp->group_count * 3);
