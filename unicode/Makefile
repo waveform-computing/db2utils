@@ -6,6 +6,10 @@
 # that script with a few minor alterations
 ###############################################################################
 
+ifndef DB2INSTANCE
+$(error DB2INSTANCE is not defined!)
+endif
+
 CC:=gcc
 CCFLAGS:=
 

@@ -7,6 +7,10 @@
 # the pcre library, and adds a registration step).
 ###############################################################################
 
+ifndef DB2INSTANCE
+$(error DB2INSTANCE is not defined)
+endif
+
 CC:=gcc
 CCFLAGS:=
 
