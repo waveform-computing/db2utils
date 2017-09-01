@@ -24,4 +24,4 @@ a pull request.
 
 
 .. _Release 0.1: https://github.com/waveform80/db2utils/archive/release-0.1.tar.gz
-.. _Release 0.1: https://github.com/waveform80/db2utils/archive/release-0.2.tar.gz
+.. _Release 0.2: https://github.com/waveform80/db2utils/archive/release-0.2.tar.gz
