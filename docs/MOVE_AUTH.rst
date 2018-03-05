@@ -87,4 +87,4 @@ See Also
 * :ref:`COPY_AUTH`
 * :ref:`REMOVE_AUTH`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/auth.sql#L1079
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/auth.sql#L1079

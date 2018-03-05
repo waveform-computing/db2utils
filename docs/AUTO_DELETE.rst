@@ -88,4 +88,4 @@ See Also
 * :ref:`AUTO_MERGE`
 * :ref:`AUTO_INSERT`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/merge.sql#L491
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/merge.sql#L491

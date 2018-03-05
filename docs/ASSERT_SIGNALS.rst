@@ -58,5 +58,5 @@ See Also
 
 * `Source code`_
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/assert.sql#L77
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/assert.sql#L77
 

@@ -66,5 +66,5 @@ See Also
 * `Source code`_
 * `ADMIN_DROP_SCHEMA`_ (built-in procedure)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/drop_schema.sql#L39
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/drop_schema.sql#L39
 .. _ADMIN_DROP_SCHEMA: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.rtn.doc/doc/r0022036.html

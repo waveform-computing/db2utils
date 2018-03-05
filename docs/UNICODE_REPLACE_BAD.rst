@@ -74,6 +74,6 @@ See Also
 * `C source code`_
 * `Wikipedia UTF-8 article`_
 
-.. _C source code: https://github.com/waveform80/db2utils/blob/master/unicode/unicode_udfs.c#L119
-.. _SQL source code: https://github.com/waveform80/db2utils/blob/master/unicode.sql#L51
+.. _C source code: https://github.com/waveform-computing/db2utils/blob/master/unicode/unicode_udfs.c#L119
+.. _SQL source code: https://github.com/waveform-computing/db2utils/blob/master/unicode.sql#L51
 .. _Wikipedia UTF-8 article: http://en.wikipedia.org/wiki/UTF-8

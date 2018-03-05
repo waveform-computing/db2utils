@@ -142,6 +142,6 @@ See Also
 * `LOAD`_ (built-in command)
 * `EXPORT`_ (built-in command)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/export_load.sql#L426
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/export_load.sql#L426
 .. _EXPORT: http://pic.dhe.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.admin.cmd.doc/doc/r0008303.html
 .. _LOAD: http://pic.dhe.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.admin.cmd.doc/doc/r0008305.html

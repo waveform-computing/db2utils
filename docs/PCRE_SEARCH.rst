@@ -119,7 +119,7 @@ See Also
 * `PCRE library homepage`_
 * `Wikipedia PCRE article`_
 
-.. _C source code: https://github.com/waveform80/db2utils/blob/master/pcre/pcre_udfs.c#L225
-.. _SQL source code: https://github.com/waveform80/db2utils/blob/master/pcre.sql#L58
+.. _C source code: https://github.com/waveform-computing/db2utils/blob/master/pcre/pcre_udfs.c#L225
+.. _SQL source code: https://github.com/waveform-computing/db2utils/blob/master/pcre.sql#L58
 .. _PCRE library homepage: http://www.pcre.org/
 .. _Wikipedia PCRE article: http://en.wikipedia.org/wiki/PCRE

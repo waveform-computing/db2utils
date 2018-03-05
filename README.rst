@@ -12,9 +12,9 @@ includes requirements, installation instructions, and an extensive reference
 section.  The project is licensed under the `MIT license`_.
 
 .. _IBM DB2 for Linux/UNIX/Windows: http://www-01.ibm.com/software/data/db2/linux-unix-windows/
-.. _Downloads: https://github.com/waveform80/db2utils/releases
-.. _source code: https://github.com/waveform80/db2utils
-.. _bug tracker: https://github.com/waveform80/db2utils/issues
+.. _Downloads: https://github.com/waveform-computing/db2utils/releases
+.. _source code: https://github.com/waveform-computing/db2utils
+.. _bug tracker: https://github.com/waveform-computing/db2utils/issues
 .. _Documentation: http://db2utils.readthedocs.org/
 .. _MIT license: http://opensource.org/licenses/MIT
 .. _GitHub: https://github.com/

@@ -83,6 +83,6 @@ See Also
 * :ref:`RESTORE_AUTHS`
 * `SYSCAT.TABAUTH`_ (built-in catalogue view)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/auth.sql#L1116
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/auth.sql#L1116
 .. _SYSCAT.TABAUTH: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001061.html
 .. _SYSCAT.COLAUTH: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001035.html

@@ -61,5 +61,5 @@ See Also
 * :ref:`RECREATE_TRIGGER`
 * `SYSCAT.TRIGGERS`_ (built-in catalogue view)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/evolve.sql#L252
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/evolve.sql#L252
 .. _SYSCAT.TRIGGERS: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001066.html

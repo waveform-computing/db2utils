@@ -89,5 +89,5 @@ See Also
 * :ref:`SECOND_START`
 * `SECOND`_ (built-in function)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1828
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/date_time.sql#L1828
 .. _SECOND: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000847.html

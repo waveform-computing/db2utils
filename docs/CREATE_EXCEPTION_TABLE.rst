@@ -114,4 +114,4 @@ See Also
 .. _LOAD: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.admin.cmd.doc/doc/r0008305.html
 .. _SET INTEGRITY: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000998.html
 .. _Exception tables: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001111.html
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/exceptions.sql#L43
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/exceptions.sql#L43

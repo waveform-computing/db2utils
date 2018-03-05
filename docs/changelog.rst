@@ -19,7 +19,7 @@ documentation, but a couple of new features were introduced:
   "upsert" style MERGE statements (along with corresponding deletion and
   insertion statements) (`#2`_)
 
-.. _#2: https://github.com/waveform80/db2utils/issues/2
+.. _#2: https://github.com/waveform-computing/db2utils/issues/2
 
 
 Release 0.1 (2013-08-16)

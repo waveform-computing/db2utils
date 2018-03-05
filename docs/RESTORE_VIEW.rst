@@ -68,5 +68,5 @@ See Also
 * :ref:`RESTORE_AUTH`
 * `SYSCAT.VIEWS`_ (built-in catalogue view)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/evolve.sql#L494
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/evolve.sql#L494
 .. _SYSCAT.VIEWS: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001068.html

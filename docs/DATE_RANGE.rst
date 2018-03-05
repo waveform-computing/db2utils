@@ -220,6 +220,6 @@ See Also
 * `DATE`_ (built-in function)
 * `DAYS`_ (built-in function)
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L1880
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/date_time.sql#L1880
 .. _DATE: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000784.html
 .. _DAYS: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0000789.html

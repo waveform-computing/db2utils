@@ -98,5 +98,5 @@ See Also
 * :ref:`CREATE_EXCEPTION_TABLE`
 * `Exception tables`_
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/exceptions.sql#L213
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/exceptions.sql#L213
 .. _Exception tables: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001111.html

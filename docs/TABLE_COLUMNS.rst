@@ -77,4 +77,4 @@ See Also
 * `SYSCAT.COLUMNS`_ (built-in catalogue view)
 
 .. _SYSCAT.COLUMNS: http://publib.boulder.ibm.com/infocenter/db2luw/v9r7/topic/com.ibm.db2.luw.sql.ref.doc/doc/r0001038.html
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/export_load.sql#L46
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/export_load.sql#L46

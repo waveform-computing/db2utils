@@ -103,22 +103,22 @@ The routines are divided into modules roughly by topic:
 
 
 .. _PCRE: http://www.pcre.org
-.. _drop_schema.sql: https://github.com/waveform80/db2utils/blob/master/drop_schema.sql
-.. _evolve.sql: https://github.com/waveform80/db2utils/blob/master/evolve.sql
-.. _pcre/: https://github.com/waveform80/db2utils/blob/master/pcre/
-.. _unicode/: https://github.com/waveform80/db2utils/blob/master/unicode/
-.. _date_time.sql: https://github.com/waveform80/db2utils/blob/master/date_time.sql
-.. _exceptions.sql: https://github.com/waveform80/db2utils/blob/master/exceptions.sql
-.. _export_load.sql: https://github.com/waveform80/db2utils/blob/master/export_load.sql
-.. _auth.sql: https://github.com/waveform80/db2utils/blob/master/auth.sql
+.. _drop_schema.sql: https://github.com/waveform-computing/db2utils/blob/master/drop_schema.sql
+.. _evolve.sql: https://github.com/waveform-computing/db2utils/blob/master/evolve.sql
+.. _pcre/: https://github.com/waveform-computing/db2utils/blob/master/pcre/
+.. _unicode/: https://github.com/waveform-computing/db2utils/blob/master/unicode/
+.. _date_time.sql: https://github.com/waveform-computing/db2utils/blob/master/date_time.sql
+.. _exceptions.sql: https://github.com/waveform-computing/db2utils/blob/master/exceptions.sql
+.. _export_load.sql: https://github.com/waveform-computing/db2utils/blob/master/export_load.sql
+.. _auth.sql: https://github.com/waveform-computing/db2utils/blob/master/auth.sql
 .. _ADMIN_DROP_SCHEMA: http://publib.boulder.ibm.com/infocenter/db2luw/v9r5/topic/com.ibm.db2.luw.sql.rtn.doc/doc/r0022036.html
-.. _pcre.sql: https://github.com/waveform80/db2utils/blob/master/pcre.sql
-.. _unicode.sql: https://github.com/waveform80/db2utils/blob/master/unicode.sql
-.. _toggle_triggers.sql: https://github.com/waveform80/db2utils/blob/master/toggle_triggers.sql
-.. _history.sql: https://github.com/waveform80/db2utils/blob/master/history.sql
-.. _log.sql: https://github.com/waveform80/db2utils/blob/master/log.sql
-.. _merge.sql: https://github.com/waveform80/db2utils/blob/master/merge.sql
-.. _sql.sql: https://github.com/waveform80/db2utils/blob/master/sql.sql
-.. _assert.sql: https://github.com/waveform80/db2utils/blob/master/assert.sql
-.. _corrections.sql: https://github.com/waveform80/db2utils/blob/master/corrections.sql
+.. _pcre.sql: https://github.com/waveform-computing/db2utils/blob/master/pcre.sql
+.. _unicode.sql: https://github.com/waveform-computing/db2utils/blob/master/unicode.sql
+.. _toggle_triggers.sql: https://github.com/waveform-computing/db2utils/blob/master/toggle_triggers.sql
+.. _history.sql: https://github.com/waveform-computing/db2utils/blob/master/history.sql
+.. _log.sql: https://github.com/waveform-computing/db2utils/blob/master/log.sql
+.. _merge.sql: https://github.com/waveform-computing/db2utils/blob/master/merge.sql
+.. _sql.sql: https://github.com/waveform-computing/db2utils/blob/master/sql.sql
+.. _assert.sql: https://github.com/waveform-computing/db2utils/blob/master/assert.sql
+.. _corrections.sql: https://github.com/waveform-computing/db2utils/blob/master/corrections.sql
 

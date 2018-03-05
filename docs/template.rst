@@ -84,4 +84,4 @@ See Also
 * :ref:`RELATED`
 * routines
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/foo.sql#Lnnn
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/foo.sql#Lnnn

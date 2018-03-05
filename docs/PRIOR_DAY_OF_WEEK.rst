@@ -74,4 +74,4 @@ See Also
 * `Source code`_
 * :ref:`NEXT_DAY_OF_WEEK`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L53
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/date_time.sql#L53

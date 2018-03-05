@@ -55,5 +55,5 @@ search path automatically. For example, in my *.bashrc* I have::
     }
 
 
-.. _auth.sql: https://github.com/waveform80/db2utils/blob/master/auth.sql
-.. _date_time.sql: https://github.com/waveform80/db2utils/blob/master/date_time.sql
+.. _auth.sql: https://github.com/waveform-computing/db2utils/blob/master/auth.sql
+.. _date_time.sql: https://github.com/waveform-computing/db2utils/blob/master/date_time.sql

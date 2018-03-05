@@ -65,5 +65,5 @@ Windows
 
 Anyone want to figure this out?
 
-.. _assert.sql: https://github.com/waveform80/db2utils/blob/master/assert.sql
-.. _Makefile: https://github.com/waveform80/db2utils/blob/master/Makefile
+.. _assert.sql: https://github.com/waveform-computing/db2utils/blob/master/assert.sql
+.. _Makefile: https://github.com/waveform-computing/db2utils/blob/master/Makefile

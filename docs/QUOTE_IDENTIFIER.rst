@@ -84,4 +84,4 @@ See Also
 * `Source code`_
 * :ref:`QUOTE_STRING`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/sql.sql#L100
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/sql.sql#L100

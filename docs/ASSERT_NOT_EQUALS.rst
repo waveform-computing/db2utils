@@ -74,5 +74,5 @@ See Also
 * :ref:`ASSERT_IS_NOT_NULL`
 * :ref:`ASSERT_FAILED_STATE`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/assert.sql#L601
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/assert.sql#L601
 

@@ -84,4 +84,4 @@ See Also
 * `Source code`_
 * :ref:`QUARTER_WEEK_ISO`
 
-.. _Source code: https://github.com/waveform80/db2utils/blob/master/date_time.sql#L822
+.. _Source code: https://github.com/waveform-computing/db2utils/blob/master/date_time.sql#L822
